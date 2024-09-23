@@ -1,0 +1,57 @@
+
+.table td, .table th {
+    vertical-align: middle;
+}
+.table-responsive {
+    overflow-x: auto;
+}
+.note {
+    max-width: 150px;
+    word-wrap: break-word;
+}
+.mp510-title {
+    cursor: pointer;
+}
+.tool-column {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+
+/* 48px */
+.backToTopBtn {
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 33%;
+    opacity: 0.6;
+    background: #000;
+    cursor: pointer;
+    position:fixed;
+    right: 1rem;
+    bottom: 1rem;
+    display: none;
+}
+.backToTopBtn::before, .backToTopBtn::after {
+    width: 25px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgb(0, 153, 255);
+    position: absolute;
+    content: "";
+}
+.backToTopBtn::before {
+    transform: rotate(-45deg) translate(0, -50%);
+    left: 0.42rem;
+}
+.backToTopBtn::after {
+    transform: rotate(45deg) translate(0, -50%);
+    right: 0.42rem;
+}
+.backToTopBtn:focus {outline: none;}
+/* ================ */

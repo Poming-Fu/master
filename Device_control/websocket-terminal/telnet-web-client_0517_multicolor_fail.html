@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Telnet 客户端</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
+</head>
+<style>
+    #terminal-container {
+        width: 100%; /* 保持寬度最適配 */
+        height: 950px;  /* 或者任何你希望的高度 */
+        overflow: hidden; /* 防止內容超出容器時出現滾動條 */
+    }
+	#saveButton, #timestampButton {
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-size: 16px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        transition: background-color 0.3s ease;
+    }
+    #saveButton:hover {
+        background-color: #555;
+    }
+    #timestampCheckbox {
+        transform: scale(1.5);
+        cursor: pointer; 
+    }
+	
+    input[type="text"] {
+	    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-size: 16px;
+        padding: 8px;
+        margin: 5px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        width: 100px; /*寬度*/
+        }	
+	#redKeyword {
+        background-color: #FF0000; 
+    }
+    #yellowKeyword {
+        background-color: #F9F900; 
+    }
+    #blueKeyword {
+        background-color: #2828FF;
+    }
+</style>
+
+<body>
+<div id="terminal-container"></div>
+<button id="saveButton">Save</button>
+<button id="timestampButton">Timestamp</button><input type="checkbox" id="timestampCheckbox">
+<input type="text" id="redKeyword"><input type="checkbox" id="redKeywordCheckbox">
+<input type="text" id="yellowKeyword"><input type="checkbox" id="yellowKeywordCheckbox">
+<input type="text" id="blueKeyword"><input type="checkbox" id="blueKeywordCheckbox">
+<script>
+
+const urlParams  = new URLSearchParams(window.location.search);
+const host       = urlParams.get('host'); // 從 URL 參數中獲取主機地址
+const port       = urlParams.get('port'); // 從 URL 參數中獲取端口號
+
+const term       = new Terminal();
+const fitAddon   = new FitAddon.FitAddon(); // fitAddon 最適配窗口大小
+let addTimestamp = false;//main時間調用
+
+term.loadAddon(fitAddon);
+term.open(document.getElementById('terminal-container'));
+
+function getTermTimestamp()
+{
+    const now     = new Date();
+    const year    = now.getFullYear().toString().slice(2); // 獲取年份的後兩位 2024 -> 24
+    const month   = (now.getMonth() + 1).toString().padStart(2, '0'); // 獲取月份，月份從0開始，所以+1
+    const day     = now.getDate().toString().padStart(2, '0'); // 獲取日期
+    const hours   = now.getHours().toString().padStart(2, '0'); // 獲取小時
+    const minutes = now.getMinutes().toString().padStart(2, '0'); // 獲取分鐘
+    const seconds = now.getSeconds().toString().padStart(2, '0'); // 獲取秒鐘
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function getFileTimestamp()
+{
+    //padStart = 字串長度不足2則補0  ex:01 ~ 09
+    const now     = new Date();
+    const year    = now.getFullYear();
+    const month   = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day     = now.getDate().toString().padStart(2, '0');
+    const hours   = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+}
+
+	
+document.getElementById('saveButton').addEventListener('click', function()
+{
+    let allText     = '';
+	const lineCount = term.buffer.active.length;
+	for (let i = 0; i < lineCount; i++) {
+        const line = term.buffer.active.getLine(i);
+        if (line) {
+            allText += line.translateToString() + '\n';
+        }
+    }
+    
+    const IP        = urlParams.get('IP');// 從 URL 參數中獲取IP
+    const timestamp = getFileTimestamp();
+    const blob      = new Blob([allText], { type: 'text/plain' });
+    const url       = URL.createObjectURL(blob);
+    const a         = document.createElement('a');
+
+    a.href          = url;
+    a.download      = `Terminal_${IP}_${timestamp}.txt`;
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('timestampCheckbox').addEventListener('change', function()
+{
+    addTimestamp = this.checked;
+});
+
+document.getElementById('timestampButton').addEventListener('click', function() 
+{
+   const checkbox   = document.getElementById('timestampCheckbox');
+   checkbox.checked = !checkbox.checked;
+   addTimestamp     = checkbox.checked;//點按鈕也可以連動checkbox功能
+});
+
+let   allText          = '';
+
+function rhighlight() 
+{
+//    let   allText          = '';	
+    const cursorY          = term.buffer.active.cursorY;
+    const cursorX          = term.buffer.active.cursorX;
+    const lineCount        = term.buffer.active.length;
+    const redCheckbox      = document.getElementById('redKeywordCheckbox');
+	let   redKeyword       = document.getElementById('redKeyword').value;
+
+    for (let i = 0; i < lineCount; i++) {
+        const line = term.buffer.active.getLine(i);
+        if (line) {
+            allText += line.translateToString();
+        }
+    }
+
+    term.reset();
+    
+	if (redCheckbox.checked) {
+        // 打勾就改顏色 ， 關鍵字要變數需用RegExp
+		const regRed = new RegExp(`\\b${redKeyword}\\b`, 'gi'); 
+        rall = allText.replace(regRed, (match) => `\u001b[31m${match}\u001b[0m`);
+		term.write(rall);
+    }
+	
+	term.write(allText);//origin
+		
+    term.write(`\x1b[${cursorY + 1};${cursorX + 1}H`);
+}
+
+function yhighlight() 
+{
+//    let   allText          = '';	
+    const cursorY          = term.buffer.active.cursorY;
+    const cursorX          = term.buffer.active.cursorX;
+    const lineCount        = term.buffer.active.length;
+    const yellowCheckbox   = document.getElementById('yellowKeywordCheckbox');
+	let   yellowKeyword    = document.getElementById('yellowKeyword').value;
+
+    for (let i = 0; i < lineCount; i++) {
+        const line = term.buffer.active.getLine(i);
+        if (line) {
+            allText += line.translateToString();
+        }
+    }
+
+    term.reset();
+    
+	if (yellowCheckbox.checked) {
+        // 打勾就改顏色 ， 關鍵字要變數需用RegExp
+		const regYellow = new RegExp(`\\b${yellowKeyword}\\b`, 'gi'); 
+        term.write(allText.replace(regYellow, (match) => `\u001b[33m${match}\u001b[0m`));
+    } else {
+        term.write(allText);
+    }
+
+    term.write(`\x1b[${cursorY + 1};${cursorX + 1}H`);
+}
+
+function bhighlight() 
+{
+//    let   allText          = '';	
+    const cursorY          = term.buffer.active.cursorY;
+    const cursorX          = term.buffer.active.cursorX;
+    const lineCount        = term.buffer.active.length;
+    const blueCheckbox     = document.getElementById('blueKeywordCheckbox');
+    let   blueKeyword      = document.getElementById('blueKeyword').value;
+
+    for (let i = 0; i < lineCount; i++) {
+        const line = term.buffer.active.getLine(i);
+        if (line) {
+            allText += line.translateToString();
+        }
+    }
+
+    term.reset();
+    
+    if (blueCheckbox.checked) {
+		const regBlue = new RegExp(`\\b${blueKeyword}\\b`, 'gi'); 
+        term.write(allText.replace(regBlue, (match) => `\u001b[34m${match}\u001b[0m`));
+    } else {
+        term.write(allText);
+    }
+	
+    term.write(`\x1b[${cursorY + 1};${cursorX + 1}H`);
+}
+
+// 勾選就調用function
+document.getElementById('redKeywordCheckbox').addEventListener('change', rhighlight);
+document.getElementById('yellowKeywordCheckbox').addEventListener('change', yhighlight);
+document.getElementById('blueKeywordCheckbox').addEventListener('change', bhighlight);
+
+
+
+
+
+
+
+
+
+/*
+document.getElementById('blueButton').addEventListener('click', function()
+{
+    let   allText      = '';
+    const cursorY      = term.buffer.active.cursorY; //目前鼠標Y軸位置count 
+	const cursorX      = term.buffer.active.cursorX; //目前鼠標X軸位置count 
+    const lineCount    = term.buffer.active.length; //總數 = N
+	const visibleCount = term.rows;//終端可視總數 = 53
+    let   count        = 0;        
+
+    if (lineCount > visibleCount) {
+        count = lineCount;
+    } else {
+        count = cursorY+1;
+    }
+
+    for (let i = 0; i < count; i++) {
+        const line = term.buffer.active.getLine(i);
+        if (line) {
+            allText += line.translateToString();
+        }
+    }
+//    term.write("====================start to highlight=============================\r\n");	
+    term.reset();
+	//term.write(allText.replace(/\bpass\b/gi, '\u001b[32mpass\u001b[0m')); //Pass 也會被改成 pass
+    term.write(allText.replace(/\bpass \b/gi, (match) => `\u001b[34m${match}\u001b[0m`)); //match不會動到原字
+	term.write('\r');
+    term.write(`\x1b[${cursorY+1};${cursorX+1}H`);
+});
+*/
+
+
+
+
+
+function main()
+{
+    // google resize方法 -> 設定timeout -> window.addEventListener('resize', () => fitAddon.fit());  
+    setTimeout(() => fitAddon.fit(), 0);
+    window.addEventListener('resize', () => fitAddon.fit());
+	
+    // 使用獲取的主機地址和端口號建立 WebSocket 連接
+    socket = new WebSocket(`ws://10.148.175.12:8081/?host=${host}&port=${port}`); // 
+
+    socket.onopen = function() {
+        term.writeln('Connected to Telnet server.');
+    };
+    	
+	socket.onmessage = function(event) {
+	//let lightData = event.data.replace(/pass/g, `\u001b[32mpass\u001b[0m`);
+	    if (addTimestamp) {
+	        let modifiedData = event.data.replace(/\r\n/g, `\r\n[${getTermTimestamp()}] `);
+            term.write(modifiedData);
+	    } else {
+            term.write(event.data);
+	        //term.write(lightData);
+	    }
+    };
+	
+    socket.onclose = function() {
+        term.writeln('Disconnected from Telnet server.');
+    };
+
+    socket.onerror = function(error) {
+        // 處理websocket錯誤message
+        term.writeln(`WebSocket error: ${error.message}`);
+    };
+
+    term.onData(data => {
+        socket.send(data);
+    });
+}
+
+
+main();
+
+</script>
+
+</body>
+</html>
