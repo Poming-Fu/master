@@ -34,5 +34,5 @@ function get_build_info() {
         building: .building
     }"
 }
-
+#test
 get_build_info lastBuild
