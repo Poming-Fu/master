@@ -1,15 +1,17 @@
-#This is my 1st project  
 
 #For company manage baord service  
 
 #==================================#  
+server : main => [10.148.175.12](http://10.148.175.12) , develop => [10.148.170.70](http://10.148.170.70)  
 
 Backend : PHP, node.js  
 
-database : mariaDB  
+database : mariaDB  (http://10.148.175.12/phpmyadmin/index.php)
 
 Frontend : javascript, CSS, Bootstrap, HTML  
 
 #==================================#  
+
+
 
 #continue to develop release form now ~~~
