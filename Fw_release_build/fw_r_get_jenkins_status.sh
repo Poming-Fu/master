@@ -4,6 +4,7 @@ JENKINS_URL="http://10.148.21.21:8080"
 USERNAME="baber"
 PASSWORD="baber"
 JOB_NAME=$1
+BUILD_NUMBER=$2
 
 case $JOB_NAME in
 obmc_rel_1)
@@ -24,9 +25,9 @@ lbmc_rel_2)
 esac
 
 function get_build_info() {
-    local BUILD_NUMBER=$1
     last_build_info=$(curl -s -u "${USERNAME}:${PASSWORD}" "${JENKINS_URL}/job/${JOB_NAME}/${BUILD_NUMBER}/api/json?pretty=true")
     echo "$last_build_info" | jq "{
+        builtOn: .builtOn,
         fullDisplayName: .fullDisplayName,
         build_number: .number,
         result: .result,
@@ -35,4 +36,15 @@ function get_build_info() {
     }"
 }
 #test
-get_build_info lastBuild
+#echo "usage : ./get_build_info obmc_rel_1 lastBuild"
+get_build_info
+
+#執行示意圖
+#./fw_r_get_jenkins_status.sh obmc_rel_1 lastBuild
+#{
+#  "fullDisplayName": "Obmc Codebase Release #90",
+#  "build_number": 90,
+#  "result": null,
+#  "inProgress": true,
+# "building": true
+#}

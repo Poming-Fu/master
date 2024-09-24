@@ -30,26 +30,24 @@ function execute_api($who, $branch, $platform, $ver, $option, $oemname) {
 //isset 檢查變數是否有值
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	//$source = $_POST['source'];
-	$branch      = $_POST['branch'];
-	$platform    = $_POST['platform'];
-	$ver         = $_POST['ver'];
-	$option      = $_POST['option'];
-	$oemname     = $_POST['oemname'];
+    $branch     = $_POST['branch'];
+    $platform   = $_POST['platform'];
+    $ver        = $_POST['ver'];
+    $option     = $_POST['option'];
+    $oemname    = $_POST['oemname'];
     if (!empty($oemname) && !str_ends_with($oemname, '.bin')) {
         $oemname .= '.bin';
     }
 
-	//submit time
-	$submit_time  = date("Y-m-d H:i:s");
-	
-	$result       = execute_api($who, $branch, $platform, $ver, $option, $oemname);
-    $api_command  = $result['api_command'];
-    $output       = $result['output'];
+    // submit time
+    $submit_time = date("Y-m-d H:i:s");
     
-	//record db
-	fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname);
-
+    $result = execute_api($who, $branch, $platform, $ver, $option, $oemname);
+    $api_command = $result['api_command'];
+    $output = $result['output'];
+    
+    // record db
+    fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname);
 }
 ?>
 
@@ -149,9 +147,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			<tr>
 				<td>output </td>
 				<td><?= htmlspecialchars($output) ?></td>
-			</tr>		
+			</tr>
 	</table>
-	 
 </body>
 </html>
 

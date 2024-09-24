@@ -87,6 +87,8 @@ $conn = connect_to_db();
                                 <input type="text" class="form-control" id="oemname" name="oemname">
                                 <span class="input-group-text">.bin</span>
                             </div>
+                            <!-- build on -->
+
                             <div class="form-text mb-4">STD ignore this, if OEM you can fill up your OEM fw filename</div>
 
                             <div class="mb-3">
@@ -102,7 +104,7 @@ $conn = connect_to_db();
                 <div class="card-body">
                     <h2 class="card-title">Build Status</h2>
                     <?php
-                    $builds = get_pending_builds();
+                    $builds = get_schedule_builds();
                     if (!empty($builds)): ?>
                         <ul class="list-group">
                         <?php foreach ($builds as $build): ?>
@@ -122,8 +124,9 @@ $conn = connect_to_db();
                                         default:
                                             echo 'bg-info';
                                     }
-                                    ?>"><?= htmlspecialchars($build['status']) 
-                                ?>
+                                    ?>">
+                                    <?= htmlspecialchars($build['id']) ?>
+                                    <?= htmlspecialchars($build['status']) ?>
                                 </span>
                             </li>
                         <?php endforeach; ?>
@@ -145,8 +148,8 @@ $conn = connect_to_db();
                             title="refresh status">
                         </h2>
                         <?php
-                        $history = fw_r_form_read_history();
-                        if (!empty($history)): ?>
+                        $historys = get_history_builds();
+                        if (!empty($historys)): ?>
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered">
                                     <thead class="table-dark">
@@ -163,16 +166,10 @@ $conn = connect_to_db();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($history as $row): ?>
+                                        <?php foreach ($historys as $history): ?>
                                         <tr>
                                             <td class="<?php
-                                            switch($row['status']) {
-                                                case 'in_progress':
-                                                    echo 'table-primary';
-                                                    break;
-                                                case 'pending':
-                                                    echo 'table-secondary';
-                                                    break;
+                                            switch($history['status']) {
                                                 case 'completed':
                                                     echo 'table-success';
                                                     break;
@@ -180,16 +177,16 @@ $conn = connect_to_db();
                                                     echo 'table-danger';
                                                     break;
                                             }
-                                            ?>"><?= htmlspecialchars($row['status']) ?>
+                                            ?>"><?= htmlspecialchars($history['status']) ?>
                                             </td>
-                                            <td><?= htmlspecialchars($row['id']) ?></td>
-                                            <td><?= $row['submit_time'] ?></td>
-                                            <td><?= htmlspecialchars($row['u_acc']) ?></td>
-                                            <td><?= htmlspecialchars($row['branch']) ?></td>
-                                            <td><?= htmlspecialchars($row['platform']) ?></td>
-                                            <td><?= htmlspecialchars($row['ver']) ?></td>
-                                            <td><?= htmlspecialchars($row['option']) ?></td>
-                                            <td><?= htmlspecialchars($row['oemname'] ?: 'N/A') ?></td>
+                                            <td><?= htmlspecialchars($history['id']) ?></td>
+                                            <td><?= $history['submit_time'] ?></td>
+                                            <td><?= htmlspecialchars($history['u_acc']) ?></td>
+                                            <td><?= htmlspecialchars($history['branch']) ?></td>
+                                            <td><?= htmlspecialchars($history['platform']) ?></td>
+                                            <td><?= htmlspecialchars($history['ver']) ?></td>
+                                            <td><?= htmlspecialchars($history['option']) ?></td>
+                                            <td><?= htmlspecialchars($history['oemname'] ?: 'N/A') ?></td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>

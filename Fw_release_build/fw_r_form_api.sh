@@ -26,15 +26,15 @@ function jenkins_api() {
 	echo $COOKIE
 	#jenkins server build 10.148.21.21
 
-	#判斷BMC_TYPE sx12 sx13 sh12 sh13 判斷 
+	#判斷BUILD_ON sx12 sx13 sh12 sh13 判斷 
 	if [[ $BUILD_TARGET == *sx12* || $BUILD_TARGET == *sx13* || $BUILD_TARGET == *sh12* || $BUILD_TARGET == *sh13* ]]; then
-		BMC_TYPE="lbmc"
+		BUILD_ON="lbmc_rel_1"
 	else
-		BMC_TYPE="obmc"
+		BUILD_ON="obmc_rel_1"
 	fi
 
-	case $BMC_TYPE in
-	lbmc)
+	case $BUILD_ON in
+	lbmc_rel_1)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
 		http://10.148.21.21:8080/job/X12%20Codebase%20Release/buildWithParameters \
 		--user $USER \
@@ -45,7 +45,7 @@ function jenkins_api() {
 		-F OEM_NAME=$OEM_NAME
 	
 	;;
-	obmc)
+	obmc_rel_1)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
 		http://10.148.21.21:8080/job/Obmc%20Codebase%20Release/buildWithParameters \
 		--user $USER \
@@ -56,7 +56,7 @@ function jenkins_api() {
 
 	;;
 	*)
-	echo "wrong BMC_TYPE"
+	echo "wrong BUILD_ON"
 	exit 1
 	;;
 	esac
