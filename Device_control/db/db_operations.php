@@ -171,14 +171,25 @@ function fw_r_form_read_history($limit = 10) {
 
 function fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname, $status = 'pending') {
     $conn = connect_to_db();
+
     $stmt = $conn->prepare("INSERT INTO fw_r_form_history (u_acc, branch, platform, ver, option, oemname, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssss", $u_acc, $branch, $platform, $ver, $option, $oemname, $status);
     $result = $stmt->execute();
+
+    //返回插入的id 可能有用
+    $insert_id = $stmt->insert_id;
     $stmt->close();
-    return $result;
+
+    return [
+        'result' => $result,
+        'insert_id' => $insert_id
+    ];
 }
 
-function get_pending_builds($limit = 10) {
+
+
+
+function get_schedule_builds($limit = 10) {
     $conn = connect_to_db();
     $sql = "SELECT * FROM fw_r_form_history 
     WHERE status IN ('pending', 'in_progress') 
@@ -200,6 +211,28 @@ function get_pending_builds($limit = 10) {
     }
     return $builds;
 }
+
+
+function get_history_builds($limit = 10) {
+    $conn = connect_to_db();
+    $sql = "SELECT * FROM fw_r_form_history 
+    WHERE status IN ('completed', 'failed') 
+    ORDER BY id DESC 
+    LIMIT ?";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $builds = [];
+    while ($row = $result->fetch_assoc()) {
+        $builds[] = $row;
+    }
+
+    return $builds;
+}
+
 
 function update_build_status($status, $id) {
     $conn = connect_to_db();
