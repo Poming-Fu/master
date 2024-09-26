@@ -10,6 +10,7 @@ BUILD_TARGET=$3
 RELEASE_FW_VER=$4
 BUILD_OPTION=$5
 OEM_NAME=$6
+UUID=$7
 
 
 function jenkins_api() {
@@ -28,21 +29,22 @@ function jenkins_api() {
 
 	#判斷BUILD_ON sx12 sx13 sh12 sh13 判斷 
 	if [[ $BUILD_TARGET == *sx12* || $BUILD_TARGET == *sx13* || $BUILD_TARGET == *sh12* || $BUILD_TARGET == *sh13* ]]; then
-		BUILD_ON="lbmc_rel_1"
+		BUILD_ON="lbmc_rel_2"
 	else
 		BUILD_ON="obmc_rel_1"
 	fi
 
 	case $BUILD_ON in
-	lbmc_rel_1)
+	lbmc_rel_2)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
-		http://10.148.21.21:8080/job/X12%20Codebase%20Release/buildWithParameters \
+		http://10.148.21.21:8080/job/X12%20Codebase%20Release_2/buildWithParameters \
 		--user $USER \
 		-F BRANCH_NAME=$BRANCH_NAME \
 		-F BUILD_TARGET=$BUILD_TARGET \
 		-F RELEASE_FW_VER=$RELEASE_FW_VER \
 		-F BUILD_OPTION=$BUILD_OPTION \
-		-F OEM_NAME=$OEM_NAME
+		-F OEM_NAME=$OEM_NAME \
+		-F UUID=$UUID
 	
 	;;
 	obmc_rel_1)
@@ -52,7 +54,8 @@ function jenkins_api() {
 		-F BRANCH_NAME=$BRANCH_NAME \
 		-F BUILD_TARGET=$BUILD_TARGET \
 		-F RELEASE_FW_VER=$RELEASE_FW_VER \
-		-F BUILD_OPTION=$BUILD_OPTION 
+		-F BUILD_OPTION=$BUILD_OPTION \
+		-F UUID=$UUID
 
 	;;
 	*)

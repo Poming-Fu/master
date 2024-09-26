@@ -169,11 +169,11 @@ function fw_r_form_read_history($limit = 10) {
     return $history;
 }
 
-function fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname, $status = 'pending') {
+function fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname, $status = 'pending', $UUID) {
     $conn = connect_to_db();
 
-    $stmt = $conn->prepare("INSERT INTO fw_r_form_history (u_acc, branch, platform, ver, option, oemname, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $u_acc, $branch, $platform, $ver, $option, $oemname, $status);
+    $stmt = $conn->prepare("INSERT INTO fw_r_form_history (u_acc, branch, platform, ver, option, oemname, status, UUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssss", $u_acc, $branch, $platform, $ver, $option, $oemname, $status, $UUID);
     $result = $stmt->execute();
 
     //返回插入的id 可能有用
@@ -234,7 +234,7 @@ function get_history_builds($limit = 10) {
 }
 
 
-function update_build_status($status, $id) {
+function update_build_status($status, $UUID) {
     $conn = connect_to_db();
     $stmt = $conn->prepare("UPDATE fw_r_form_history SET status = ? WHERE id = ?");
     $stmt->bind_param("si", $status, $id);

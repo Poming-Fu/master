@@ -87,8 +87,6 @@ $conn = connect_to_db();
                                 <input type="text" class="form-control" id="oemname" name="oemname">
                                 <span class="input-group-text">.bin</span>
                             </div>
-                            <!-- build on -->
-
                             <div class="form-text mb-4">STD ignore this, if OEM you can fill up your OEM fw filename</div>
 
                             <div class="mb-3">

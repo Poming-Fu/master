@@ -1,27 +1,36 @@
 <?php
 session_start();
 require_once '../Device_control/db/db_operations.php';
-$conn = connect_to_db();
+$conn       = connect_to_db();
+$u_acc      = htmlspecialchars($_SESSION['username']);
+$who        = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSION['password']);
 
-$u_acc = htmlspecialchars($_SESSION['username']);
-$who = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSION['password']);
+function generate_uuid() {
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $UUID = '';
+    for ($i = 0; $i < 4; $i++) {
+        $UUID .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $UUID;
+}
 
-function execute_api($who, $branch, $platform, $ver, $option, $oemname) {
-    $script_path = __DIR__ . "/fw_r_form_api.sh";
-    $args = escapeshellarg($who) . ' ' . 
-            escapeshellarg($branch) . ' ' . 
-            escapeshellarg($platform) . ' ' . 
-            escapeshellarg($ver) . ' ' . 
-            escapeshellarg($option) . ' ' . 
-            escapeshellarg($oemname);
 
-    $api_command = "$script_path $args";
+function execute_api($who, $branch, $platform, $ver, $option, $oemname, $UUID) {
+    $script_path  = __DIR__ . "/fw_r_form_api.sh";
+    $args         = escapeshellarg($who) . ' ' . 
+                    escapeshellarg($branch) . ' ' . 
+                    escapeshellarg($platform) . ' ' . 
+                    escapeshellarg($ver) . ' ' . 
+                    escapeshellarg($option) . ' ' . 
+                    escapeshellarg($oemname) . ' ' . 
+                    escapeshellarg($UUID);
 
-    $output = shell_exec($api_command);
+    $api_command  = "$script_path $args";
+    $output       = shell_exec($api_command);
 
     return [
-        'api_command' => $api_command,
-        'output' =>  $output
+        'api_command'   => $api_command,
+        'output'        => $output
     ];
 }
 
@@ -30,24 +39,27 @@ function execute_api($who, $branch, $platform, $ver, $option, $oemname) {
 //isset 檢查變數是否有值
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $branch     = $_POST['branch'];
-    $platform   = $_POST['platform'];
-    $ver        = $_POST['ver'];
-    $option     = $_POST['option'];
-    $oemname    = $_POST['oemname'];
+    $branch      = $_POST['branch'];
+    $platform    = $_POST['platform'];
+    $ver         = $_POST['ver'];
+    $option      = $_POST['option'];
+    $oemname     = $_POST['oemname'];
+    
     if (!empty($oemname) && !str_ends_with($oemname, '.bin')) {
         $oemname .= '.bin';
     }
 
+    //gen uuid
+    $UUID        = generate_uuid();
     // submit time
     $submit_time = date("Y-m-d H:i:s");
     
-    $result = execute_api($who, $branch, $platform, $ver, $option, $oemname);
+    $result      = execute_api($who, $branch, $platform, $ver, $option, $oemname, $UUID);
     $api_command = $result['api_command'];
-    $output = $result['output'];
+    $output      = $result['output'];
     
     // record db
-    fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname);
+    fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname, $status = 'pending', $UUID);
 }
 ?>
 
@@ -139,6 +151,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			<tr>
 				<td>submit start time</td>
 				<td><?= htmlspecialchars($submit_time) ?></td>
+			</tr>
+            <tr>
+				<td>UUID</td>
+				<td><?= htmlspecialchars($UUID) ?></td>
 			</tr>
 			<tr>
 				<td>result cmd </td>
