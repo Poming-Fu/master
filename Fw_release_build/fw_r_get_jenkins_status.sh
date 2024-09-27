@@ -1,50 +1,56 @@
 #!/bin/bash
-#baber 0919
-JENKINS_URL="http://10.148.21.21:8080"
+
+db_server="10.148.175.12"
+db_user="one"
+db_password="1234"
+database="ipmi"
+table="fw_r_form_history"
 USERNAME="baber"
 PASSWORD="baber"
-JOB_NAME=$1
-BUILD_NUMBER=$2
 
-case $JOB_NAME in
-obmc_rel_1)
-    JOB_NAME="Obmc%20Codebase%20Release"
-    ;;
-obmc_rel_2)
-    JOB_NAME="Obmc%20Codebase%20Release_2"
-    ;;
-lbmc_rel_1)
-    JOB_NAME="X12%20Codebase%20Release"
-    ;;
-lbmc_rel_2)
-    JOB_NAME="X12%20Codebase%20Release_2"
-    ;;
-*)
-    echo "No job_name in case"
-    ;;
-esac
 
-function get_build_info() {
-    last_build_info=$(curl -s -u "${USERNAME}:${PASSWORD}" "${JENKINS_URL}/job/${JOB_NAME}/${BUILD_NUMBER}/api/json?pretty=true")
-    echo "$last_build_info" | jq "{
-        builtOn: .builtOn,
-        fullDisplayName: .fullDisplayName,
-        build_number: .number,
+get_build_to_update() {
+    mysql -u"$db_user" -p"$db_password" -h"$db_server" "$database" -se "SELECT UUID, build_url FROM $table WHERE status IN ('pending', 'in_progress')"
+}
+
+
+get_build_info() {
+    local build_url=$1
+    curl -s -u "${USERNAME}:${PASSWORD}" "${build_url}/api/json" | jq '{
         result: .result,
         inProgress: .inProgress,
         building: .building
-    }"
+    }'
 }
-#test
-#echo "usage : ./get_build_info obmc_rel_1 lastBuild"
-get_build_info
 
-#執行示意圖
-#./fw_r_get_jenkins_status.sh obmc_rel_1 lastBuild
-#{
-#  "fullDisplayName": "Obmc Codebase Release #90",
-#  "build_number": 90,
-#  "result": null,
-#  "inProgress": true,
-# "building": true
-#}
+# update table : fw_r_form_history => status
+update_build_status() {
+    local UUID=$1
+    local status=$2
+    mysql -u"$db_user" -p"$db_password" -h"$db_server" "$database" -e "UPDATE $table SET status='$status' WHERE UUID='$UUID'"
+}
+
+main() {
+    while read -r UUID build_url; do
+        if [ -n "$build_url" ]; then
+            build_info=$(get_build_info "$build_url")
+            in_progress=$(echo "$build_info" | jq -r '.inProgress')
+            building=$(echo "$build_info" | jq -r '.building')
+            result=$(echo "$build_info" | jq -r '.result')
+
+            if [ "$in_progress" = "true" ] || [ "$building" = "true" ]; then
+                update_build_status "$UUID" "in_progress"
+            elif [ "$result" = "SUCCESS" ]; then
+                update_build_status "$UUID" "completed"
+            elif [ "$result" = "FAILURE" ]; then
+                update_build_status "$UUID" "failed"
+            fi
+        fi
+    done < <(get_build_to_update) #function 有讀到 UUID build_url 就往下做
+    
+    if [[ $? != 0 ]];then
+        echo "get jenkins status script error !"
+    fi
+}
+
+main

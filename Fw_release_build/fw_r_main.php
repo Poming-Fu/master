@@ -90,7 +90,7 @@ $conn = connect_to_db();
                             <div class="form-text mb-4">STD ignore this, if OEM you can fill up your OEM fw filename</div>
 
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button id="build-form-submit-btn" type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
                     </div>
@@ -114,17 +114,20 @@ $conn = connect_to_db();
                                 <?php
                                     switch($build['status']) {
                                         case 'in_progress':
-                                            echo 'bg-primary'; //藍色
+                                            echo 'bg-primary d-flex align-items-center justify-content-center';
+                                            $spinner = '<span class="spinner-border spinner-border-sm me-2"></span>';//
                                             break;
                                         case 'pending':
-                                            echo 'bg-secondary'; //灰色
+                                            echo 'bg-secondary';
+                                            $spinner = '';
                                             break;
                                         default:
                                             echo 'bg-info';
+                                            $spinner = '';
                                     }
                                     ?>">
-                                    <?= htmlspecialchars($build['id']) ?>
-                                    <?= htmlspecialchars($build['status']) ?>
+                                    <?= $spinner ?><?= htmlspecialchars($build['id']) ?>
+                                    <?= htmlspecialchars($build['status']) ?>..
                                 </span>
                             </li>
                         <?php endforeach; ?>
