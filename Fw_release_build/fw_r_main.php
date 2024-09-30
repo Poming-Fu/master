@@ -52,8 +52,7 @@ $conn = connect_to_db();
                         
                         <form method="post" action="/web1/Fw_release_build/fw_r_form.php" target="_blank">
                             <div class="mb-3">
-                                <label for="username" class="form-label">User：</label>
-                                <input type="text" class="form-control" id="username" value="<?= htmlspecialchars($_SESSION['username']) ?>" readonly>
+                                <label for="username" class="form-label">User：<?= htmlspecialchars($_SESSION['username']) ?></label>
                             </div>
                             
                             <div class="mb-3">
@@ -107,6 +106,7 @@ $conn = connect_to_db();
                         <ul class="list-group">
                         <?php foreach ($builds as $build): ?>
                             <li class="list-group-item">
+                                <?= htmlspecialchars($build['u_acc']) ?> -
                                 <?= htmlspecialchars($build['submit_time']) ?> - 
                                 <?= htmlspecialchars($build['branch']) ?> 
                                 (<?= htmlspecialchars($build['platform']) ?>)

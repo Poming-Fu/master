@@ -5,11 +5,11 @@ $conn       = connect_to_db();
 $u_acc      = htmlspecialchars($_SESSION['username']);
 $who        = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSION['password']);
 
-function generate_uuid() {
+function generate_uuid($num) {
     $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $UUID = '';
-    for ($i = 0; $i < 4; $i++) {
-        $UUID .= $characters[rand(0, strlen($characters) - 1)];
+    for ($i = 0; $i < $num; $i++) {
+        $UUID .= $characters[rand(0, strlen($characters) - 1)];// - 1 為索引 ex 英文有26位，但位元從0開始，所以要0~25 => 0~(26-1)
     }
     return $UUID;
 }
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     //gen uuid
-    $UUID        = generate_uuid();
+    $UUID        = generate_uuid(num: 4);
     // submit time
     $submit_time = date("Y-m-d H:i:s");
     

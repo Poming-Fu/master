@@ -234,14 +234,7 @@ function get_history_builds($limit = 10) {
 }
 
 
-function update_build_status($status, $UUID) {
-    $conn = connect_to_db();
-    $stmt = $conn->prepare("UPDATE fw_r_form_history SET status = ? WHERE id = ?");
-    $stmt->bind_param("si", $status, $id);
-    $result = $stmt->execute();
-    $stmt->close();
-    return $result;
-}
+
 
 
 ?>

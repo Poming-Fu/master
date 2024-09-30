@@ -8,13 +8,14 @@ table="fw_r_form_history"
 USERNAME="baber"
 PASSWORD="baber"
 
+mysql_conn="mysql -u"$db_user" -p"$db_password" -h"$db_server" "$database""
 
-get_build_to_update() {
-    mysql -u"$db_user" -p"$db_password" -h"$db_server" "$database" -se "SELECT UUID, build_url FROM $table WHERE status IN ('pending', 'in_progress')"
+function get_build_to_update() {
+    $mysql_conn -se "SELECT UUID, build_url FROM $table WHERE status IN ('pending', 'in_progress')"
 }
 
 
-get_build_info() {
+function get_build_info() {
     local build_url=$1
     curl -s -u "${USERNAME}:${PASSWORD}" "${build_url}/api/json" | jq '{
         result: .result,
@@ -24,13 +25,13 @@ get_build_info() {
 }
 
 # update table : fw_r_form_history => status
-update_build_status() {
+function update_build_status() {
     local UUID=$1
     local status=$2
-    mysql -u"$db_user" -p"$db_password" -h"$db_server" "$database" -e "UPDATE $table SET status='$status' WHERE UUID='$UUID'"
+    $mysql_conn -e "UPDATE $table SET status='$status' WHERE UUID='$UUID'"
 }
 
-main() {
+function main() {
     while read -r UUID build_url; do
         if [ -n "$build_url" ]; then
             build_info=$(get_build_info "$build_url")
