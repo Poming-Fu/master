@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'dev_c_main_functions.php';
+require_once 'dev_ctrl_main_functions.php';
 require_once 'db/db_operations.php';
 require_once 'user_mgmt/log_user_action.php';
 
@@ -28,7 +28,7 @@ $mp510_groups = $boards_info['mp510_groups'];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>IPMI web service - control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="dev_c_main.css" rel="stylesheet">
+    <link href="dev_ctrl_main.css" rel="stylesheet">
 </head>
 <body>
 
@@ -51,7 +51,7 @@ $mp510_groups = $boards_info['mp510_groups'];
 
     <div class="tool-column">
         <h5>Board Raw小工具</h5>
-        <form id="rawForm" method="post" action="fetch_raw_command.php" class="row">
+        <form id="rawForm" class="row">
             <div class="col-md-3">
                 <select name="board_number" id="board_number" class="form-select">
                     <option value="0">Board options</option>
@@ -151,7 +151,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                                             data-ip="<?php echo htmlspecialchars($board['IP']); ?>"
                                             data-unique_pw="<?php echo htmlspecialchars($board['unique_pw']); ?>"
                                             style="width: 20px; height: 20px; cursor: pointer;" 
-                                            title="refresh status">
+                                            title="reload status">
                                     </div>
                                     <div>BMC ver = <?php echo htmlspecialchars($board['version']); ?></div>
                                     <div>BMC MAC = <?php echo htmlspecialchars($board['bmc_nc_mac']); ?></div>
@@ -185,13 +185,13 @@ $mp510_groups = $boards_info['mp510_groups'];
                                     </div>
                                 </td>
                                 <td>
-                                    <form class="enableForm" method="post" action="execute_function.php">
+                                    <form class="enableForm">
                                         <input type="hidden" name="ip" value="<?php echo htmlspecialchars($board['IP']); ?>">
                                         <input type="submit" name="BMC_enable_console_btn" value="Console Enabled" class="btn btn-sm btn-primary">
                                     </form>
                                 </td>
                                 <td>
-                                    <form id="actionForm" method="post" action="handle_action.php">
+                                    <form class="actionForm">
                                         <input type="hidden" name="ip" value="<?php echo htmlspecialchars($board['IP']); ?>">
                                         <div class="row g-2 align-items-center">
                                             <div class="col-auto flex-grow-1">
@@ -231,8 +231,8 @@ $mp510_groups = $boards_info['mp510_groups'];
 <button id="backToTopBtn" class="backToTopBtn" title="回到頂部">↑</button>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="dev_c_main.js"></script>
-<script src="power/dev_c_power_fetch.js"></script>
+<script src="dev_ctrl_main.js"></script>
+<script src="power/dev_ctrl_power_fetch.js"></script>
 <script>
 
 

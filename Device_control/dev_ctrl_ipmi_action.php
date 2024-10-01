@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 function executeBMCOperation($ip, $username, $password, $operation) {
     switch ($operation) {
         case 'bmc_default_uni_ADMIN':
-            $command = "ipmitool -I lanplus -H $ip -U $username -P $password raw 0x30 0x48 01";
+            $command = "ipmitool -I lanplus -H $ip -U $username -P $password raw 0x30 0x48 0x1";
             break;
         case 'reset':
             $command = "ipmitool -I lanplus -H $ip -U $username -P $password power reset";

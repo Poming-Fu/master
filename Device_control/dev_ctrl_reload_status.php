@@ -3,17 +3,17 @@ require_once '../Device_control/db/db_operations.php';
 $conn = connect_to_db();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $ip = htmlspecialchars($_POST['ip'], ENT_QUOTES, 'UTF-8');
-    $table = "boards";//DB 
-    $account = $_POST['account'];
-    $password = $_POST['password'];
-    $unique_pw = $_POST['unique_pw'];
-    $custom_pw = isset($_POST['custom_pw']) ? $_POST['custom_pw'] : null;
+    $ip         = htmlspecialchars($_POST['ip'], ENT_QUOTES, 'UTF-8');
+    $table      = "boards";//DB 
+    $account    = $_POST['account'];
+    $password   = $_POST['password'];
+    $unique_pw  = $_POST['unique_pw'];
+    $custom_pw  = isset($_POST['custom_pw']) ? $_POST['custom_pw'] : null;
     
     function ping_and_get_ip_status($conn, $table, $ip) {
         // 檢查 IP 是否在線
-        $ping_result = shell_exec("ping -c 1 -W 2 $ip");
-        $status = (strpos($ping_result, '1 received') !== false) ? 'online' : 'offline';
+        $ping_result   = shell_exec("ping -c 1 -W 2 $ip");
+        $status        = (strpos($ping_result, '1 received') !== false) ? 'online' : 'offline';
 
         // 更新資料庫中的狀態
         $stmt = $conn->prepare("UPDATE $table SET status = ? WHERE IP = ?");
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $get_bmc_info = trim($get_bmc_info);
                 //如果沒有error 就success = true
                 if (strpos($get_bmc_info, 'Error') === false) {
-                    $success = true;
+                    $success  = true;
                     $password = $pw;
                     break;
                 }

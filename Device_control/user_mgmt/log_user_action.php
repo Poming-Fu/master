@@ -4,11 +4,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    // header('Content-Type: application/json');
     if (isset($_POST['action_type']) && $_POST['action_type'] === 'log_user_actions') {
         
-        $u_acc = $_POST['u_acc'];
-        $action = $_POST['action'];
-        $element_id = $_POST['element_id'];
-        $element_type = $_POST['element_type'];
-        $page_url = $_POST['page_url'];
+        $u_acc          = $_POST['u_acc'];
+        $action         = $_POST['action'];
+        $element_id     = $_POST['element_id'];
+        $element_type   = $_POST['element_type'];
+        $page_url       = $_POST['page_url'];
 
         log_user_actions($u_acc, $action, $element_id, $element_type, $page_url);
 
@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 <script>
-const u_acc = "<?php echo htmlspecialchars($_SESSION['username']); ?>"; // 從 session 得到用戶名
-const page_url = window.location.href;
+const u_acc     = "<?php echo htmlspecialchars($_SESSION['username']); ?>"; // 從 session 得到用戶名
+const page_url  = window.location.href;
 
 function log_user_actions_collect(action, element, element_type) {
     const element_id = element.attr('id') || element.parent().attr('id') || element.parent().attr('href') || 'undefined';

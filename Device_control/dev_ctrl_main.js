@@ -101,7 +101,7 @@ $(document).ready(function() {
             }
 
             $.ajax({
-                url: '/web1//Device_control/execute_reload_mb_status_single.php',
+                url: 'dev_ctrl_reload_status.php',
                 type: 'POST',
                 data: data,
                 dataType: 'json',
@@ -226,7 +226,7 @@ $(document).ready(function() {
         event.preventDefault();
 
         $.ajax({
-            url: 'fetch_raw_command.php',
+            url: 'dev_ctrl_fetch_raw_cmd.php',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',
@@ -245,7 +245,7 @@ $(document).ready(function() {
         event.preventDefault(); // Prevent default form submission
         if (confirm('確定要enable console嗎？')) {
             $.ajax({
-                url: 'execute_function.php',
+                url: 'dev_ctrl_console_enable.php',
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
@@ -267,7 +267,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('submit', '#actionForm', function(event) {
+    $(document).on('submit', '.actionForm', function(event) {
         event.preventDefault(); // Prevent default form submission
         let action = $(this).find('select[name="action"]').val();
         if (action === 'NA') {
@@ -276,7 +276,7 @@ $(document).ready(function() {
         }
         if (confirm('Are you sure you want to perform this action?')) {
             $.ajax({
-                url: 'handle_action.php',
+                url: 'dev_ctrl_ipmi_action.php',
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
@@ -308,7 +308,7 @@ $(document).ready(function() {
 //獲取板子存活狀態
 function fetchBoardAliveData() {
     $.ajax({
-        url: 'fetch_boards_alive.php',
+        url: 'dev_ctrl_fetch_boards_alive.php',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
