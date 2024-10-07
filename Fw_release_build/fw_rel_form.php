@@ -16,7 +16,7 @@ function generate_uuid($num) {
 
 
 function execute_api($who, $branch, $platform, $ver, $option, $oemname, $UUID) {
-    $script_path  = __DIR__ . "/fw_r_form_api.sh";
+    $script_path  = __DIR__ . "/fw_rel_form_api.sh";
     $args         = escapeshellarg($who) . ' ' . 
                     escapeshellarg($branch) . ' ' . 
                     escapeshellarg($platform) . ' ' . 
@@ -54,9 +54,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // submit time
     $submit_time = date("Y-m-d H:i:s");
     
-    $result      = execute_api($who, $branch, $platform, $ver, $option, $oemname, $UUID);
+    $result = execute_api($who, $branch, $platform, $ver, $option, $oemname, $UUID);
     $api_command = $result['api_command'];
     $output      = $result['output'];
+
+    function alert($msg) {
+        echo "<script type='text/javascript'>alert('$msg');</script>";
+    }
+
+    if ($output === null || trim($output) === '') {
+        $output = "not expected error happened ~";
+        alert($output);
+        exit;
+    }
+
+
     
     // record db
     fw_r_form_record_history($u_acc, $branch, $platform, $ver, $option, $oemname, $status = 'pending', $UUID);

@@ -1,7 +1,7 @@
 
 function update_jenkins_status() {
     $.ajax({
-        url: 'fw_r_get_jenkins_status.php',
+        url: 'fw_rel_get_jenkins_status.php',
         type: 'POST',
         dataType: 'json',
         success: function(response) {

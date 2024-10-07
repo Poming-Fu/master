@@ -5,10 +5,8 @@ function connect_to_db() {
     $db_password = "1234";
     $database = "ipmi";
 
-    // 建立数据库连接
     $conn = new mysqli($db_server, $db_user, $db_password, $database);
 
-    // 检查连接
     if ($conn->connect_error) {
         die("連接失敗: " . $conn->connect_error);
     }

@@ -37,11 +37,11 @@ $conn = connect_to_db();
     <div class="container-fluid py-5">
         <h1 class="text-center mb-4">FW release build</h1>
         
-        <!-- 頁內導航 -->
+        <!-- 頁內導航 
         <nav class="nav justify-content-center mb-4">
             <a class="nav-link" href="#build-form">Build Form</a>
             <a class="nav-link" href="#history">Build History</a>
-        </nav>
+        </nav> -->
         
         <div class="row g-4">
         <div class="col-12 col-lg-6 order-1">
@@ -50,13 +50,13 @@ $conn = connect_to_db();
                         <h2 class="card-title">Build Form</h2>
                         <p class="card-text">請填寫必要的參數。</p>
                         
-                        <form method="post" action="/web1/Fw_release_build/fw_r_form.php" target="_blank">
+                        <form method="post" action="/web1/Fw_release_build/fw_rel_form.php" target="_blank">
                             <div class="mb-3">
                                 <label for="username" class="form-label">User：<?= htmlspecialchars($_SESSION['username']) ?></label>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="branch" class="form-label">branch name or tag：</label>
+                                <label for="branch" class="form-label">Branch name or tag：</label>
                                 <input type="text" class="form-control" id="branch" name="branch" required>
                                 <div class="form-text">ex：x12 : master_x12_rel_1.05_20240715 , x13 : master_rel_1.03_20240715, x14 : aspeed-master</div>
                             </div>
@@ -205,6 +205,6 @@ $conn = connect_to_db();
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="fw_r_main.js"></script>
+    <script src="fw_rel_main.js"></script>
 </body>
 </html>

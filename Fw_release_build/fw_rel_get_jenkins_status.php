@@ -1,6 +1,6 @@
 <?php
 function update_jenkins_status() {
-    $output = shell_exec(__DIR__ . "/fw_r_get_jenkins_status.sh");
+    $output = shell_exec(__DIR__ . "/fw_rel_get_jenkins_status.sh");
     return $output;
 }
 
