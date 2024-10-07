@@ -233,6 +233,4 @@ function get_history_builds($limit = 10) {
 
 
 
-
-
 ?>

@@ -323,6 +323,6 @@ function fetchBoardAliveData() {
 
 //BMC console function -> telnet
 function openTelnetSession(host, port, IP) {
-	const url = `/web1/Device_control/websocket-terminal/telnet-web-client.html?host=${host}&port=${port}&IP=${IP}`;
+	const url = `/web1/Device_control/websocket-terminal/bmc-console.html?host=${host}&port=${port}&IP=${IP}`;
 	window.open(url, '_blank');
 }

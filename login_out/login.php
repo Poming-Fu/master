@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../Device_control/db/db_operations.php';
+require_once __DIR__ . '/../DB/db_operations.php';
 // 檢查是否為 POST 請求
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 從表單獲取用戶名和密碼，用戶名要轉小寫，因LDAP沒有嚴格規定大小寫。
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['username'] = $username;
 	//不建議把密碼存在session，測試方便
 	$_SESSION['password'] = $password;
-        header("Location: ../Device_control/button3.php"); // 重定向到首頁
+        header("Location: ../Device_control/dev_ctrl_main.php"); // 重定向到首頁
         exit;
     } else {
         // 綁定失敗，顯示錯誤訊息

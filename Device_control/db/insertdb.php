@@ -55,26 +55,26 @@
 <div class="container">
     <?php
     session_start();
-    require_once 'db_operations.php';
-    $conn = connect_to_db();
-    $username = $_SESSION['username'];
-    $user = check_user_in_db($conn, $username);
+    require_once __DIR__ . '../../DB/db_operations.php';
+    $conn           = connect_to_db();
+    $username       = $_SESSION['username'];
+    $user           = check_user_in_db($conn, $username);
 
     if (isset($_POST['InsertBtn'])) {
         // 表單數據庫，帶入檢查機制
-        $B_Name = !empty($_POST['B_Name']) ? $_POST['B_Name'] : NULL;
-        $IP = !empty($_POST['IP']) ? $_POST['IP'] : NULL;
-        $BMC_MAC = !empty($_POST['bmc_nc_mac']) ? $_POST['bmc_nc_mac'] : NULL;
-        $L1_MAC = !empty($_POST['L1_MAC']) ? $_POST['L1_MAC'] : NULL;
-        $Unique_pw = !empty($_POST['unique_pw']) ? $_POST['unique_pw'] : NULL;
-        $Locate = !empty($_POST['Locate']) ? $_POST['Locate'] : NULL;
-        $pw_ip = !empty($_POST['pw_ip']) ? $_POST['pw_ip'] : NULL;
-        $pw_num = ($_POST['pw_num'] !== '' && $_POST['pw_num'] !== '0') ? $_POST['pw_num'] : NULL;
-        $pw_port = ($_POST['pw_port'] !== '' && $_POST['pw_port'] !== '0') ? $_POST['pw_port'] : NULL;
-        $mp_ip = !empty($_POST['mp_ip']) ? $_POST['mp_ip'] : NULL;
-        $mp_num = ($_POST['mp_num'] !== '' && $_POST['mp_num'] !== '0') ? $_POST['mp_num'] : NULL;
-        $mp_com = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
-        $note = !empty($_POST['note']) ? $_POST['note'] : NULL;
+        $B_Name     = !empty($_POST['B_Name']) ? $_POST['B_Name'] : NULL;
+        $IP         = !empty($_POST['IP']) ? $_POST['IP'] : NULL;
+        $BMC_MAC    = !empty($_POST['bmc_nc_mac']) ? $_POST['bmc_nc_mac'] : NULL;
+        $L1_MAC     = !empty($_POST['L1_MAC']) ? $_POST['L1_MAC'] : NULL;
+        $Unique_pw  = !empty($_POST['unique_pw']) ? $_POST['unique_pw'] : NULL;
+        $Locate     = !empty($_POST['Locate']) ? $_POST['Locate'] : NULL;
+        $pw_ip      = !empty($_POST['pw_ip']) ? $_POST['pw_ip'] : NULL;
+        $pw_num     = ($_POST['pw_num'] !== '' && $_POST['pw_num'] !== '0') ? $_POST['pw_num'] : NULL;
+        $pw_port    = ($_POST['pw_port'] !== '' && $_POST['pw_port'] !== '0') ? $_POST['pw_port'] : NULL;
+        $mp_ip      = !empty($_POST['mp_ip']) ? $_POST['mp_ip'] : NULL;
+        $mp_num     = ($_POST['mp_num'] !== '' && $_POST['mp_num'] !== '0') ? $_POST['mp_num'] : NULL;
+        $mp_com     = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
+        $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
 
         if ($conn) {
             // prepare bind 語法
@@ -100,13 +100,13 @@
             $_SESSION['message'] = "資料庫連接失敗";
         }
 
-        header("Location: ../button3.php");
+        header("Location: ../dev_ctrl_main.php");
         exit;
     }
 
     if (isset($_GET['mp_num']) && isset($_GET['mp_ip']) && isset($_GET['Locate'])) {
         $MP_NUM = $_GET['mp_num'];
-        $MP_IP = $_GET['mp_ip'];
+        $MP_IP  = $_GET['mp_ip'];
         $LOCATE = urldecode($_GET['Locate']);
     }
     ?>

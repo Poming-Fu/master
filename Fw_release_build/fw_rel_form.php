@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../Device_control/db/db_operations.php';
+require_once __DIR__ . '/../DB/db_operations.php';
 $conn       = connect_to_db();
 $u_acc      = htmlspecialchars($_SESSION['username']);
 $who        = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSION['password']);

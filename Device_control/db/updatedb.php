@@ -55,28 +55,28 @@
 <div class="container">
     <?php
     session_start();
-    require_once 'db_operations.php';
-    $conn = connect_to_db();
-    $username = $_SESSION['username'];
-    $user = check_user_in_db($conn, $username);
+    require_once __DIR__ . '../../DB/db_operations.php';
+    $conn           = connect_to_db();
+    $username       = $_SESSION['username'];
+    $user           = check_user_in_db($conn, $username);
 
     if (isset($_POST['EditBtn'])) {
-        $id = $_POST['ID'];
-        $B_Name = !empty($_POST['B_Name']) ? $_POST['B_Name'] : NULL;
-        $IP = !empty($_POST['IP']) ? $_POST['IP'] : NULL;
-        $BMC_MAC = !empty($_POST['bmc_nc_mac']) ? $_POST['bmc_nc_mac'] : NULL;
-        $L1_MAC = !empty($_POST['L1_MAC']) ? $_POST['L1_MAC'] : NULL;
-        $Unique_pw = !empty($_POST['unique_pw']) ? $_POST['unique_pw'] : NULL;
-        $Locate = !empty($_POST['Locate']) ? $_POST['Locate'] : NULL;
-        $pw_ip = !empty($_POST['pw_ip']) ? $_POST['pw_ip'] : NULL;
-        $pw_num = ($_POST['pw_num'] !== '' && $_POST['pw_num'] !== '0') ? $_POST['pw_num'] : NULL;
-        $pw_port = ($_POST['pw_port'] !== '' && $_POST['pw_port'] !== '0') ? $_POST['pw_port'] : NULL;
-        $mp_ip = !empty($_POST['mp_ip']) ? $_POST['mp_ip'] : NULL;
-        $mp_num = ($_POST['mp_num'] !== '' && $_POST['mp_num'] !== '0') ? $_POST['mp_num'] : NULL;
-        $mp_com = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
-        $note = !empty($_POST['note']) ? $_POST['note'] : NULL;
+        $id         = $_POST['ID'];
+        $B_Name     = !empty($_POST['B_Name']) ? $_POST['B_Name'] : NULL;
+        $IP         = !empty($_POST['IP']) ? $_POST['IP'] : NULL;
+        $BMC_MAC    = !empty($_POST['bmc_nc_mac']) ? $_POST['bmc_nc_mac'] : NULL;
+        $L1_MAC     = !empty($_POST['L1_MAC']) ? $_POST['L1_MAC'] : NULL;
+        $Unique_pw  = !empty($_POST['unique_pw']) ? $_POST['unique_pw'] : NULL;
+        $Locate     = !empty($_POST['Locate']) ? $_POST['Locate'] : NULL;
+        $pw_ip      = !empty($_POST['pw_ip']) ? $_POST['pw_ip'] : NULL;
+        $pw_num     = ($_POST['pw_num'] !== '' && $_POST['pw_num'] !== '0') ? $_POST['pw_num'] : NULL;
+        $pw_port    = ($_POST['pw_port'] !== '' && $_POST['pw_port'] !== '0') ? $_POST['pw_port'] : NULL;
+        $mp_ip      = !empty($_POST['mp_ip']) ? $_POST['mp_ip'] : NULL;
+        $mp_num     = ($_POST['mp_num'] !== '' && $_POST['mp_num'] !== '0') ? $_POST['mp_num'] : NULL;
+        $mp_com     = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
+        $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
 
-        $stmt = $conn->prepare("UPDATE boards SET B_Name=?, IP=?, bmc_nc_mac=?, L1_MAC=?, unique_pw=?, Locate=?, pw_ip=?, pw_num=?, pw_port=?, mp_ip=?, mp_num=?, mp_com=?, note=? WHERE id=?");
+        $stmt       = $conn->prepare("UPDATE boards SET B_Name=?, IP=?, bmc_nc_mac=?, L1_MAC=?, unique_pw=?, Locate=?, pw_ip=?, pw_num=?, pw_port=?, mp_ip=?, mp_num=?, mp_com=?, note=? WHERE id=?");
         $stmt->bind_param("sssssssiisiisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id);
 
         if ($stmt->execute()) {
@@ -88,15 +88,15 @@
         $stmt->close();
         $conn->close();
 
-        header("Location: ../button3.php");
+        header("Location: ../dev_ctrl_main.php");
         exit;
     }
 
     $board = null;
     if (isset($_GET['id'])) {
-        $ID = $_GET['id'];
-        $sql = "SELECT * FROM boards WHERE id=?";
-        $stmt = $conn->prepare($sql);
+        $ID     = $_GET['id'];
+        $sql    = "SELECT * FROM boards WHERE id=?";
+        $stmt   = $conn->prepare($sql);
         $stmt->bind_param("i", $ID);
         $stmt->execute();
         $result = $stmt->get_result();

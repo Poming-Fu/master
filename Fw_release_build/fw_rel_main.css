@@ -1,0 +1,9 @@
+.form-label {
+    border: 1px solid #007bff;
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 0.25rem 0.5rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}

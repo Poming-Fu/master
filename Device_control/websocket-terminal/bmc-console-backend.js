@@ -1,3 +1,5 @@
+//This is for server backend running ...
+//nodemon bmc-console-backend.js
 const WebSocket = require('ws');
 const net = require('net');
 const url = require('url');

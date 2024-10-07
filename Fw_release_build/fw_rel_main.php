@@ -6,8 +6,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 
-require_once '../Device_control/db/db_operations.php';
+require_once __DIR__ . '/../DB/db_operations.php';
 $conn = connect_to_db();
+
 
 ?>
 
@@ -19,17 +20,7 @@ $conn = connect_to_db();
     <title>Fw_release_build</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>        
-        .form-label {
-            border: 1px solid #007bff;
-            color: #007bff;
-            font-weight: bold;
-            font-size: 1.2rem;
-            padding: 0.25rem 0.5rem;
-            display: inline-block;
-            margin-bottom: 0.5rem;
-        }
-    </style>
+    <link href="fw_rel_main.css" rel="stylesheet">
 </head>
 <body>
     <?php include '../login_out/navbar.php'; ?>
@@ -138,6 +129,7 @@ $conn = connect_to_db();
                 </div>
             </div>
             </div>
+            
             <div class="col-12 col-lg-4 order-3 order-lg-2">
                 <div id="history" class="card h-100">
                     <div class="card-body">
@@ -199,6 +191,7 @@ $conn = connect_to_db();
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 

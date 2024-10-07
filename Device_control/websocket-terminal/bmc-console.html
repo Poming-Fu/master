@@ -324,18 +324,19 @@ document.getElementById('highlight').addEventListener('click', highlight);
 document.getElementById('cleanall').addEventListener('click', cleanall);
 
 
+let socket;
 let heartbeatInterval;
+let reconnectTimeout;
+const HEARTBEAT_INTERVAL = 30000; // 30秒
+const RECONNECT_DELAY = 3000; // 3秒
+
 function startHeartbeat() {
-    // 每30秒發送一次心跳消息
+    clearInterval(heartbeatInterval);
     heartbeatInterval = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {
-            socket.send(''); // 這裡定義心跳消息內容
+            socket.send(JSON.stringify({ type: 'heartbeat' }));
         }
-    }, 5000); // 30秒發送一次心跳
-}
-
-function stopHeartbeat() {
-    clearInterval(heartbeatInterval);
+    }, HEARTBEAT_INTERVAL);
 }
 
 function main()

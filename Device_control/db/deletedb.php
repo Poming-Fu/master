@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'db_operations.php';
+require_once __DIR__ . '../../DB/db_operations.php';
 $conn = connect_to_db();
 $username = $_SESSION['username'];
 $user = check_user_in_db($conn, $username);
@@ -9,7 +9,7 @@ $user = check_user_in_db($conn, $username);
 // 如果用戶等級不是 'high'，則拒絕操作
 if ($user['u_lev'] != 'high') {
     $_SESSION['del_message'] = "等級為: {$user['u_lev']}，無權限操作";
-    header("Location: ../button3.php");
+    header("Location: ../dev_ctrl_main.php");
     exit;
 } else {
     $id = $_GET['id'];
@@ -24,7 +24,7 @@ if ($user['u_lev'] != 'high') {
     
     $stmt->close();
     $conn->close();
-    header("Location: ../button3.php");
+    header("Location: ../dev_ctrl_main.php");
     exit;
 }
 ?>

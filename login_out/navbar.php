@@ -33,7 +33,7 @@
     <div class="navbar">
         <!-- <a href="/web1/Index/index.php">Index</a> -->
         <a href="/web1/Fw_release_build/fw_rel_main.php">Fw_release_build</a>
-        <a href="/web1/Device_control/button3.php">Device_control</a>
+        <a href="/web1/Device_control/dev_ctrl_main.php">Device_control</a>
 		<!-- <a href="/web1/Automation/automation.php">Automation</a> -->
 		<a href="/web1/login_out/logout.php" class="logout">Logout</a>
         <!-- more links -->

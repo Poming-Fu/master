@@ -1,7 +1,7 @@
 
 function fetchPb1Status() {
     $.ajax({
-        url: '/web1/Device_control/power/dev_ctrl_power_fetch.php?get-pb1_status=true',
+        url: '/web1/Device_control/powerbox/dev_ctrl_power_fetch.php?get-pb1_status=true',
         type: 'GET',
         success: function(response) {
             const data = JSON.parse(response);
@@ -32,7 +32,7 @@ function fetchPb1Status() {
 
 function fetchPb2Status() {
     $.ajax({
-        url: '/web1/Device_control/power/dev_ctrl_power_fetch.php?get-pb2_status=true',
+        url: '/web1/Device_control/powerbox/dev_ctrl_power_fetch.php?get-pb2_status=true',
         type: 'GET',
         dataType: 'json',
             success: function(data) {
