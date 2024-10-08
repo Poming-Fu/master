@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'dev_ctrl_main_functions.php';
-require_once __DIR__ . '/../DB/db_operations.php';
+require_once '../DB/db_operations.php';
 require_once 'user_mgmt/log_user_action.php';
 
 include '../login_out/navbar.php';
@@ -32,7 +32,7 @@ $mp510_groups = $boards_info['mp510_groups'];
 </head>
 <body>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-2">
     <div class="card mb-3">
         <div class="card-body">
             <span>
@@ -228,6 +228,7 @@ $mp510_groups = $boards_info['mp510_groups'];
             </div>
         <?php endforeach; ?>
     </div>
+    
 <button id="backToTopBtn" class="backToTopBtn" title="回到頂部">↑</button>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

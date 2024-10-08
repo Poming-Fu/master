@@ -55,7 +55,7 @@
 <div class="container">
     <?php
     session_start();
-    require_once __DIR__ . '../../DB/db_operations.php';
+    require_once '../../DB/db_operations.php';
     $conn           = connect_to_db();
     $username       = $_SESSION['username'];
     $user           = check_user_in_db($conn, $username);

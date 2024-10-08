@@ -62,7 +62,7 @@
 
     <?php
     session_start();
-    require_once __DIR__ . '../../DB/db_operations.php';
+    require_once '../../DB/db_operations.php';
     $conn = connect_to_db();
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 獲取表單數據

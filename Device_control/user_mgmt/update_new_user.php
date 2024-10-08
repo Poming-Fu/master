@@ -1,7 +1,7 @@
 <?php
 //這頁是整合 列出用戶 -> edit 後填入表單 -> submit -> 更改用戶資訊
 session_start();
-require_once __DIR__ . '../../DB/db_operations.php';
+require_once '../../DB/db_operations.php';
 $conn = connect_to_db();
 
 // 檢查是否有更新或刪除請求

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../../DB/db_operations.php';
+require_once '../../DB/db_operations.php';
 $conn = connect_to_db();
 
 //BMC BIOS CPLD 要不要做一起

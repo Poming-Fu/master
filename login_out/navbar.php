@@ -2,42 +2,51 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Website Title</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-		.navbar {
-			display: flex;
-			justify-content: flex-start; /*讓導航欄靠左*/
-			background-color: #333;
-			overflow: hidden;
-		}
-
-		.navbar a {
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-		}
-
-		.navbar a:hover {
-			background-color: #ddd;
-			color: black;
-		}
-
-		.logout {
-			margin-left: auto; /* 使用 margin-left: auto; 推動 Logout 靠右*/
-		}
-
+        .navbar-custom {
+            background-color: #333;
+        }
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+            color: white;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #ddd;
+        }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <!-- <a href="/web1/Index/index.php">Index</a> -->
-        <a href="/web1/Fw_release_build/fw_rel_main.php">Fw_release_build</a>
-        <a href="/web1/Device_control/dev_ctrl_main.php">Device_control</a>
-		<!-- <a href="/web1/Automation/automation.php">Automation</a> -->
-		<a href="/web1/login_out/logout.php" class="logout">Logout</a>
-        <!-- more links -->
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+                        <a class="nav-link" href="/web1/index.php">Index</a>
+                    </li>
+					<li class="nav-item">
+                        <a class="nav-link" href="/web1/Device_control/dev_ctrl_main.php">Device_control</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web1/Fw_release_build/fw_rel_main.php">Fw_release_build</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web1/login_out/logout.php">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Bootstrap JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

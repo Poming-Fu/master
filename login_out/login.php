@@ -27,13 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if ($user) {
 		update_user_last_login($conn, $username);
 	}
-        //綁定成功，設置屬性可用於其他頁面檢查是否已登入
-        $_SESSION['loggedin'] = true;
-        $_SESSION['username'] = $username;
-	//不建議把密碼存在session，測試方便
-	$_SESSION['password'] = $password;
-        header("Location: ../Device_control/dev_ctrl_main.php"); // 重定向到首頁
-        exit;
+    //綁定成功，設置屬性可用於其他頁面檢查是否已登入
+    $_SESSION['loggedin'] = true;
+    $_SESSION['username'] = $username;
+    //不建議把密碼存在session，測試方便
+    $_SESSION['password'] = $password;
+    header("Location: ../index.php"); // 重定向到首頁
+    exit;
     } else {
         // 綁定失敗，顯示錯誤訊息
         $error = "用戶名或密碼不正確。";
