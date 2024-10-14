@@ -101,7 +101,7 @@ $(document).ready(function() {
             }
 
             $.ajax({
-                url: 'dev_ctrl_reload_status.php',
+                url: 'dev_ctrl_main_functions.php?action=reload_status',
                 type: 'POST',
                 data: data,
                 dataType: 'json',
@@ -226,7 +226,7 @@ $(document).ready(function() {
         event.preventDefault();
 
         $.ajax({
-            url: 'dev_ctrl_fetch_raw_cmd.php',
+            url: 'dev_ctrl_main_functions.php?action=execute_raw_command',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',
@@ -245,7 +245,7 @@ $(document).ready(function() {
         event.preventDefault(); // Prevent default form submission
         if (confirm('確定要enable console嗎？')) {
             $.ajax({
-                url: 'dev_ctrl_console_enable.php',
+                url: 'dev_ctrl_main_functions.php?action=enable_console',
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
@@ -276,7 +276,7 @@ $(document).ready(function() {
         }
         if (confirm('Are you sure you want to perform this action?')) {
             $.ajax({
-                url: 'dev_ctrl_ipmi_action.php',
+                url: 'dev_ctrl_main_functions.php?action=perform_action',
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
@@ -308,7 +308,7 @@ $(document).ready(function() {
 //獲取板子存活狀態
 function fetchBoardAliveData() {
     $.ajax({
-        url: 'dev_ctrl_fetch_boards_alive.php',
+        url: 'dev_ctrl_main_functions.php?action=get_boards_alive',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
