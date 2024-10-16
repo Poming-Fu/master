@@ -1,6 +1,7 @@
 <?php
-require_once '../../DB/db_operations.php';
-$conn = connect_to_db();
+//require_once '../../DB/db_operations.php';
+require_once '../../DB/db_operations_all.php';
+$conn       = database_connection::get_connection();
 
 //BMC BIOS CPLD 要不要做一起
 function check_password($ip, $account, $password, $unique_pw, $custom_pw) {
@@ -91,21 +92,21 @@ function FW_update_operation($ip, $B_id, $FW_type, $GUID, $BMC_bin_path, $curren
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $ip = htmlspecialchars($_POST['ip'], ENT_QUOTES, 'UTF-8');
-    $table = "boards";//DB 
-    $account = $_POST['account'];
-    $password = $_POST['password'];
-    $unique_pw = $_POST['unique_pw'];
-    $custom_pw = isset($_POST['custom_pw']) ? $_POST['custom_pw'] : null;
+    $ip         = htmlspecialchars($_POST['ip'], ENT_QUOTES, 'UTF-8');
+    $table      = "boards";//DB 
+    $account    = $_POST['account'];
+    $password   = $_POST['password'];
+    $unique_pw  = $_POST['unique_pw'];
+    $custom_pw  = isset($_POST['custom_pw']) ? $_POST['custom_pw'] : null;
 
 
 
     if (isset($_POST['action']) && $_POST['action'] === 'get_latest_FW') {
-        $B_id = $_POST['B_id'];
+        $B_id    = $_POST['B_id'];
         $FW_type = $_POST['FW_type'];
 
 
-        $GUID = get_GUID_by_B_id($conn, $B_id);
+        $GUID = boards_repository::get_GUID_by_B_id($B_id);
         if (!$GUID) {
             echo json_encode(["success" => false, "message" => "GUID not found , check the board id"]);
             exit;
@@ -130,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['submit']) && $_POST['submit'] === 'true' && $_POST['RF_recovery']) {
         $B_id      = $_POST['B_id'];
         $FW_type   = $_POST['FW_type'];    
-        $GUID      = get_GUID_by_B_id($conn, $B_id);
+        $GUID      = boards_repository::get_GUID_by_B_id($B_id);
         $directory = "/mnt";
         
         // 先檢查密碼

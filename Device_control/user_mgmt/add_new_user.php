@@ -62,15 +62,16 @@
 
     <?php
     session_start();
-    require_once '../../DB/db_operations.php';
-    $conn = connect_to_db();
+    //require_once '../../DB/db_operations.php';
+    require_once '../../DB/db_operations_all.php';
+    $conn       = database_connection::get_connection();
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 獲取表單數據
         $u_acc = $_POST['u_acc'];
         $u_lev = $_POST['u_lev'];
 
         // 調用函數添加新用戶
-        if (add_new_user($u_acc, $u_lev)) {
+        if (users_repository::add_new_user($u_acc, $u_lev)) {
             echo "<p>新增用戶成功！</p>";
         } else {
             echo "<p>新增用戶失敗。</p>";

@@ -1,5 +1,6 @@
 <?php
 require_once '../DB/db_operations.php';
+require_once '../DB/db_operations_all.php';
 function check_login() {
     if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         header('Location: /web1/login_out/login.php');
@@ -13,7 +14,8 @@ class device_controller {
     private $conn;
 
     public function __construct() {
-        $this->conn = connect_to_db();
+        //$this->conn = connect_to_db();
+        $this->conn = database_connection::get_connection();
     }
 
     public function execute_raw_command($board_number, $user_value, $pass_value, $raw_value) {
@@ -50,29 +52,18 @@ class device_controller {
     }
 
     public function reload_status($ip, $unique_pw, $custom_pw = null) {
-        $table = "boards";
-        $this->ping_and_get_ip_status($table, $ip);
-        return $this->get_board_id_and_ver($table, $ip, $this->username, $this->password, $unique_pw, $custom_pw);
+        $this->ping_and_get_ip_status($ip);
+        return $this->get_board_id_and_ver($ip, $this->username, $this->password, $unique_pw, $custom_pw);
     }
 
-    private function ping_and_get_ip_status($table, $ip) {
+    private function ping_and_get_ip_status($ip) {
         $ping_result = shell_exec("ping -c 1 -W 2 $ip");
-        $status = (strpos($ping_result, '1 received') !== false) ? 'online' : 'offline';
-
-        $stmt = $this->conn->prepare("UPDATE $table SET status = ? WHERE IP = ?");
-        $stmt->bind_param("ss", $status, $ip);
-        $stmt->execute();
-        $stmt->close();
+        $status      = (strpos($ping_result, '1 received') !== false) ? 'online' : 'offline';
+        boards_repository::update_boards_status($status, $ip);
     }
 
-    private function get_board_id_and_ver($table, $ip, $account, $password, $unique_pw, $custom_pw) {
-        $stmt = $this->conn->prepare("SELECT status FROM $table WHERE IP = ?");
-        $stmt->bind_param("s", $ip);
-        $stmt->execute();
-        $stmt->bind_result($status);
-        $stmt->fetch();
-        $stmt->close();
-
+    private function get_board_id_and_ver($ip, $account, $password, $unique_pw, $custom_pw) {
+        $status = boards_repository::query_boards_status($ip);
         if ($status == "online") {
             $passwords = [$password, $unique_pw];
             if ($custom_pw) {
@@ -102,14 +93,14 @@ class device_controller {
             $board_id = $bmc_info_parts[10] . $bmc_info_parts[9];
             $version = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
 
-            $stmt = $this->conn->prepare("UPDATE $table SET B_id = ?, version = ? WHERE IP = ?");
+            $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
             $stmt->bind_param("sss", $board_id, $version, $ip);
             $stmt->execute();
             $stmt->close();
 
             return json_encode(["success" => true, "message" => "Reload & Ping pass\nCurrent password: $password\nRequest: $get_bmc_info"]);
         } else {
-            $stmt = $this->conn->prepare("UPDATE $table SET B_id = NULL, version = NULL WHERE IP = ?");
+            $stmt = $this->conn->prepare("UPDATE boards SET B_id = NULL, version = NULL WHERE IP = ?");
             $stmt->bind_param("s", $ip);
             $stmt->execute();
             $stmt->close();
@@ -132,10 +123,12 @@ class device_controller {
     }
 
     public function get_boards_alive() {
-        return json_encode(query_boards_alive());
+        return json_encode(boards_repository::query_boards_alive());
     }
 }
 
+
+//call api area 
 if (isset($_GET['action'])) {
     header('Content-Type: application/json');
     $controller = new device_controller();

@@ -1,17 +1,21 @@
 <?php
 //這頁是整合 列出用戶 -> edit 後填入表單 -> submit -> 更改用戶資訊
 session_start();
-require_once '../../DB/db_operations.php';
-$conn = connect_to_db();
+//require_once '../../DB/db_operations.php';
+require_once '../../DB/db_operations_all.php';
+$conn       = database_connection::get_connection();
+
+//下面user表格用到
+$users      = users_repository::query_users_info();
 
 // 檢查是否有更新或刪除請求
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update'])) {
-        $id = $_POST['id'];
-        $u_acc = $_POST['u_acc'];
-        $u_lev = $_POST['u_lev'];
+        $id     = $_POST['id'];
+        $u_acc  = $_POST['u_acc'];
+        $u_lev  = $_POST['u_lev'];
 
-        if (update_new_user($conn, $u_acc, $u_lev, $id)) {
+        if (users_repository::update_new_user($u_acc, $u_lev, $id)) {
             $message = "用戶訊息已更新。";
         } else {
             $message = "更新用戶信息時發生錯誤。";
@@ -19,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST['delete'])) {
         $id = $_POST['id'];
 
-        if (delete_new_user($conn, $id)) {
+        if (users_repository::delete_new_user($id)) {
             $message = "用戶已刪除。";
         } else {
             $message = "刪除用戶時發生錯誤。";
@@ -27,16 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// 獲取用戶列表
-$sql = "SELECT * FROM users";
-$result = $conn->query($sql);
 
-$users = []; // 空的數組來存用戶信息
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $users[] = $row; // 直接將$row賦值給$users數組
-    }
-}
 
 ?>
 <!DOCTYPE html>

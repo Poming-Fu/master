@@ -55,13 +55,14 @@
 <div class="container">
     <?php
     session_start();
-    require_once '../../DB/db_operations.php';
-    $conn           = connect_to_db();
+    //require_once '../../DB/db_operations.php';
+    require_once '../../DB/db_operations_all.php';
+    $conn           = database_connection::get_connection();
     $username       = $_SESSION['username'];
-    $user           = check_user_in_db($conn, $username);
+    $user           = users_repository::check_user_in_db($username);
 
     if (isset($_POST['EditBtn'])) {
-        $id         = $_POST['ID'];
+        $id         = $_POST['id'];
         $B_Name     = !empty($_POST['B_Name']) ? $_POST['B_Name'] : NULL;
         $IP         = !empty($_POST['IP']) ? $_POST['IP'] : NULL;
         $BMC_MAC    = !empty($_POST['bmc_nc_mac']) ? $_POST['bmc_nc_mac'] : NULL;
@@ -76,46 +77,24 @@
         $mp_com     = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
         $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
 
-        $stmt       = $conn->prepare("UPDATE boards SET B_Name=?, IP=?, bmc_nc_mac=?, L1_MAC=?, unique_pw=?, Locate=?, pw_ip=?, pw_num=?, pw_port=?, mp_ip=?, mp_num=?, mp_com=?, note=? WHERE id=?");
-        $stmt->bind_param("sssssssiisiisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id);
 
-        if ($stmt->execute()) {
+        if (boards_repository::modify_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id)) {
             $_SESSION['message'] = "記錄更新成功";
         } else {
             $_SESSION['message'] = "更新記錄時發生錯誤";
         }
-        
-        $stmt->close();
-        $conn->close();
-
         header("Location: ../dev_ctrl_main.php");
         exit;
     }
 
-    $board = null;
     if (isset($_GET['id'])) {
-        $ID     = $_GET['id'];
-        $sql    = "SELECT * FROM boards WHERE id=?";
-        $stmt   = $conn->prepare($sql);
-        $stmt->bind_param("i", $ID);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $board = $result->fetch_assoc();
-        } else {
-            echo "無記錄";
-        }
-        $stmt->close();
-    } else {
-        echo "無效的ID";
+        $id    = $_GET['id'];
+        $board = boards_repository::query_boards_info_by_id($id);
     }
-
-    $conn->close();
     ?>
     <?php if ($board): ?>
         <form class="UpdateForm" method="post">
-            <input type="hidden" name="ID" value="<?php echo htmlspecialchars($ID); ?>">
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>">
             <table>
                 <thead>
                 <tr>

@@ -10,6 +10,7 @@ include '../login_out/navbar.php';
 check_login();
 $username = $_SESSION['username'];
 
+
 //檢查用戶是否合法
 $conn = connect_to_db();
 $user = check_user_in_db($conn, $username);
@@ -98,7 +99,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                 <h2 class="mp510-title" data-bs-target="#<?php echo $mp_id; ?>" style="font-weight: bold; text-decoration: underline; padding-bottom: 5px; margin: 0;">
                     MP510：<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&nbsp;(<?php echo htmlspecialchars($boards[0]['Locate']); ?>)
                 </h2>
-                <a href="db/insertdb.php?mp_num=<?php echo $mp_num; ?>&mp_ip=<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&Locate=<?php echo urlencode($boards[0]['Locate']); ?>">
+                <a href="boards_mgmt/insert.php?mp_num=<?php echo $mp_num; ?>&mp_ip=<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&Locate=<?php echo urlencode($boards[0]['Locate']); ?>">
                     <img src="/web1/web_picture/insert.png" style="width: 30px; height: 30px; cursor: pointer; vertical-align: middle;" alt="Insert">
                 </a>
             </div>
@@ -210,13 +211,18 @@ $mp510_groups = $boards_info['mp510_groups'];
                                     </form>
                                 </td>
                                 <td>
-                                <a href="db/deletedb.php?id=<?php echo htmlspecialchars($board['id']); ?>">
-                                        <img src="/web1/web_picture/bin.png" alt="Delete" style="width: 30px; height: 30px;">
-                                    </a>
+                                    <?php
+                                    if (isset($user['u_lev']) && $user['u_lev'] == 'high'): ?>
+                                        <a href="boards_mgmt/delete.php?id=<?php echo htmlspecialchars($board['id']); ?>">
+                                            <img src="/web1/web_picture/bin.png" alt="Delete" style="width: 30px; height: 30px;">
+                                        </a>
+                                    <?php else: ?>
+                                        <img src="/web1/web_picture/bin.png" alt="Delete" style="width: 30px; height: 30px; opacity: 0.5;" title="Not allow">
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    <a href="db/updatedb.php?id=<?php echo htmlspecialchars($board['id']); ?>">
-                                        <img src="/web1/web_picture/modify.png" alt="update" style="width: 30px; height: 30px;">
+                                    <a href="boards_mgmt/modify.php?id=<?php echo htmlspecialchars($board['id']); ?>">
+                                        <img src="/web1/web_picture/modify.png" alt="modify" style="width: 30px; height: 30px;">
                                     </a>
                                 </td>
                                 <td class="note"><?php echo htmlspecialchars($board['note']); ?></td>

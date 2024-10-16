@@ -56,9 +56,10 @@
     <?php
     session_start();
     require_once '../../DB/db_operations.php';
-    $conn           = connect_to_db();
+    require_once '../../DB/db_operations_all.php';
+    $conn           = database_connection::get_connection();
     $username       = $_SESSION['username'];
-    $user           = check_user_in_db($conn, $username);
+    $user           = users_repository::check_user_in_db($username);
 
     if (isset($_POST['InsertBtn'])) {
         // 表單數據庫，帶入檢查機制
@@ -76,34 +77,18 @@
         $mp_com     = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
         $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
 
-        if ($conn) {
-            // prepare bind 語法
-            $stmt = $conn->prepare("INSERT INTO boards (B_Name, IP, bmc_nc_mac, L1_MAC, unique_pw, Locate, pw_ip, pw_num, pw_port, mp_ip, mp_num, mp_com, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            if ($stmt) {
-                $stmt->bind_param("ssssssssisisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
-
-                $stmt->execute();
-
-                if ($stmt->affected_rows > 0) {
-                    $_SESSION['message'] = "記錄插入成功";
-                } else {
-                    $_SESSION['message'] = "記錄插入失敗";
-                }
-
-                $stmt->close();
-            } else {
-                $_SESSION['message'] = "SQL語句準備失敗";
-            }
-
-            $conn->close();
+        // prepare bind 語法
+        if (boards_repository::insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note)) {       
+            $_SESSION['message'] = "插入資料成功";
         } else {
-            $_SESSION['message'] = "資料庫連接失敗";
+            $_SESSION['message'] = "插入資料失敗";
         }
-
         header("Location: ../dev_ctrl_main.php");
         exit;
     }
 
+
+    //顯示表格基本訊息
     if (isset($_GET['mp_num']) && isset($_GET['mp_ip']) && isset($_GET['Locate'])) {
         $MP_NUM = $_GET['mp_num'];
         $MP_IP  = $_GET['mp_ip'];
@@ -165,7 +150,7 @@
             </tr>
             <tr>
                 <td>MP510 編號</td>
-                <td><input type="number" name="mp_num" value="<?php echo htmlspecialchars($MP_NUM); ?>" required <?php if ($user['u_lev'] !== 'high') echo 'readonly'; ?>></td>
+                <td><input type="number" name="mp_num" value="<?php echo htmlspecialchars($MP_NUM); ?>" <?php if ($user['u_lev'] !== 'high') echo 'readonly'; ?>></td>
             </tr>
             <tr>
                 <td>MP510 COM</td>
