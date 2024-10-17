@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (users_repository::update_new_user($u_acc, $u_lev, $id)) {
             $message = "用戶訊息已更新。";
         } else {
-            $message = "更新用戶信息時發生錯誤。";
+            $message = "更新用戶訊息發生錯誤。";
         }
     } elseif (isset($_POST['delete'])) {
         $id = $_POST['id'];
@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (users_repository::delete_new_user($id)) {
             $message = "用戶已刪除。";
         } else {
-            $message = "刪除用戶時發生錯誤。";
+            $message = "刪除用戶發生錯誤。";
         }
     }
 }

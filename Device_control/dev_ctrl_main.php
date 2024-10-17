@@ -1,8 +1,9 @@
 <?php
 session_start();
 require_once 'dev_ctrl_main_functions.php';
-require_once '../DB/db_operations.php';
-require_once 'user_mgmt/log_user_action.php';
+//require_once '../DB/db_operations.php';
+require_once '../DB/db_operations_all.php';
+require_once 'users_mgmt/log_user_action.php';
 
 include '../login_out/navbar.php';
 
@@ -12,12 +13,11 @@ $username = $_SESSION['username'];
 
 
 //檢查用戶是否合法
-$conn = connect_to_db();
-$user = check_user_in_db($conn, $username);
-mysqli_close($conn);
+$conn = database_connection::get_connection();
+$user = users_repository::check_user_in_db($username);
 
 // 使用query_boards_info 獲取板子info
-$boards_info  = query_boards_info();
+$boards_info  = boards_repository::query_boards_info();
 $ip_list      = $boards_info['ip_list'];
 $mp510_groups = $boards_info['mp510_groups'];
 
@@ -43,8 +43,8 @@ $mp510_groups = $boards_info['mp510_groups'];
                 <strong class="text-success" id="alive_count"></strong> / 
                 <strong class="text-primary" id="total_count"></strong> &nbsp;
                 <?php if ($user['u_lev'] == 'high'): ?>
-                    <a href="user_mgmt/add_new_user.php" target="_blank" class="btn btn-sm btn-primary">Add User</a>
-                    <a href="user_mgmt/update_new_user.php" target="_blank" class="btn btn-sm btn-primary">Update User</a>
+                    <a href="users_mgmt/add_new_user.php" target="_blank" class="btn btn-sm btn-primary">Add User</a>
+                    <a href="users_mgmt/update_new_user.php" target="_blank" class="btn btn-sm btn-primary">Update User</a>
                 <?php endif; ?>
             </span>
         </div>

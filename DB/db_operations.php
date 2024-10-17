@@ -196,7 +196,7 @@ function get_schedule_builds($limit = 10) {
             WHEN status = 'in_progress' THEN 0 
             WHEN status = 'pending' THEN 1 
         END, 
-        submit_time DESC 
+        submit_time
         LIMIT ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $limit);

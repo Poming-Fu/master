@@ -6,8 +6,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 
-require_once __DIR__ . '/../DB/db_operations.php';
-$conn = connect_to_db();
+require_once __DIR__ . '/../DB/db_operations_all.php';
+//require_once __DIR__ . '/../DB/db_operations.php';
+$conn = database_connection::get_connection();
 
 
 ?>
@@ -92,7 +93,7 @@ $conn = connect_to_db();
                 <div class="card-body">
                     <h2 class="card-title">Build Status</h2>
                     <?php
-                    $builds = get_schedule_builds();
+                    $builds = firmware_repository::get_schedule_builds();
                     if (!empty($builds)): ?>
                         <ul class="list-group">
                         <?php foreach ($builds as $build): ?>
@@ -109,7 +110,7 @@ $conn = connect_to_db();
                                             $spinner = '<span class="spinner-border spinner-border-sm me-2"></span>';//
                                             break;
                                         case 'pending':
-                                            echo 'bg-secondary';
+                                            echo 'bg-secondary d-flex align-items-center justify-content-center';
                                             $spinner = '';
                                             break;
                                         default:
@@ -117,6 +118,7 @@ $conn = connect_to_db();
                                             $spinner = '';
                                     }
                                     ?>">
+                                    
                                     <?= $spinner ?><?= htmlspecialchars($build['id']) ?>
                                     <?= htmlspecialchars($build['status']) ?>..
                                 </span>
@@ -133,15 +135,9 @@ $conn = connect_to_db();
             <div class="col-12 col-lg-4 order-3 order-lg-2">
                 <div id="history" class="card h-100">
                     <div class="card-body">
-                        <h2 class="card-title">Build history 
-                            <img
-                            id="history_reload"
-                            src="/web1/web_picture/reload.png" 
-                            style="width: 20px; height: 20px; cursor: pointer;"
-                            title="refresh status">
-                        </h2>
+                        <h2 class="card-title">Build history </h2>
                         <?php
-                        $historys = get_history_builds();
+                        $historys = firmware_repository::get_history_builds();
                         if (!empty($historys)): ?>
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered">

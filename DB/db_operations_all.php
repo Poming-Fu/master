@@ -250,7 +250,7 @@ class firmware_repository {
                         WHEN status = 'in_progress' THEN 0 
                         WHEN status = 'pending' THEN 1 
                     END, 
-                    submit_time DESC 
+                    submit_time 
                 LIMIT ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $limit);
@@ -268,7 +268,7 @@ class firmware_repository {
         $conn = database_connection::get_connection();
         $sql = "SELECT * FROM fw_r_form_history 
                 WHERE status IN ('completed', 'failed') 
-                ORDER BY id DESC 
+                ORDER BY id DESC
                 LIMIT ?";
         
         $stmt = $conn->prepare($sql);
