@@ -1,8 +1,8 @@
 <?php
-function update_jenkins_status() {
-    $output = shell_exec(__DIR__ . "/fw_rel_get_jenkins_status.sh");
-    return $output;
-}
+session_start();
+require_once '../../DB/db_operations.php';
+require_once '../../DB/db_operations_all.php';
+require_once 'fw_rel_main_function.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = update_jenkins_status();
@@ -10,4 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['success' => false, 'message' => 'POST fail, check PHP & script']);
 }
+
+
 ?>

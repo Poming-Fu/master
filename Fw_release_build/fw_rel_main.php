@@ -102,15 +102,15 @@ $conn = database_connection::get_connection();
                                 <?= htmlspecialchars($build['submit_time']) ?> - 
                                 <?= htmlspecialchars($build['branch']) ?> 
                                 (<?= htmlspecialchars($build['platform']) ?>)
-                                <span class="badge 
+                                <span class="badge d-flex align-items-center justify-content-center
                                 <?php
                                     switch($build['status']) {
                                         case 'in_progress':
-                                            echo 'bg-primary d-flex align-items-center justify-content-center';
+                                            echo 'bg-primary';
                                             $spinner = '<span class="spinner-border spinner-border-sm me-2"></span>';//
                                             break;
                                         case 'pending':
-                                            echo 'bg-secondary d-flex align-items-center justify-content-center';
+                                            echo 'bg-secondary';
                                             $spinner = '';
                                             break;
                                         default:

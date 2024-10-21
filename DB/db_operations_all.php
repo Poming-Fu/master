@@ -23,13 +23,13 @@ class users_repository {
     public static function query_users_info() {
         $conn   = database_connection::get_connection();
         // 獲取用戶列表
-        $sql = "SELECT * FROM users";
-        $result = $conn->query($sql);
-        $users = []; // 空的數組來存用戶信息
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $users[] = $row; // 直接將$row賦值給$users數組
-            }
+        $sql    = "SELECT * FROM users";
+        $stmt   = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $users  = []; // 空的數組來存用戶信息
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row; // 直接將$row賦值給$users數組
         }
         return $users;
     }
@@ -66,7 +66,7 @@ class users_repository {
 
     public static function update_new_user($u_acc, $u_lev, $id) {
         $conn = database_connection::get_connection();
-        $sql = "UPDATE users SET u_acc=?, u_lev=? WHERE id=?";
+        $sql  = "UPDATE users SET u_acc=?, u_lev=? WHERE id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $u_acc, $u_lev, $id);
         $result = $stmt->execute();
@@ -76,7 +76,7 @@ class users_repository {
 
     public static function delete_new_user($id) {
         $conn = database_connection::get_connection();
-        $sql = "DELETE FROM users WHERE id=?";
+        $sql  = "DELETE FROM users WHERE id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $result = $stmt->execute();
@@ -86,7 +86,8 @@ class users_repository {
 
     public static function log_user_actions($u_acc, $action, $element_id, $element_type, $page_url) {
         $conn = database_connection::get_connection();
-        $stmt = $conn->prepare("INSERT INTO users_action (u_acc, action, element_id, element_type, page_url) VALUES (?, ?, ?, ?, ?)");
+        $sql  = "INSERT INTO users_action (u_acc, action, element_id, element_type, page_url) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssss", $u_acc, $action, $element_id, $element_type, $page_url);
         $result = $stmt->execute();
         $stmt->close();
@@ -131,7 +132,8 @@ class boards_repository {
 
     public static function delete_boards_info($id) {
         $conn = database_connection::get_connection();
-        $stmt = $conn->prepare("DELETE FROM boards WHERE id = ?");
+        $sql  = "DELETE FROM boards WHERE id = ?";
+        $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $result = $stmt->execute();
         $stmt->close();
