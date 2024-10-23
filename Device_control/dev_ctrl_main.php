@@ -3,12 +3,13 @@ session_start();
 require_once 'dev_ctrl_main_functions.php';
 //require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
+require_once '../common/common.php';
 require_once 'users_mgmt/log_user_action.php';
 
 include '../login_out/navbar.php';
 
 //檢查用戶是否登入
-check_login();
+common::check_login();
 $username = $_SESSION['username'];
 
 

@@ -1,12 +1,7 @@
 <?php
-require_once '../DB/db_operations.php';
+//require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
-function check_login() {
-    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-        header('Location: /web1/login_out/login.php');
-        exit;
-    }
-}
+require_once '../common/common.php';
 
 class device_controller {
     private $username = "ADMIN";

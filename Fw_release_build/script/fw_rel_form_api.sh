@@ -49,7 +49,7 @@ function jenkins_api() {
 	;;
 	obmc_rel_1)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
-		http://10.148.21.21:8080/job/Obmc%20Codebase%20Release_2/buildWithParameters \
+		http://10.148.21.21:8080/job/Obmc%20Codebase%20Release_1/buildWithParameters \
 		--user $USER \
 		-F BRANCH_NAME=$BRANCH_NAME \
 		-F BUILD_TARGET=$BUILD_TARGET \

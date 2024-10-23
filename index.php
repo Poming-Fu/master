@@ -50,7 +50,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         <div class="p-5">
             <div class="container">
                 <div class="row mt-4">
-                    <div class="col-md-3 mb-4">
+                    <div class="col-md-4 mb-4">
                         <a href="/web1/Device_control/dev_ctrl_main.php" class="text-decoration-none">
                             <div class="card text-center">
                                 <div class="card-body">
@@ -61,7 +61,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-3 mb-4">
+                    <div class="col-md-4 mb-4">
                         <a href="/web1/Fw_release_build/fw_rel_main.php" class="text-decoration-none">
                             <div class="card text-center">
                                 <div class="card-body">
@@ -72,27 +72,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-3 mb-4">
-                        <a href="#" class="text-decoration-none">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <i class="bi bi-pause-circle-fill card-icon"></i>
-                                    <h5 class="card-title">test</h5>
-                                    <p class="card-text">test</p>
-                                </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card text-center disabled" style="opacity: 0.5; pointer-events: none;">
+                            <div class="card-body">
+                                <i class="bi bi-stop-circle-fill card-icon"></i>
+                                <h5 class="card-title">Automation</h5>
+                                <p class="card-text">(Planning)</p>
                             </div>
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-4">
-                        <a href="#" class="text-decoration-none">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                <i class="bi bi-pause-circle-fill card-icon"></i>
-                                    <h5 class="card-title">test</h5>
-                                    <p class="card-text">test</p>
-                                </div>
-                            </div>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,7 +89,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             <p class="mb-0 text-muted">
                 &copy; 2024 Baber. All rights reserved.
             </p>
-            <a href="mailto:BaberF@supermicro.com" class="text-decoration-none text-muted">
+            <a href="mailto:BaberF@xxx.com" class="text-decoration-none text-muted">
                 寄信給我
             </a>
          </div>

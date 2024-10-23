@@ -9,7 +9,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 require_once __DIR__ . '/../DB/db_operations_all.php';
 //require_once __DIR__ . '/../DB/db_operations.php';
 $conn = database_connection::get_connection();
-
+$who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSION['password']);
 
 ?>
 
@@ -28,6 +28,7 @@ $conn = database_connection::get_connection();
     
     <div class="container-fluid py-5">
         <h1 class="text-center mb-4">FW release build</h1>
+        <h2 class="text-center mb-4">Support x12 x13 x14 codebase</h2>
         
         <!-- 頁內導航 
         <nav class="nav justify-content-center mb-4">
@@ -42,9 +43,10 @@ $conn = database_connection::get_connection();
                         <h2 class="card-title">Build Form</h2>
                         <p class="card-text">請填寫必要的參數。</p>
                         
-                        <form method="post" action="/web1/Fw_release_build/fw_rel_form.php" target="_blank">
+                        <form>
                             <div class="mb-3">
                                 <label for="username" class="form-label">User：<?= htmlspecialchars($_SESSION['username']) ?></label>
+                                <input type="hidden" id="who" name="who" value="<?= htmlspecialchars($who) ?>">
                             </div>
                             
                             <div class="mb-3">
@@ -67,7 +69,7 @@ $conn = database_connection::get_connection();
                             
                             <div class="mb-3">
                                 <label for="option" class="form-label">Option：</label>
-                                <input type="text" class="form-control" id="option" name="option" value="core=8" required>
+                                <input type="text" class="form-control" id="option" name="option" value="core=10" required>
                                 <div class="form-text">default please</div>
                             </div>
 
