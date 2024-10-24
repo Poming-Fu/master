@@ -139,7 +139,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                     <div class="card-body">
                         <h2 class="card-title">Build history </h2>
                         <?php
-                        $historys = firmware_repository::get_history_builds();
+                        $historys = firmware_repository::get_history_builds(10);
                         if (!empty($historys)): ?>
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered">

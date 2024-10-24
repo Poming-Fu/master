@@ -266,7 +266,7 @@ class firmware_repository {
         return $builds;
     }
 
-    public static function get_history_builds($limit = 10) {
+    public static function get_history_builds($limit) {
         $conn = database_connection::get_connection();
         $sql = "SELECT * FROM fw_r_form_history 
                 WHERE status IN ('completed', 'failed') 

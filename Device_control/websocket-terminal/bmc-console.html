@@ -334,7 +334,7 @@ function startHeartbeat() {
     clearInterval(heartbeatInterval);
     heartbeatInterval = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'heartbeat' }));
+            socket.send('');
         }
     }, HEARTBEAT_INTERVAL);
 }
