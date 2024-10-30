@@ -78,13 +78,19 @@
         $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
 
         // prepare bind 語法
-        if (boards_repository::insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note)) {       
-            $_SESSION['message'] = "插入資料成功";
+        $new_id = boards_repository::insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
+        if ($new_id) {       
+            echo "<script>
+                    alert('新增成功，ID: ' + " . $new_id . ");
+                    window.location.href = '../dev_ctrl_main.php#board_" . $new_id . "';
+                  </script>";
+            exit;
         } else {
-            $_SESSION['message'] = "插入資料失敗";
+            echo "<script>
+                    alert('更新失敗');
+                </script>";
+            exit;
         }
-        header("Location: ../dev_ctrl_main.php");
-        exit;
     }
 
 

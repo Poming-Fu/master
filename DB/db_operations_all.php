@@ -154,8 +154,14 @@ class boards_repository {
         $stmt = $conn->prepare("INSERT INTO boards (B_Name, IP, bmc_nc_mac, L1_MAC, unique_pw, Locate, pw_ip, pw_num, pw_port, mp_ip, mp_num, mp_com, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssssssisisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
         $result = $stmt->execute();
-        $stmt->close();
-        return $result;
+        if ($result) {
+            $new_id = $conn->insert_id;  // Get 新ID原生語法
+            $stmt->close();
+            return $new_id;  // 返回新 ID
+        } else {
+            $stmt->close();
+            return false;    // 插入失敗返回 false
+        }
     }
 
 

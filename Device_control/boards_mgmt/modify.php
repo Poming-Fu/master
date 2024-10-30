@@ -79,12 +79,18 @@
 
 
         if (boards_repository::modify_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id)) {
-            $_SESSION['message'] = "記錄更新成功";
+            // 改用 JavaScript 來處理跳轉
+            echo "<script>
+                    alert('更新成功');
+                    window.location.href = '../dev_ctrl_main.php#board_" . $id . "';
+                  </script>";
+            exit;
         } else {
-            $_SESSION['message'] = "更新記錄時發生錯誤";
+            echo "<script>
+                    alert('更新失敗');
+                </script>";
+            exit;
         }
-        header("Location: ../dev_ctrl_main.php");
-        exit;
     }
 
     if (isset($_GET['id'])) {

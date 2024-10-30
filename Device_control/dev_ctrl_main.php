@@ -123,7 +123,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                         </thead>
                         <tbody>
                             <?php foreach ($boards as $board): ?>
-                            <tr>
+                            <tr id="board_<?php echo htmlspecialchars($board['id']); ?>"> <!-- 這裡加入 id -->
                                 <td>
                                     <?php if ($board['status'] == "online"): ?>
                                         <img src="/web1/web_picture/O.png" style="width: 48px; height: 48px;">
@@ -180,11 +180,27 @@ $mp510_groups = $boards_info['mp510_groups'];
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <div class="telnet-console" id="telnet-console_<?php echo htmlspecialchars($board['IP']); ?>" 
+                                <div class="telnet-console" id="telnet-console_<?php echo htmlspecialchars($board['IP']); ?>" 
+                                    <?php if ($board['console_status'] == 'enable'): ?>
                                         onclick="openTelnetSession('<?php echo htmlspecialchars($board['mp_ip']); ?>', '<?php echo htmlspecialchars($board['mp_com']); ?>', '<?php echo htmlspecialchars($board['IP']); ?>')" 
-                                        style="cursor: pointer;">
-                                        <img src="/web1/web_picture/<?php echo $board['console_status'] == 'enable' ? 'icon' : 'iconX'; ?>.png" alt="Console" style="width: 60px; height: 60px;">
-                                    </div>
+                                        style="cursor: pointer;"
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Click to open console"
+                                    <?php else: ?>
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Console not prepared"
+                                    <?php endif; ?>
+                                >
+                                    <img src="/web1/web_picture/icon.png" 
+                                        alt="Console" 
+                                        style="width: 60px; height: 60px; 
+                                            <?php if ($board['console_status'] != 'enable'): ?>
+                                                opacity: 0.3;
+                                            <?php endif; ?>"
+                                    >
+                                </div>
                                 </td>
                                 <td>
                                     <form class="enableForm">
