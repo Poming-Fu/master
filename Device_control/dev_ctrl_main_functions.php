@@ -120,6 +120,10 @@ class device_controller {
     public function get_boards_alive() {
         return json_encode(boards_repository::query_boards_alive());
     }
+
+    public function upload_boards_FW_file() {
+        
+    }
 }
 
 

@@ -33,6 +33,7 @@ function get_latest_FW_bin($directory, $FW_type, $GUID) {
     if ($FW_type == "BMC") {
         $FW_directory = "$directory/$FW_type";
     }
+    //以後BIOS 加在這裡
 
     if (!is_dir($FW_directory)) {
         return null;
@@ -128,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    if (isset($_POST['submit']) && $_POST['submit'] === 'true' && $_POST['RF_recovery']) {
+    if (isset($_POST['action']) && $_POST['action'] === 'RF_recovery') {
         $B_id      = $_POST['B_id'];
         $FW_type   = $_POST['FW_type'];    
         $GUID      = boards_repository::get_GUID_by_B_id($B_id);

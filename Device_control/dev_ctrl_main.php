@@ -55,14 +55,15 @@ $mp510_groups = $boards_info['mp510_groups'];
         <h5>Board Raw小工具</h5>
         <form id="rawForm" class="row">
             <div class="col-md-3">
-                <select name="board_number" id="board_number" class="form-select">
-                    <option value="0">Board options</option>
-                    <?php
-                    foreach ($ip_list as $i => $board) {
-                        echo "<option value='" . htmlspecialchars($board['IP']) . "'>Board " . ($i + 1) . " - " . htmlspecialchars($board['IP']) . "</option>";
-                    }
-                    ?>
-                </select>
+                <input autocomplete="off" list="boardList" id="board_number" name="board_number" class="form-control" placeholder="選擇或輸入 IP">
+                    <datalist id="boardList">
+                        <?php
+                        foreach ($ip_list as $i => $board) {
+                            echo "<option value='" . htmlspecialchars($board['IP']) . "'>Board " . ($i + 1) . " - " . htmlspecialchars($board['IP']) . "</option>";
+                        }
+                        ?>
+                    </datalist>
+                <input type="text" id="custom_ip" class="form-control mt-2" placeholder="輸入 IP" style="display: none;">
             </div>
             <div class="col-md-2">
                 <input type="text" name="user_value" id="user_value" value="ADMIN" class="form-control">
@@ -134,13 +135,13 @@ $mp510_groups = $boards_info['mp510_groups'];
                                 <td>
                                     <div class="fw-bold text-danger fs-6">
                                         Board name = <?php echo htmlspecialchars($board['B_Name']); ?>
-                                        <form id="fwUpdateForm" method="post" action="/web1/Device_control/recovery_FW/handle_FwUpdate.php" target="_blank" class="d-inline">
+                                        <form class="d-inline">
                                             <input type="hidden" name="ip" value="<?php echo htmlspecialchars($board['IP']); ?>">
                                             <input type="hidden" name="B_id" value="<?php echo htmlspecialchars($board['B_id']); ?>">
                                             <input type="hidden" name="FW_type" value="BMC">
                                             <input type="hidden" name="status" value="<?php echo htmlspecialchars($board['status']); ?>">
                                             <input type="hidden" name="unique_pw" value="<?php echo htmlspecialchars($board['unique_pw']); ?>">
-                                            <img src="/web1/web_picture/recovery_BMC.png" class="fw-button" name="RF_recovery" value="RF_recovery" style="width: 23px; height: 23px; cursor: pointer;" title="recover fw" alt="RF_recovery_BMC">
+                                            <img src="/web1/web_picture/recovery_BMC.png" class="fw-button" name="RF_recovery" style="width: 23px; height: 23px; cursor: pointer;" title="recover fw" alt="RF_recovery_BMC">
                                         </form>
                                     </div>
                                     <div>Board id = <?php echo htmlspecialchars($board['B_id']); ?></div>

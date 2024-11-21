@@ -1,4 +1,5 @@
 <?php
+require_once '../DB/db_operations_all.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    // header('Content-Type: application/json');
@@ -10,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $element_type   = $_POST['element_type'];
         $page_url       = $_POST['page_url'];
 
-        log_user_actions($u_acc, $action, $element_id, $element_type, $page_url);
+        users_repository::log_user_actions($u_acc, $action, $element_id, $element_type, $page_url);
 
         $response = ['status' => 'success'];
     } else {

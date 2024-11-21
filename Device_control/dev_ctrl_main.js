@@ -30,27 +30,31 @@ $(document).ready(function() {
 
     // 捕捉BMC Console按钮click事件
     $('.telnet-console img').click(function() {
-        log_user_actions_collect('click_bmc_console', $(this), 'button');
+        const element_img = $(this);
+        log_user_actions_collect('click_bmc_console', element_img, 'button');
     });
 
     // 捕捉delete事件
     $('a img[src*="bin.png"]').click(function(event) {
         event.preventDefault(); // 防默認提交
-        const element = $(this).closest('a'); // 找最靠近 a 的元素
-        const confirmed = confirm('確定要刪除表單嗎？');
-        log_user_actions_collect('click_delete_image', $(this), 'button');
+        const element_img = $(this);
+        const element     = element_img.closest('a'); // 找最靠近 a 的元素
+        const confirmed   = confirm('確定要刪除表單嗎？');
+        log_user_actions_collect('click_delete_image', element_img, 'button');
         
         if (confirmed) {
-            log_user_actions_collect('click_delete_image', element, 'confirm');
+            log_user_actions_collect('click_delete_image', element_img, 'confirm');
             window.location.href = element.attr('href'); // 導航到 a 的href屬性
         } else {
-            log_user_actions_collect('click_delete_image', element, 'cancel');
+            log_user_actions_collect('click_delete_image', element_img, 'cancel');
+            
         }
     });
 
     // 捕捉update事件
     $('a img[src*="modify.png"]').click(function() {
-        log_user_actions_collect('click_modify', $(this), 'button');
+        const element_img = $(this);
+        log_user_actions_collect('click_modify', element_img, 'button');
     });
 });
 
@@ -85,10 +89,10 @@ $(document).ready(function() {
 
     // Reload button click event
     $('.reload-icon').click(function() {
-        let ip = $(this).data('ip');
+        let ip        = $(this).data('ip');
         let unique_pw = $(this).data('unique_pw');
-        let account = "ADMIN";
-        let password = "ADMIN";
+        let account   = "ADMIN";
+        let password  = "ADMIN";
         function sendRequest(customPassword = null) {
             let data = { 
                 ip: ip,
@@ -130,12 +134,10 @@ $(document).ready(function() {
     $('.fw-button').click(function(event) {
         event.preventDefault();
         let name      = $(this).attr('name');
-        let value     = $(this).attr('value');
         let form      = $(this).closest('form');
         let ip        = form.find('input[name="ip"]').val();
         let B_id      = form.find('input[name="B_id"]').val();
         let FW_type   = form.find('input[name="FW_type"]').val();
-        let status    = form.find('input[name="status"]').val();
         let unique_pw = form.find('input[name="unique_pw"]').val();
         let account   = "ADMIN";
         let password  = "ADMIN";
@@ -174,8 +176,7 @@ $(document).ready(function() {
                 if (confirmation) {
                     function sendUpdateRequest(customPassword = null) {
                         let data = { 
-                            submit: true, 
-                            [name]: value,
+                            action: 'RF_recovery',
                             ip: ip,
                             B_id: B_id,
                             FW_type: FW_type,
@@ -239,7 +240,7 @@ $(document).ready(function() {
             }
         });
     });
-
+    
     $(document).on('submit', '.enableForm', function(event) {
         //動態生成表格用 class=enableForm去指定比較好，用id=會bug
         event.preventDefault(); // Prevent default form submission
