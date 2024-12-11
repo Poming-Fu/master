@@ -95,6 +95,82 @@ class users_repository {
     }
 }
 
+class daily_repository {
+
+    // 修改 query_daily_info 函數來分組數據
+
+    public static function query_daily_info($filters = []) {
+        $conn = database_connection::get_connection();
+        $sql = "SELECT * FROM daily_builds WHERE 1=1"; //使用 WHERE 1=1 後，可以統一使用 AND
+        $params = [];
+        $types = "";
+
+        // 處理過濾條件
+        if (!empty($filters['branch'])) {
+            $sql .= " AND branch = ?";
+            $params[] = $filters['branch'];
+            $types .= "s";
+        }
+
+        if (!empty($filters['status'])) {
+            $sql .= " AND status = ?";
+            $params[] = strtoupper($filters['status']); // 轉大寫確保匹配
+            $types .= "s";
+        }
+
+        if (!empty($filters['date'])) {
+            $sql .= " AND DATE(build_date) = ?";
+            $params[] = $filters['date'];
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY branch, build_date DESC";
+        
+        $stmt = $conn->prepare($sql);
+        if ($params) {
+            $stmt->bind_param($types, ...$params);
+            // 使用展開運算符
+            //$stmt->bind_param($types, ...$params);
+            // 相當於
+            //$stmt->bind_param($types, $params[0], $params[1]);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $branch_list = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $branch = $row['branch'];
+                $target = $row['target'];
+                
+                // 初始化分支
+                if (!isset($branch_list[$branch])) {
+                    $branch_list[$branch] = [
+                        'branch' => $branch,
+                        'latest_status' => $row['status'],
+                        'targets' => []
+                    ];
+                }
+                
+                // 初始化目標
+                if (!isset($branch_list[$branch]['targets'][$target])) {
+                    $branch_list[$branch]['targets'][$target] = [
+                        'target' => $target,
+                        'latest_status' => $row['status'],
+                        'builds' => []
+                    ];
+                }
+                
+                // 添加建構記錄
+                $branch_list[$branch]['targets'][$target]['builds'][] = $row;
+            }
+        }
+        
+        return ['branch_list' => $branch_list];
+    }
+}
+
+
 class boards_repository {
     public static function query_boards_info() {
         $conn    = database_connection::get_connection();
@@ -255,8 +331,8 @@ class firmware_repository {
                 WHERE status IN ('pending', 'in_progress') 
                 ORDER BY 
                     CASE 
-                        WHEN status = 'in_progress' THEN 0 
-                        WHEN status = 'pending' THEN 1 
+                        WHEN status = 'in_progress' THEN 0 -- in_progress 優先（排在前面）
+                        WHEN status = 'pending' THEN 1 -- pending 次之（排在後面）
                     END, 
                     submit_time 
                 LIMIT ?";

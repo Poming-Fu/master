@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
         //在web server先做sudo mount -o username=sam,password=sam,iocharset=utf8 //10.148.165.16/Golden_FW /mnt
-        $directory = "/mnt";
+        $directory = "/mnt/Golden_FW";
         if (!is_dir($directory)) {
             echo json_encode(["success" => false, "message" => "NAS directory not found"]);
             exit;

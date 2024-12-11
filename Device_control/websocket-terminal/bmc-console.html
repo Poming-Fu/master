@@ -348,8 +348,13 @@ function main()
 
 
 
-    // 使用獲取的主機地址和端口號建立 WebSocket 連接
-    socket = new WebSocket(`ws://10.148.175.12:8081/?host=${host}&port=${port}`); // 
+    // 2024/12/10 限制console用http開啟 https已debug，開視窗會需求安全較麻煩，統一用http
+    const protocol      = 'ws:';  // 強制使用 ws
+    const protocol_port = '8081';  // 強制使用 8081 端口
+    const server_host   = window.location.hostname;
+    const ws_url         = `${protocol}//${server_host}:${protocol_port}/?host=${host}&port=${port}`;
+    socket              = new WebSocket(ws_url);   
+
     socket.onopen = function() {
         term.writeln('Connected to Telnet server.');
         startHeartbeat();

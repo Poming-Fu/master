@@ -78,7 +78,8 @@ class device_controller {
 
             if (!$success) {
                 if (!$custom_pw) {
-                    return json_encode(["success" => false, "need_custom_password" => true, "message" => "Both password \"ADMIN\" and \"$unique_pw\" are login failed.\nPlease enter your custom password."]);
+                    //前端需要needCustomPassword 去判定要不要輸入新密碼
+                    return json_encode(["success" => false, "needCustomPassword" => true, "message" => "Both password \"ADMIN\" and \"$unique_pw\" are login failed.\nPlease enter your custom password."]);
                 } else {
                     return json_encode(["success" => false, "message" => "custom password: $custom_pw login failed."]);
                 }
