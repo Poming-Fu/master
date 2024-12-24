@@ -7,22 +7,25 @@ if (isset($_GET['action'])) {
     $action = $_GET['action'];
     try {
         switch ($action) {
-            // 返回 HTML
-            case 'get_filter_data':
-                $filters = [
-                    'branch' => $_POST['branch'] ?? '',
-                    'status' => $_POST['status'] ?? '',
-                    'date' => $_POST['date'] ?? ''
-                ];
-                $data = daily_repository::query_daily_info($filters);
-                require 'template/daily_template.php';
-                break;
- 
-            // 查看日誌
+                case 'get_filter_data':
+                    header('Content-Type: application/json');
+                    
+                    // 移除可能的破折號
+                    $start_date = str_replace('-', '', $_POST['start_date'] ?? '');
+                    $end_date = str_replace('-', '', $_POST['end_date'] ?? '');
+                    $branch = $_POST['branch'] ?? '';
+                    $status = $_POST['status'] ?? '';
+            
+                    // Debug 接收到的參數
+                    error_log("Received parameters - Start: {$start_date}, End: {$end_date}, Branch: {$branch}, Status: {$status}");
+            
+                    $builds = daily_repository::scan_build_directories($branch, $start_date, $end_date, $status);
+                    echo json_encode($builds);
+                    break;
+
             case 'view_log':
                 if (isset($_GET['path'])) {
-                    $base_path = '/mnt/DB/dailybuild_obmc/';
-                    $file_path = $base_path . $_GET['path'];
+                    $file_path = $_GET['path'];
                     
                     if (file_exists($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'txt') {
                         header('Content-Type: text/plain');
@@ -32,13 +35,10 @@ if (isset($_GET['action'])) {
                     }
                 }
                 break;
- 
-            // 下載檔案
+            
             case 'download_file':
                 if (isset($_GET['path'])) {
-                    $base_path = '/mnt/DB/dailybuild_obmc/';
-                    $file_path = $base_path . $_GET['path'];
-                    
+                    $file_path = $_GET['path'];
                     if (file_exists($file_path)) {
                         header('Content-Type: application/octet-stream');
                         header('Content-Disposition: attachment; filename="' . basename($file_path) . '"');
@@ -49,7 +49,7 @@ if (isset($_GET['action'])) {
                     }
                 }
                 break;
- 
+
             // 其他 API...
         }
     } catch (Exception $e) {

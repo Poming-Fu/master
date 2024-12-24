@@ -168,6 +168,132 @@ class daily_repository {
         
         return ['branch_list' => $branch_list];
     }
+
+    public static function scan_build_directories($branch = '', $start_date = '', $end_date = '', $status = '') {
+        // 定義基礎路徑對應
+        $base_path = '/mnt/DB/';
+        
+        // 新增 target 對應設定
+        $branch_maps = [
+            'master' => [
+                'sx13_rot2hw2_ast26_p' => [
+                    'path' => 'daily_master/',
+                    'type' => 'lbmc',
+                    'name' => 'sx13_rot2hw2_ast26_p'
+                ]
+            ],
+            'aspeed-master' => [
+                'x14-ast2600-rot' => [
+                    'path' => 'dailybuild_obmc/',
+                    'type' => 'obmc',
+                    'name' => 'x14-ast2600-rot'
+                ]
+            ],
+            'master_rel_1.03_20240715' => [
+                'sx13_rot2hw2_ast26_p' => [
+                    'path' => 'dailybuild_lbmc_x13rot/',
+                    'type' => 'lbmc',
+                    'name' => 'sx13_rot2hw2_ast26_p'
+                ],
+                'sh13_rot2hw2_ast26_std_p' => [
+                    'path' => 'dailybuild_lbmc_h13/',
+                    'type' => 'lbmc',
+                    'name' => 'sh13_rot2hw2_ast26_std_p'
+                ]
+            ],
+            'master_x12_rel_1.05_20240715' => [
+                'sx13_ast26_ws_p' => [
+                    'path' => 'dailybuild_lbmc_x13nonrot/',
+                    'type' => 'lbmc',
+                    'name' => 'sx13_ast26_ws_p'
+                ],
+            ]
+        ];
+    
+        $all_builds = [];
+        
+        // 決定要處理的分支 all or single
+        if (empty($branch) || $branch === 'all') {
+            $branches_to_scan = $branch_maps;  
+        } else {
+            $branches_to_scan = [$branch => $branch_maps[$branch]];
+        }
+    
+        // 統一掃描邏輯
+        foreach ($branches_to_scan as $branch_name => $targets) {
+            foreach ($targets as $target_id => $target_info) {
+                $scan_path = $base_path . $target_info['path'];
+                $target_builds = self::scan_single_build_directory(
+                    $scan_path, 
+                    $start_date, 
+                    $end_date, 
+                    $status
+                );
+                
+                if (!empty($target_builds)) {
+                    $all_builds[] = [
+                        'branch_name' => $branch_name,
+                        'target_id' => $target_id,
+                        'target_name' => "{$branch_name} - {$target_info['name']} ({$target_info['type']})",
+                        'builds' => $target_builds
+                    ];
+                }
+            }
+        }   
+        return $all_builds;
+    }
+    
+    private static function scan_single_build_directory($scan_path, $start_date, $end_date, $status) {
+        $builds = [];
+        
+        if (!is_dir($scan_path)) {
+            error_log("Directory not found: " . $scan_path);
+            return $builds;
+        }
+        
+        $dirs = scandir($scan_path);
+        natsort($dirs);
+        
+        foreach ($dirs as $dir) {
+            if ($dir === '.' || $dir === '..') continue;
+            
+            preg_match('/(\d{8})/', $dir, $matches);
+            $build_date = $matches[1] ?? '';
+            
+            if (empty($build_date)) continue; 
+            if (!empty($start_date) && $build_date < $start_date) continue;
+            if (!empty($end_date) && $build_date > $end_date) continue;
+    
+            $full_path = $scan_path . $dir;
+            if (is_dir($full_path)) {
+                $bin_file_path = glob($full_path . '/*.bin')[0] ?? null;
+                $log_file_path = glob($full_path . '/*git*.txt')[0] ?? null;
+                $build_file_path = glob($full_path . '/*build*.txt')[0] ?? null;
+                
+                $build_status = $bin_file_path ? 'PASS' : 'FAIL';
+                
+                if (!empty($status) && strtoupper($status) !== $build_status) {
+                    continue;
+                }
+    
+                if ($bin_file_path || $log_file_path) {
+                    $builds[] = [
+                        'build_date' => $build_date,
+                        'bin_file_path' => $bin_file_path,
+                        'log_file_path' => $log_file_path,
+                        'build_file_path' => $build_file_path,
+                        'build_status' => $build_status
+                    ];
+                }
+            }
+        }
+        
+        usort($builds, function($a, $b) {
+            return strcmp($b['build_date'], $a['build_date']);
+        });
+        
+        return $builds;
+    }
 }
 
 

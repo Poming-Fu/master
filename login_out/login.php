@@ -47,86 +47,124 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
         }
+
         .login-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 500px;
-            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            margin: auto;
         }
-        h2 {
-            margin-top: 0;
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
-        .image-container {
-            margin-bottom: 20px;
+
+        .card-body {
+            padding: 2.5rem;
         }
-        .image-container img {
+
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+
+        .logo-container img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: 10px;
         }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            text-align: left;
+
+        .form-floating {
+            margin-bottom: 1rem;
         }
-        input[type="text"], input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
+
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: #fff;
+
+        .btn-login {
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            background-color: #0d6efd;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
         }
-        input[type="submit"]:hover {
-            background-color: #45a049;
+
+        .btn-login:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
         }
+
         .error-message {
-            color: red;
-            text-align: center;
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="image-container">
-            <img src="/web1/web_picture/SMC.png" alt="Login Image">
+    <div class="container">
+        <div class="login-container">
+            <div class="card">
+                <div class="card-body">
+                    <div class="logo-container text-center">
+                        <img src="/web1/web_picture/SMC.png" alt="Login Image" class="img-fluid">
+                    </div>
+                    
+                    <h2 class="text-center mb-4">IPMI for testing</h2>
+                    
+                    <?php if (!empty($error)): ?>
+                        <div class="error-message">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <?php echo $error; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="post" action="">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="Username" required>
+                            <label for="username">
+                                <i class="bi bi-person-fill me-2"></i>用戶名
+                            </label>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Password" required>
+                            <label for="password">
+                                <i class="bi bi-lock-fill me-2"></i>密碼
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-login btn-primary w-100">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>登入
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <h2>IPMI for testing</h2>
-        <?php if (!empty($error)): ?>
-            <p class="error-message"><?php echo $error; ?></p>
-        <?php endif; ?>
-        <form method="post" action="">
-            <label for="username">用戶名:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">密碼:</label>
-            <input type="password" id="password" name="password" required>
-            <input type="submit" value="登入">
-        </form>
     </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

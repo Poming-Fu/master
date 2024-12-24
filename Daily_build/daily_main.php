@@ -6,7 +6,7 @@ require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
 //require_once 'users_mgmt/log_user_action.php';
 
-//include '../login_out/navbar.php';
+include '../login_out/navbar.php';
 
 //檢查用戶是否登入
 //common::check_login();
@@ -20,7 +20,7 @@ require_once '../common/common.php';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -65,8 +65,9 @@ require_once '../common/common.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- 自定義 JavaScript -->
     <script src="daily_main.js"></script>
 
@@ -87,21 +88,25 @@ require_once '../common/common.php';
             <div class="col-md-3">
                 <select class="form-select" id="statusFilter">
                     <option value="">All Status</option>
-                    <option value="pass">Pass</option>
-                    <option value="fail">Fail</option>
+                    <option value="PASS">PASS</option>
+                    <option value="FAIL">FAIL</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <input type="input-group" class="form-control" id="dateFilter" placeholder="click date">
+                <input type="input-group" class="form-control" id="dateFilter">
+                <!--
+                    在 js 用 datarangepicker 渲染
+                -->
             </div>
 
+            <div class="col-md-3">
+                <input type="button" class="btn btn-primary" id="searchFilter" value="search">
+            </div>
         </div>
-
         <div class="accordion" id="buildResults">
-            <?php 
-                $data = daily_repository::query_daily_info();  // get DB
-                include 'template/daily_template.php';         // 載入初始模板
-            ?>
+            <!--
+                在 js 用 {#buildResults} 渲染版面
+            -->
         </div>
     </div>
 </body>

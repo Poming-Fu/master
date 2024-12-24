@@ -54,7 +54,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <a href="/web1/Device_control/dev_ctrl_main.php" class="text-decoration-none">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <i class="bi bi-hdd-rack card-icon"></i>
+                                    <i class="bi bi-sliders card-icon"></i>
                                     <h5 class="card-title">Device Control</h5>
                                     <p class="card-text">Include some boards info</p>
                                 </div>
