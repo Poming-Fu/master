@@ -35,6 +35,7 @@ $mp510_groups = $boards_info['mp510_groups'];
 <body>
 
 <div class="container-fluid px-2">
+    <!-- 狀態&資訊列 -->
     <div class="card mb-3">
         <div class="card-body">
             <span>
@@ -50,7 +51,7 @@ $mp510_groups = $boards_info['mp510_groups'];
             </span>
         </div>
     </div>
-
+    <!-- board raw rool -->
     <div class="tool-column">
         <h5>Board Raw小工具</h5>
         <form id="rawForm" class="row">
@@ -81,6 +82,7 @@ $mp510_groups = $boards_info['mp510_groups'];
         <p class="mt-3">cmd = <span id="cmd"></span></p>
         <p>result = <span id="result"></span></p>
     </div>
+    <!-- 下拉選擇MP510 -->
     <div class="mb-3">
         <select id="mp510Dropdown" class="form-select">
             <option value="">選擇MP510</option>
@@ -93,6 +95,7 @@ $mp510_groups = $boards_info['mp510_groups'];
             ?>
         </select>
     </div>
+    <!-- 所有主板區塊 -->
     <div class="mb-3">
         <?php foreach ($mp510_groups as $mp_num => $boards): 
             $mp_id = 'mp510_group_' . $mp_num;

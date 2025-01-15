@@ -17,6 +17,8 @@ include '../login_out/navbar.php';
 //$conn = database_connection::get_connection();
 //$user = users_repository::check_user_in_db($username);
 
+$branch_names = daily_repository::get_branch_names();
+
 ?>
 
 <!DOCTYPE html>
@@ -76,15 +78,17 @@ include '../login_out/navbar.php';
         
         <!-- 過濾器保持不變 -->
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md-3">        
                 <select class="form-select" id="branchFilter">
                     <option value="">All Branches</option>
-                    <option value="master">master</option>
-                    <option value="master_rel_1.03_20240715">master_rel_1.03_20240715</option>
-                    <option value="master_x12_rel_1.05_20240715">master_x12_rel_1.05_20240715</option>
-                    <option value="aspeed-master">aspeed-master</option>
+                    <?php foreach ($branch_names as $branch_name): ?>
+                        <option value="<?php echo htmlspecialchars($branch_name); ?>">
+                            <?php echo htmlspecialchars($branch_name); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
             <div class="col-md-3">
                 <select class="form-select" id="statusFilter">
                     <option value="">All Status</option>

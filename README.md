@@ -12,6 +12,12 @@ Frontend : JavaScript, CSS, Bootstrap, HTML
 
 #==================================#  
 
+部署新web server時記得mount NAS 
+sudo vim /etc/fstab
+//10.148.165.16/Golden_FW  /mnt/Golden_FW  cifs  credentials=/etc/samba/credentials,iocharset=utf8,nofail  0  0
+//10.148.165.16/DB         /mnt/DB         cifs  credentials=/etc/samba/credentials,iocharset=utf8,nofail  0  0
+
+#==================================#
 
 
 #continue to develop release form now ~~~

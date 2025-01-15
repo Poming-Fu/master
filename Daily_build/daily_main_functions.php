@@ -7,23 +7,23 @@ if (isset($_GET['action'])) {
     $action = $_GET['action'];
     try {
         switch ($action) {
-                case 'get_filter_data':
-                    header('Content-Type: application/json');
-                    
-                    // 移除可能的破折號
-                    $start_date = str_replace('-', '', $_POST['start_date'] ?? '');
-                    $end_date = str_replace('-', '', $_POST['end_date'] ?? '');
-                    $branch = $_POST['branch'] ?? '';
-                    $status = $_POST['status'] ?? '';
-            
-                    // Debug 接收到的參數
-                    error_log("Received parameters - Start: {$start_date}, End: {$end_date}, Branch: {$branch}, Status: {$status}");
-            
-                    $builds = daily_repository::scan_build_directories($branch, $start_date, $end_date, $status);
-                    echo json_encode($builds);
-                    break;
+            case 'get_filter_data':
+                header('Content-Type: application/json');
+                
+                // 移除可能的破折號
+                $start_date = str_replace('-', '', $_POST['start_date'] ?? '');
+                $end_date = str_replace('-', '', $_POST['end_date'] ?? '');
+                $branch = $_POST['branch'] ?? '';
+                $status = $_POST['status'] ?? '';
+        
+                // Debug 接收到的參數
+                error_log("Received parameters - Start: {$start_date}, End: {$end_date}, Branch: {$branch}, Status: {$status}");
+        
+                $builds = daily_repository::scan_build_directories($branch, $start_date, $end_date, $status);
+                echo json_encode($builds);
+                break;
 
-            case 'view_log':
+            case 'view_build_log':
                 if (isset($_GET['path'])) {
                     $file_path = $_GET['path'];
                     
@@ -35,6 +35,63 @@ if (isset($_GET['action'])) {
                     }
                 }
                 break;
+                case 'view_git_log':
+                    if (isset($_GET['path'])) {
+                        $file_path = $_GET['path'];
+                        
+                        if (file_exists($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'txt') {
+                            header('Content-Type: text/html; charset=utf-8');
+                            
+                            // 先輸出基本 HTML 結構
+                            echo '<!DOCTYPE html>
+                            <html>
+                            <head>
+                                <style>
+                                    body { font-family: monospace; }
+                                    .hash { color:rgb(123, 3, 153); }
+                                    .date { color: #0066cc; }
+                                    .author { color: #2da44e; }
+                                    .message { color: #cf222e; }
+                                </style>
+                            </head>
+                            <body><pre>';
+                                                      
+                            // 讀取檔案內容
+                            $lines = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                     
+                            foreach ($lines as $line_number => $line) {
+                                if (strpos($line, '|') !== false) {
+                                    // 有水管符號的新格式
+                                    $parts = explode("|", trim($line));
+                                    if (count($parts) === 4) {
+                                        $hash = trim($parts[0]);
+                                        $date = trim($parts[1]);
+                                        $author = trim($parts[2]);
+                                        $message = trim($parts[3]);
+                                        
+                                        echo "<span class='hash'>$hash</span> <span class='date'><$date></span> <span class='author'>$author</span> <span class='message'>$message</span>\n";
+                                    }
+                                } else {
+                                    // 沒有水管符號的舊格式，直接輸出
+                                    echo htmlspecialchars($line) . "\n";
+                                }
+                            }
+                            
+                            echo '</pre></body></html>';
+                        } else {
+                            echo "File check failed: " . htmlspecialchars($file_path);
+                            if (!file_exists($file_path)) {
+                                echo " (File does not exist)";
+                            }
+                            if (pathinfo($file_path, PATHINFO_EXTENSION) !== 'txt') {
+                                echo " (Not a .txt file)";
+                            }
+                            throw new Exception("File not found or invalid file type: $file_path");
+                        }
+                    } else {
+                        echo "No path parameter provided";
+                    }
+                    break;
             
             case 'download_file':
                 if (isset($_GET['path'])) {

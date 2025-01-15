@@ -3,7 +3,7 @@ $(document).ready(function() {
     // 初始化日期選擇器
     $('#dateFilter').daterangepicker({
         autoUpdateInput: true, //初始值在這邊設定
-        startDate: moment().subtract(6, 'days'),  // 預設開始日期
+        startDate: moment().subtract(3, 'days'),  // 預設開始日期
         endDate: moment(),  // 預設結束日期
         locale: {
             format: 'YYYYMMDD',
@@ -75,7 +75,7 @@ $(document).ready(function() {
                     const targetSection = $(`
                         <div class="target-section mb-4">
                             <h3 class="mb-3 border-bottom pb-2">
-                                ${targetGroup.target_name}
+                            ${targetGroup.branch_name} - ${targetGroup.target_name} - ${targetGroup.target_type}
                             </h3>
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped align-middle">
@@ -106,7 +106,7 @@ $(document).ready(function() {
                                     <div class="d-flex gap-2">
                                         <div title="${!build.build_file_path ? 'If compile pass, no build log' : 'View build log'}" 
                                              class="flex-fill">
-                                            <a href="${build.build_file_path ? 'daily_main_functions.php?action=view_log&path=' + encodeURIComponent(build.build_file_path) : '#'}" 
+                                            <a href="${build.build_file_path ? 'daily_main_functions.php?action=view_build_log&path=' + encodeURIComponent(build.build_file_path) : '#'}" 
                                                target="_blank" 
                                                class="btn btn-info btn-sm ${!build.build_file_path ? 'disabled' : ''} w-100">
                                                <i class="fas fa-file-alt me-2"></i>Build Log
@@ -115,7 +115,7 @@ $(document).ready(function() {
                                         
                                         <div title="${!build.log_file_path ? 'Git log not available' : 'View git log'}"
                                              class="flex-fill">
-                                            <a href="${build.log_file_path ? 'daily_main_functions.php?action=view_log&path=' + encodeURIComponent(build.log_file_path) : '#'}" 
+                                            <a href="${build.log_file_path ? 'daily_main_functions.php?action=view_git_log&path=' + encodeURIComponent(build.log_file_path) : '#'}" 
                                                target="_blank" 
                                                class="btn btn-info btn-sm ${!build.log_file_path ? 'disabled' : ''} w-100">
                                                <i class="fas fa-code-branch me-2"></i>Git Log

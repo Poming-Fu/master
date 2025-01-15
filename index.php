@@ -45,7 +45,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             <p class="lead mb-4">
                 This is ipmi web site for testing.
             </p>
+            <div class="row">
+    </div>
         </div>
+        
     </div>
         <div class="p-5">
             <div class="container">
