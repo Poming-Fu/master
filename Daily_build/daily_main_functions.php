@@ -29,7 +29,14 @@ if (isset($_GET['action'])) {
                     
                     if (file_exists($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'txt') {
                         header('Content-Type: text/plain');
-                        readfile($file_path);
+                        
+                        // 完整讀取檔案 暫停用
+                        //readfile($file_path);
+                        
+                        // 使用 tail 命令讀取最後 1000 行
+                        $content = shell_exec("tail -n 1000 " . escapeshellarg($file_path));
+                        echo "=== Showing last 1000 lines of the log ===\n";
+                        echo $content;
                     } else {
                         throw new Exception("File not found or invalid file type: $file_path");
                     }
