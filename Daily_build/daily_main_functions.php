@@ -34,7 +34,7 @@ if (isset($_GET['action'])) {
                         //readfile($file_path);
                         
                         // 使用 tail 命令讀取最後 1000 行
-                        $content = shell_exec("tail -n 1000 " . escapeshellarg($file_path));
+                        $content = shell_exec("tail -n 1000 " . $file_path);
                         echo "=== Showing last 1000 lines of the log ===\n";
                         echo $content;
                     } else {

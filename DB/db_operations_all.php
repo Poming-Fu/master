@@ -98,7 +98,7 @@ class users_repository {
 class daily_repository {
 
     // 修改 query_daily_info 函數來分組數據 暫時用不到
-    public static function query_daily_info($filters = []) {
+    /* public static function query_daily_info($filters = []) {
         $conn = database_connection::get_connection();
         $sql = "SELECT * FROM daily_builds WHERE 1=1"; //使用 WHERE 1=1 後，可以統一使用 AND
         $params = [];
@@ -166,7 +166,7 @@ class daily_repository {
         }
         
         return ['branch_list' => $branch_list];
-    }
+    } */
 
     private static $branch_maps = [
         'master' => [
