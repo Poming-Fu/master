@@ -69,7 +69,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                             
                             <div class="mb-3">
                                 <label for="option" class="form-label">Option：</label>
-                                <input type="text" class="form-control" id="option" name="option" value="core=10" required>
+                                <input type="text" class="form-control" id="option" name="option" value="core=8" required>
                                 <div class="form-text">default please</div>
                             </div>
 
