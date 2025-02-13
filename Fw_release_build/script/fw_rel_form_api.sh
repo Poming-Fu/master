@@ -28,7 +28,7 @@ function jenkins_api() {
 	#jenkins server build 10.148.21.21
 
 	#判斷BUILD_ON sx12 sx13 sh12 sh13 判斷 
-	if [[ $BUILD_TARGET == *sx12* || $BUILD_TARGET == *sx13* || $BUILD_TARGET == *sh12* || $BUILD_TARGET == *sh13* || $BUILD_TARGET == *h13* || $BUILD_TARGET == *h12* || $BUILD_TARGET == *h11* ]]; then
+	if [[ $BUILD_TARGET == *sx12* || $BUILD_TARGET == *sx13* || $BUILD_TARGET == *sh12* || $BUILD_TARGET == *sh13* || $BUILD_TARGET == *h13* || $BUILD_TARGET == *h12* || $BUILD_TARGET == *h11* || $BUILD_TARGET == *x12* || $BUILD_TARGET == *x13* ]]; then
 		BUILD_ON="lbmc_rel_2"
 	else
 		BUILD_ON="obmc_rel_1"
