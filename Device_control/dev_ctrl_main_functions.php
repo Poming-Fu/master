@@ -119,6 +119,7 @@ class device_controller {
     }
 
     public function get_boards_alive() {
+        // return total_count & alive_count
         return json_encode(boards_repository::query_boards_alive());
     }
 

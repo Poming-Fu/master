@@ -20,28 +20,28 @@
 }*/
 class database_connection {
     private static $conn = null;
-
+    private static $current_master = null;
     public static function get_connection() {
         if (self::$conn === null) {
             // 先連到本地資料庫查詢誰是 master
-            $temp_conn = new mysqli("localhost", "one", "1234", "ipmi");
+            $local_conn = new mysqli("localhost", "one", "1234", "ipmi");
             
-            if ($temp_conn->connect_error) {
-                die("連接失敗: " . $temp_conn->connect_error);
+            if ($local_conn->connect_error) {
+                die("連接失敗: " . $local_conn->connect_error);
             }
 
             // 從 mp510 表查詢 master 的 IP
             $sql = "SELECT mp_ip FROM mp510 WHERE node_type = 'master'";
-            $result = $temp_conn->query($sql);
+            $result = $local_conn->query($sql);
             
             if ($row = $result->fetch_assoc()) {
                 $db_server = $row['mp_ip'];  // 獲取 master IP
-                //echo $db_server;
+                self::$current_master = $db_server;
             } else {
                 die("找不到 master 節點");
             }
 
-            $temp_conn->close();
+            $local_conn->close();
 
             // 使用 master IP 建立連線
             self::$conn = new mysqli($db_server, "one", "1234", "ipmi");
@@ -51,6 +51,13 @@ class database_connection {
             }
         }
         return self::$conn;
+    }
+    public static function get_master_ip() {
+        if (self::$current_master === null) {
+            // 如果還沒建立連線，先呼叫 get_connection()
+            self::get_connection();
+        }
+        return self::$current_master;
     }
 }
 

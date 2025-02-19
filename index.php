@@ -4,6 +4,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: /web1/login_out/login.php');
     exit;
 }
+require_once 'DB/db_operations_all.php';
+$conn = database_connection::get_connection();
+// 獲取當前master mp510 ip
+$master_ip = database_connection::get_master_ip();
 ?>
 
 
@@ -45,6 +49,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             <p class="lead mb-4">
                 This is ipmi web site for testing.
             </p>
+            <span>
+                <strong class="text-secondary">(Master: <?php echo $master_ip; ?>)</strong>
+            </span>
             <div class="row">
     </div>
         </div>
