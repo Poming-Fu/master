@@ -20,31 +20,26 @@
 }*/
 class database_connection {
     private static $conn = null;
-    private static $current_master = null;
+    private static $server_hostname = null;
+    private static $server_ip = null;
+
+    // 初始化伺服器資訊
+    private static function init_server_info() {
+        if (self::$server_hostname === null) {
+            self::$server_hostname = gethostname();
+            self::$server_ip = gethostbyname(self::$server_hostname);
+        }
+    }
+
     public static function get_connection() {
+        self::init_server_info();
         if (self::$conn === null) {
-            // 先連到本地資料庫查詢誰是 master
-            $local_conn = new mysqli("localhost", "one", "1234", "ipmi");
-            
-            if ($local_conn->connect_error) {
-                die("連接失敗: " . $local_conn->connect_error);
-            }
+            $db_server = self::$server_ip; #main server
+            $db_user = "one";
+            $db_password = "1234";
+            $database = "ipmi";
 
-            // 從 mp510 表查詢 master 的 IP
-            $sql = "SELECT mp_ip FROM mp510 WHERE node_type = 'master'";
-            $result = $local_conn->query($sql);
-            
-            if ($row = $result->fetch_assoc()) {
-                $db_server = $row['mp_ip'];  // 獲取 master IP
-                self::$current_master = $db_server;
-            } else {
-                die("找不到 master 節點");
-            }
-
-            $local_conn->close();
-
-            // 使用 master IP 建立連線
-            self::$conn = new mysqli($db_server, "one", "1234", "ipmi");
+            self::$conn = new mysqli($db_server, $db_user, $db_password, $database);
 
             if (self::$conn->connect_error) {
                 die("連接失敗: " . self::$conn->connect_error);
@@ -52,14 +47,32 @@ class database_connection {
         }
         return self::$conn;
     }
-    public static function get_master_ip() {
-        if (self::$current_master === null) {
-            // 如果還沒建立連線，先呼叫 get_connection()
-            self::get_connection();
-        }
-        return self::$current_master;
+
+    // 新增取得伺服器 IP 的方法
+    public static function get_server_ip() {
+        self::init_server_info();
+        return self::$server_ip;
     }
 }
+
+ class mp510_repository {
+    public static function get_master_ip() {
+        $conn   = database_connection::get_connection();
+        $sql    = "SELECT mp_ip FROM mp510 WHERE node_type = 'master'";
+        $stmt   = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $current_master = null; //只有一個master
+        if ($row = $result->fetch_assoc()) {
+            $current_master = $row['mp_ip'];  // 從 DB 獲取 master IP
+        } else {
+            $current_master = "NA";
+        }
+        $stmt->close();
+        return $current_master;
+    }
+ }
 
 class users_repository {
     public static function query_users_info() {

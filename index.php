@@ -5,9 +5,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 require_once 'DB/db_operations_all.php';
+require_once 'common/common.php';
 $conn = database_connection::get_connection();
 // 獲取當前master mp510 ip
-$master_ip = database_connection::get_master_ip();
+//$master_ip = database_connection::get_master_ip();
+$master_ip = mp510_repository::get_master_ip();
+$current_ip = database_connection::get_server_ip();
 ?>
 
 
@@ -51,6 +54,9 @@ $master_ip = database_connection::get_master_ip();
             </p>
             <span>
                 <strong class="text-secondary">(Master: <?php echo $master_ip; ?>)</strong>
+            </span>
+            <span>
+                <strong class="text-secondary">(Current: <?php echo $current_ip ?>)</strong>
             </span>
             <div class="row">
     </div>
