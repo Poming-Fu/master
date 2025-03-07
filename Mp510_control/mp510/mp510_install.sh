@@ -33,28 +33,6 @@ log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
 }
 
-#check master or slave
-check_role() {
-    while true; do
-        read -p "Please enter role (master/slave): " char
-        case "$char" in
-            "slave")
-                echo "Setting up as SLAVE node"
-                ROLE="slave"
-                break
-                ;;
-            "master")
-                echo "Setting up as MASTER node"
-                ROLE="master"
-                break
-                ;;
-            *)
-                echo "Invalid input. Please enter 'master' or 'slave'"
-                ;;
-        esac
-    done
-}
-
 
 # Check root privileges
 check_sudo() {
@@ -190,6 +168,8 @@ install_ser2net() {
     
     # 重啟服務
     sudo systemctl restart ser2net || error_exit "Failed to restart ser2net"
+    
+    # 斷電自動重新啟動服務
     sudo systemctl enable ser2net || error_exit "Failed to enable ser2net"
     
     log_message "ser2net installation completed"
@@ -259,43 +239,16 @@ mount_nas() {
     log_message "NAS mounted successfully"
 }
 
-# Setup Crontab
-setup_slave_crontab() {
-    log_message "Setting up slave Crontab..."
 
-    # 執行一次
-    bash slave_backup.sh
-    
-    crontab_slave_backup="0 12 * * * /home/one/share_one/mp510/slave_backup.sh"
+setup_crontab() {
+    log_message "Setting up Crontab..."
+
+    crontab_mp510_backup="* 12 * * * /home/one/share_one/mp510/mp510_backup.sh"
     crontab_bmc_console="@reboot nodemon /home/one/share_one/web1/Device_control/websocket-terminal/bmc-console-backend.js"
     
     # 檢查crontab 是否已存在
-    if ! crontab -l 2>/dev/null | grep -q "slave_backup.sh"; then
-        (crontab -l 2>/dev/null; echo "${crontab_slave_backup}") | crontab -
-        log_message "Crontab slave_backup.sh added"
-    else
-        log_message "Crontab slave_backup.sh exists"
-    fi
-
-    if ! crontab -l 2>/dev/null | grep -q "bmc-console-backend.js"; then
-        (crontab -l 2>/dev/null; echo "${crontab_bmc_console}") | crontab -
-        log_message "Crontab bmc-console-backend added"
-    else
-        log_message "Crontab bmc-console-backend exists"
-    fi
-
-    log_message "Crontab setup completed"
-}
-
-setup_master_crontab() {
-    log_message "Setting up master Crontab..."
-
-    crontab_master_backup="50 11 * * * /home/one/share_one/mp510/master_backup.sh"
-    crontab_bmc_console="@reboot nodemon /home/one/share_one/web1/Device_control/websocket-terminal/bmc-console-backend.js"
-    
-    # 檢查crontab 是否已存在
-    if ! crontab -l 2>/dev/null | grep -q "master_backup.sh"; then
-        (crontab -l 2>/dev/null; echo "${crontab_master_backup}") | crontab -
+    if ! crontab -l 2>/dev/null | grep -q "mp510_backup.sh"; then
+        (crontab -l 2>/dev/null; echo "${crontab_mp510_backup}") | crontab -
         log_message "Crontab master_backup.sh added"
     else
         log_message "Crontab master_backup.sh exists"
@@ -315,7 +268,6 @@ setup_master_crontab() {
 main() {
 
     log_message "Starting environment setup..."
-    check_role
     check_sudo
     
     install_sshpass
@@ -327,17 +279,7 @@ main() {
     install_ser2net
 
     mount_nas
-
-    # 根據ROLE設定 crontab
-    if [ "$ROLE" == "slave" ]; then
-        setup_slave_crontab
-        log_message "Slave setup completed. Will sync with master at 12:00 daily."
-    elif [ "$ROLE" == "master" ]; then
-        setup_master_crontab
-        log_message "Master setup completed. Will backup at 11:50 daily."
-    else
-        error_exit "wrong ROLE"
-    fi
+    setup_crontab
 
     log_message "Environment setup completed!"
 }
