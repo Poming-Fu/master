@@ -27,7 +27,18 @@ class database_connection {
     private static function init_server_info() {
         if (self::$server_hostname === null) {
             self::$server_hostname = gethostname();
-            self::$server_ip = gethostbyname(self::$server_hostname);
+            
+            // 直接獲取第一個非本地 IP 地址
+            $ip = trim(shell_exec("hostname -I | awk '{print $1}'"));
+            
+            
+            // 確保獲取的是有效 IP
+            if (filter_var($ip, FILTER_VALIDATE_IP) && $ip != '127.0.0.1' && $ip != '127.0.1.1') {
+                self::$server_ip = $ip;
+            } else {
+                // 回退到原始方法
+                self::$server_ip = gethostbyname(self::$server_hostname);
+            }
         }
     }
 
