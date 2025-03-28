@@ -476,6 +476,16 @@ class boards_repository {
         return $row['status'];
     }
 
+    public static function query_boards_name($ip) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("SELECT B_Name FROM boards WHERE IP = ?");
+        $stmt->bind_param("s", $ip);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['B_Name'];
+    }
+
 
     public static function get_GUID_by_B_id($B_id) {
         $conn = database_connection::get_connection();

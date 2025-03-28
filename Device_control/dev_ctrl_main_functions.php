@@ -58,7 +58,8 @@ class device_controller {
     }
 
     private function get_board_id_and_ver($ip, $account, $password, $unique_pw, $custom_pw) {
-        $status = boards_repository::query_boards_status($ip);
+        $status     = boards_repository::query_boards_status($ip);
+        $boardname  = boards_repository::query_boards_name($ip);
         if ($status == "online") {
             $passwords = [$password, $unique_pw];
             if ($custom_pw) {
@@ -87,7 +88,10 @@ class device_controller {
 
             $bmc_info_parts = explode(" ", $get_bmc_info);
             $board_id = $bmc_info_parts[10] . $bmc_info_parts[9];
-            $version = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
+            $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11] . "." .$bmc_info_parts[14];
+            if (preg_match('/[xXhH]1[123]/', $boardname)) {
+                $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
+            }
 
             $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
             $stmt->bind_param("sss", $board_id, $version, $ip);
