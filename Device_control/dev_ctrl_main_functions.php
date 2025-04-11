@@ -89,6 +89,8 @@ class device_controller {
             $bmc_info_parts = explode(" ", $get_bmc_info);
             $board_id = $bmc_info_parts[10] . $bmc_info_parts[9];
             $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11] . "." .$bmc_info_parts[14];
+            
+            //# x10 x11 x12 x13 h系列也是 都使用3組 version
             if (preg_match('/[xXhH]1[123]/', $boardname)) {
                 $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
             }

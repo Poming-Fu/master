@@ -50,7 +50,9 @@ $master_ip = mp510_repository::get_master_ip();
                     echo "<td>{$row['mp_num']}</td>";
                     echo "<td>{$row['mp_ip']}</td>";
                     echo "<td>" . ($row['node_type'] == 'master' ? 
-                                "<strong class='text-primary'>Master</strong>" : 
+                                "<strong class='text-primary'>Master
+                                
+                                </strong>" : 
                                 $row['node_type']) . "</td>";
                     echo "<td>" . ($row['status'] == 'online' ? 
                                 "<span class='text-success'>Online</span>" : 

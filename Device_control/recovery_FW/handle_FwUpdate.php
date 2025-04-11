@@ -32,6 +32,7 @@ function check_password($ip, $account, $password, $unique_pw, $custom_pw) {
 function get_latest_FW_bin($directory, $FW_type, $GUID) {
     if ($FW_type == "BMC") {
         $FW_directory = "$directory/$FW_type";
+        //$FW_directory = "$directory/$FW_type";
     }
     //以後BIOS 加在這裡
 
@@ -86,10 +87,9 @@ function FW_update_operation($ip, $B_id, $FW_type, $GUID, $BMC_bin_path, $curren
     flush();
 
     // 命令執行成功
-    echo json_encode(['success' => true, 'message' => "current_password " . $current_password]);
+    echo json_encode(['success' => true, 'message' => "Upload complete. Update FW now"]);
     exit;
 }
-
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -133,8 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $B_id      = $_POST['B_id'];
         $FW_type   = $_POST['FW_type'];    
         $GUID      = boards_repository::get_GUID_by_B_id($B_id);
-        $directory = "/mnt";
-        
+        $directory = "/mnt/Golden_FW";
+
         // 先檢查密碼
         $password_check = check_password($ip, $account, $password, $unique_pw, $custom_pw);
         if (!$password_check['success']) {
@@ -144,15 +144,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $current_password = $password_check['current_password'];//這邊從return的值拿current_password ， 可以從function check_password找到
 
         $BMC_bin_path = get_latest_FW_bin($directory, $FW_type, $GUID);
+
         if (!$BMC_bin_path) {
             echo json_encode(["success" => false, "message" => "BMC_bin not found."]);
             exit;
         }
-
-        // 開始更新操作
-        
         FW_update_operation($ip, $B_id, $FW_type, $GUID, $BMC_bin_path, $current_password);
-    } else {
+    }
+    else {
         echo json_encode(["success" => false, 'message' => 'Invalid parameter request.']);
     }
 }
