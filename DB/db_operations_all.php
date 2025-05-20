@@ -274,6 +274,12 @@ class daily_repository {
                 'type' => 'lbmc',
                 'name' => 'sx13_ast26_ws_p'
             ],
+            'sx12_rot_ast26_p' => [
+                'path' => 'dailybuild_lbmc_x12rot/',
+                'type' => 'lbmc',
+                'name' => 'sx12_rot_ast26_p'
+            ]
+
         ]
     ];
 
@@ -281,7 +287,7 @@ class daily_repository {
     public static function get_branch_names() {
         return array_keys(self::$branch_maps); // array_keys() 會返回： ['master', 'aspeed-master']
     }
-    // 您原有的掃描目錄函數
+    // 原有的掃描目錄函數
     public static function scan_build_directories($branch = '', $start_date = '', $end_date = '', $status = '') {
         $base_path = '/mnt/DB/';
         
@@ -363,7 +369,7 @@ class daily_repository {
                 }
             }
         }
-        
+        //日期 近 -> 遠 排列
         usort($builds, function($a, $b) {
             return strcmp($b['build_date'], $a['build_date']);
         });
