@@ -75,7 +75,7 @@ $(document).ready(function() {
                     const targetSection = $(`
                         <div class="target-section mb-4">
                             <h3 class="mb-3 border-bottom pb-2">
-                            ${targetGroup.branch_name} - ${targetGroup.target_name} - ${targetGroup.target_type}
+                            ${targetGroup.branch_name} - ${targetGroup.target_name} - ${targetGroup.target_type} - ${targetGroup.target_GUID} 
                             </h3>
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped align-middle">

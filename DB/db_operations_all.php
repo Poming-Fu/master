@@ -236,51 +236,66 @@ class daily_repository {
 
     private static $branch_maps = [
         'master' => [
-            'sx13_rot2hw2_ast26_p' => [
+            'x13rot' => [
                 'path' => 'daily_master/',
                 'type' => 'lbmc',
-                'name' => 'sx13_rot2hw2_ast26_p'
+                'name' => 'sx13_rot2hw2_ast26_p',
+                'GUID' => 'C301MS'
             ]
         ],
         'aspeed-master' => [
-            'x14-ast2600-rot' => [
+            'x14rot' => [
                 'path' => 'dailybuild_obmc/',
                 'type' => 'obmc',
-                'name' => 'x14-ast2600-rot'
+                'name' => 'x14-ast2600-rot',
+                'GUID' => '5601MS'
             ]
         ],
         'BR_BMC_X14H14_AST2600_20241128_redfish_1_11' => [
-            'x14-ast2600-rot' => [
+            'RF1.11' => [
                 'path' => 'dailybuild_obmc_RF1.11/',
                 'type' => 'obmc',
-                'name' => 'x14-ast2600-rot'
+                'name' => 'x14-ast2600-rot',
+                'GUID' => '5601MS'
             ]
         ],
-        'master_rel_1.03_20240715' => [
-            'sx13_rot2hw2_ast26_p' => [
+        'master_rel_1.06_20250513' => [
+            'x13rot' => [
                 'path' => 'dailybuild_lbmc_x13rot/',
                 'type' => 'lbmc',
-                'name' => 'sx13_rot2hw2_ast26_p'
+                'name' => 'sx13_rot2hw2_ast26_p',
+                'GUID' => 'C301MS'
             ],
-            'sh13_rot2hw2_ast26_std_p' => [
+            'h13rot' => [
                 'path' => 'dailybuild_lbmc_h13/',
                 'type' => 'lbmc',
-                'name' => 'sh13_rot2hw2_ast26_std_p'
+                'name' => 'sh13_rot2hw2_ast26_std_p',
+                'GUID' => '6501MS'
             ]
         ],
-        'master_x12_rel_1.05_20240715' => [
-            'sx13_ast26_ws_p' => [
+        'master_x12_rel_1.04_20250513' => [
+            'x13nonrot' => [
                 'path' => 'dailybuild_lbmc_x13nonrot/',
                 'type' => 'lbmc',
-                'name' => 'sx13_ast26_ws_p'
+                'name' => 'sx13_ast26_ws_p',
+                'GUID' => 'F201MS'
             ],
-            'sx12_rot_ast26_p' => [
+            'x12rot' => [
                 'path' => 'dailybuild_lbmc_x12rot/',
                 'type' => 'lbmc',
-                'name' => 'sx12_rot_ast26_p'
+                'name' => 'sx12_rot_ast26_p',
+                'GUID' => '5201MS'
             ]
 
-        ]
+        ],        
+        'master_hw1_rel_1.04_20250513' => [
+            'master_hw1' => [
+                'path' => 'dailybuild_lbmc_master_hw1/',
+                'type' => 'lbmc',
+                'name' => 'x13_ast26_pfr',
+                'GUID' => '3401MS'
+            ]
+        ],
     ];
 
     // 獲取所有分支名稱
@@ -317,6 +332,7 @@ class daily_repository {
                         'target_id' => $target_id,
                         'target_name' => $target_info['name'],
                         'target_type' => $target_info['type'],
+                        'target_GUID' => $target_info['GUID'],
                         'builds' => $target_builds
                     ];
                 }
