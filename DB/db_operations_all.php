@@ -290,7 +290,7 @@ class daily_repository {
         ],        
         'master_hw1_rel_1.04_20250513' => [
             'master_hw1' => [
-                'path' => 'dailybuild_lbmc_master_hw1/',
+                'path' => 'dailybuild_master_hw1/',
                 'type' => 'lbmc',
                 'name' => 'x13_ast26_pfr',
                 'GUID' => '3401MS'
