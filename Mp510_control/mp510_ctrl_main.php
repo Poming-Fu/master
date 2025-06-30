@@ -96,6 +96,7 @@ $master_ip = mp510_repository::get_master_ip();
                             }
                         } catch(e) {
                             alert('Error processing response');
+                            //console.log(e.message);
                         }
                     },
                     error: function() {

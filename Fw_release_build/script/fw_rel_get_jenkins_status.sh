@@ -1,6 +1,6 @@
 #!/bin/bash
 
-db_server="10.148.175.12"
+db_server=$(hostname -I | awk '{print $1}')
 db_user="one"
 db_password="1234"
 database="ipmi"

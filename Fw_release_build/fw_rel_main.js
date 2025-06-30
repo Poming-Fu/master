@@ -26,7 +26,7 @@ function update_jenkins_status() {
 $(document).ready(function() {
     $('#build-form-submit-btn').click(function(e) {
         e.preventDefault();
-        let formData = $(this).closest('form').serialize(); //表單值
+        let formData = $(this).closest('form').serialize(); //表單值 who, branch, target...
         let formDOM  = $(this).closest('form')[0]; //元素
         //document.getElementById("myDIV").classList.add("mystyle");
         formDOM.classList.add('was-validated');  // 加 Bootstrap 驗證樣式
@@ -44,6 +44,7 @@ $(document).ready(function() {
                 success: function(response) {
                     if (response.success) {
                         // 創建彈出視窗的 HTML 內容
+                        // 調適用<tr><td>Command</td><td>${response.api_command}</td></tr>
                         let popupContent = `
                             <html>
                             <head>
@@ -58,14 +59,12 @@ $(document).ready(function() {
                             <body>
                                 <table>
                                     <tr><th colspan="2">Build Result</th></tr>
-                                    <tr><td>Who</td><td>${$('#who').val()}</td></tr>
                                     <tr><td>Branch</td><td>${$('#branch').val()}</td></tr>
                                     <tr><td>Platform</td><td>${$('#platform').val()}</td></tr>
                                     <tr><td>Version</td><td>${$('#ver').val()}</td></tr>
                                     <tr><td>Option</td><td>${$('#option').val()}</td></tr>
                                     <tr><td>OEM Name</td><td>${$('#oemname').val()}</td></tr>
                                     <tr><td>UUID</td><td>${response.UUID}</td></tr>
-                                    <tr><td>Command</td><td>${response.api_command}</td></tr>
                                     <tr><td>Output</td><td>${response.message}</td></tr>
                                 </table>
                             </body>

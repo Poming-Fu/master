@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>新增用戶</title>
+    <title>IPMI web service - add user</title>
     <style>
         body {
             font-family: Arial, sans-serif;

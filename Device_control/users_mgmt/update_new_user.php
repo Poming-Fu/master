@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>用戶管理</title>
+    <title>IPMI web service - user list</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -126,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <div class="container">
-    <h2>用戶列表</h2>
+    <h2>User List</h2>
     <?php if (isset($message)): ?>
         <p class="message"><?php echo $message; ?></p>
     <?php endif; ?>

@@ -35,8 +35,8 @@ class firmware_release_controller {
         ];
         }
     public function submit_fw_rel_form(){
-        $u_acc       = htmlspecialchars($_SESSION['username']);
-        $who         = $_POST['who'];
+        $u_acc       = htmlspecialchars($_SESSION['username']); //login acc like : ipmi
+        $who         = $_POST['who']; //jenkins acc format like : ipmi:ipmi
         $branch      = $_POST['branch'];
         $platform    = $_POST['platform'];
         $ver         = $_POST['ver'];
