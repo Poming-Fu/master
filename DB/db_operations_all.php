@@ -273,7 +273,7 @@ class daily_repository {
                 'GUID' => '6501MS'
             ]
         ],
-        'master_x12_rel_1.04_20250513' => [
+        'master_x12_rel_1.06_20250513' => [
             'x13nonrot' => [
                 'path' => 'dailybuild_lbmc_x13nonrot/',
                 'type' => 'lbmc',
