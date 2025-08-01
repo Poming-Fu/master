@@ -81,11 +81,41 @@ $branch_names = daily_repository::get_branch_names();
             <div class="col-md-3">        
                 <select class="form-select" id="branchFilter">
                     <option value="">All Branches</option>
-                    <?php foreach ($branch_names as $branch_name): ?>
-                        <option value="<?php echo htmlspecialchars($branch_name); ?>">
-                            <?php echo htmlspecialchars($branch_name); ?>
-                        </option>
-                    <?php endforeach; ?>
+                    <?php 
+                    // 分离普通分支和BR分支
+                    $normal_branches = [];
+                    $br_branches = [];
+                    // BR開頭的暫時停用
+                    foreach ($branch_names as $branch_name) {
+                        if (strpos($branch_name, 'BR_') === 0) {
+                            $br_branches[] = $branch_name;
+                        } else {
+                            $normal_branches[] = $branch_name;
+                        }
+                    }
+                    ?>
+                    
+                    <!-- 主要 Daily build 群組 -->
+                    <?php if (!empty($normal_branches)): ?>
+                        <optgroup label="Active Branches">
+                            <?php foreach ($normal_branches as $branch_name): ?>
+                                <option value="<?php echo htmlspecialchars($branch_name); ?>">
+                                    <?php echo htmlspecialchars($branch_name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endif; ?>
+                    
+                    <!-- 停用 Daily build 群組 -->
+                    <?php if (!empty($br_branches)): ?>
+                        <optgroup label="Deprecated Branches">
+                            <?php foreach ($br_branches as $branch_name): ?>
+                                <option value="<?php echo htmlspecialchars($branch_name); ?>">
+                                    <?php echo htmlspecialchars($branch_name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endif; ?>
                 </select>
             </div>
 

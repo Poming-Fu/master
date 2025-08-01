@@ -243,20 +243,12 @@ class daily_repository {
                 'GUID' => 'C301MS'
             ]
         ],
-        'aspeed-master' => [
-            'x14rot' => [
-                'path' => 'dailybuild_obmc/',
-                'type' => 'obmc',
-                'name' => 'x14-ast2600-rot',
-                'GUID' => '5601MS'
-            ]
-        ],
-        'BR_BMC_X14H14_AST2600_20241128_redfish_1_11' => [
-            'RF1.11' => [
-                'path' => 'dailybuild_obmc_RF1.11/',
-                'type' => 'obmc',
-                'name' => 'x14-ast2600-rot',
-                'GUID' => '5601MS'
+        'master_x12' => [
+            'x13rot' => [
+                'path' => 'daily_master_x12/',
+                'type' => 'lbmc',
+                'name' => 'sx12_rot_ast26_p',
+                'GUID' => '5201MS'
             ]
         ],
         'master_rel_1.06_20250513' => [
@@ -294,6 +286,30 @@ class daily_repository {
                 'type' => 'lbmc',
                 'name' => 'x13_ast26_pfr',
                 'GUID' => '3401MS'
+            ]
+        ],        
+        'aspeed-master' => [
+            'x14rot' => [
+                'path' => 'dailybuild_obmc/',
+                'type' => 'obmc',
+                'name' => 'x14-ast2600-rot',
+                'GUID' => '5601MS'
+            ]
+        ],
+        'master_rel_1.02_20250609' => [
+            'x14rot' => [
+                'path' => 'dailybuild_obmc_rel_1.02/',
+                'type' => 'obmc',
+                'name' => 'x14-ast2600-rot',
+                'GUID' => '5601MS'
+            ]
+        ],
+        'BR_BMC_X14H14_AST2600_20241128_redfish_1_11' => [
+            'RF1.11' => [
+                'path' => 'dailybuild_obmc_RF1.11/',
+                'type' => 'obmc',
+                'name' => 'x14-ast2600-rot',
+                'GUID' => '5601MS'
             ]
         ],
     ];
