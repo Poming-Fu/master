@@ -11,11 +11,15 @@ database : mariaDB  (http://10.148.175.12/phpmyadmin/index.php)
 Frontend : JavaScript, CSS, Bootstrap, HTML  
 
 #==================================#  
-
+1. local mount
 部署新web server時記得mount NAS 
+sudo mount -t cifs //10.148.165.16/DB /mnt/DB -o username=sam,password=sam,iocharset=utf8
+sudo mount -t cifs //10.148.165.16/Golden_FW /mnt/Golden_FW -o username=sam,password=sam,iocharset=utf8
+
+2. setup reboot auto mount
 sudo vim /etc/fstab
-//10.148.165.16/Golden_FW  /mnt/Golden_FW  cifs  credentials=/etc/samba/credentials,iocharset=utf8,nofail  0  0
-//10.148.165.16/DB         /mnt/DB         cifs  credentials=/etc/samba/credentials,iocharset=utf8,nofail  0  0
+//10.148.165.16/DB /mnt/DB cifs username=sam,password=sam,iocharset=utf8 0 0
+//10.148.165.16/Golden_FW /mnt/Golden_FW cifs username=sam,password=sam,iocharset=utf8 0 0
 
 #==================================#
 
