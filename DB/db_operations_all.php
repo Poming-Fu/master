@@ -244,14 +244,14 @@ class daily_repository {
             ]
         ],
         'master_x12' => [
-            'x13rot' => [
+            'x12rot' => [
                 'path' => 'daily_master_x12/',
                 'type' => 'lbmc',
                 'name' => 'sx12_rot_ast26_p',
                 'GUID' => '5201MS'
             ]
         ],
-        'master_rel_1.06_20250513' => [
+        'master_rel_1.05_20250818' => [
             'x13rot' => [
                 'path' => 'dailybuild_lbmc_x13rot/',
                 'type' => 'lbmc',
@@ -265,7 +265,7 @@ class daily_repository {
                 'GUID' => '6501MS'
             ]
         ],
-        'master_x12_rel_1.06_20250513' => [
+        'master_x12_rel_1.07_20250818' => [
             'x13nonrot' => [
                 'path' => 'dailybuild_lbmc_x13nonrot/',
                 'type' => 'lbmc',
@@ -280,7 +280,7 @@ class daily_repository {
             ]
 
         ],        
-        'master_hw1_rel_1.04_20250513' => [
+        'master_hw1_rel_1.05_20250818' => [
             'master_hw1' => [
                 'path' => 'dailybuild_master_hw1/',
                 'type' => 'lbmc',
