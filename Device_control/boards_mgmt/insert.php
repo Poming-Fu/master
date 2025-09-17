@@ -55,7 +55,7 @@
 <div class="container">
     <?php
     session_start();
-    require_once '../../DB/db_operations.php';
+    //require_once '../../DB/db_operations.php';
     require_once '../../DB/db_operations_all.php';
     $conn           = database_connection::get_connection();
     $username       = $_SESSION['username'];

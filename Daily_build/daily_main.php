@@ -75,17 +75,15 @@ $branch_names = daily_repository::get_branch_names();
 
     <div class="container mt-4">
         <h2 class="mb-4">Daily Build Results</h2>
-        
-        <!-- 過濾器保持不變 -->
         <div class="row mb-4">
             <div class="col-md-3">        
                 <select class="form-select" id="branchFilter">
                     <option value="">All Branches</option>
                     <?php 
-                    // 分离普通分支和BR分支
+                    // 分離普通分支和BR分支
                     $normal_branches = [];
                     $br_branches = [];
-                    // BR開頭的暫時停用
+                    // BR開頭的是特別分支
                     foreach ($branch_names as $branch_name) {
                         if (strpos($branch_name, 'BR_') === 0) {
                             $br_branches[] = $branch_name;
@@ -106,9 +104,9 @@ $branch_names = daily_repository::get_branch_names();
                         </optgroup>
                     <?php endif; ?>
                     
-                    <!-- 停用 Daily build 群組 -->
+                    <!-- BR Daily build 群組 -->
                     <?php if (!empty($br_branches)): ?>
-                        <optgroup label="Deprecated Branches">
+                        <optgroup label="Develop Branches">
                             <?php foreach ($br_branches as $branch_name): ?>
                                 <option value="<?php echo htmlspecialchars($branch_name); ?>">
                                     <?php echo htmlspecialchars($branch_name); ?>

@@ -304,6 +304,14 @@ class daily_repository {
                 'GUID' => '5601MS'
             ]
         ],
+        'BR_BMC_X14AST2600-ROT-B601MS_01.00.16.00_OEM_FOR_OBON' => [
+            'OBON' => [
+                'path' => 'dailybuild_obmc_OBON/',
+                'type' => 'obmc',
+                'name' => 'x14-ast2600-deltanext',
+                'GUID' => 'B601MS'
+            ]
+        ],
         'BR_BMC_X14H14_AST2600_20241128_redfish_1_11' => [
             'RF1.11' => [
                 'path' => 'dailybuild_obmc_RF1.11/',
