@@ -296,15 +296,15 @@ class daily_repository {
                 'GUID' => '5601MS'
             ]
         ],
-        'master_rel_1.02_20250609' => [
+        'master_rel_1.04_20250811' => [
             'x14rot' => [
-                'path' => 'dailybuild_obmc_rel_1.02/',
+                'path' => 'dailybuild_obmc_rel/',
                 'type' => 'obmc',
                 'name' => 'x14-ast2600-rot',
                 'GUID' => '5601MS'
             ]
         ],
-        'BR_BMC_X14AST2600-ROT-B601MS_01.00.16.00_OEM_FOR_OBON' => [
+        'BR_BMC_X14AST2600-ROT-B601MS_01.00.16.00_OEM_CVE_FOR_OBON' => [
             'OBON' => [
                 'path' => 'dailybuild_obmc_OBON/',
                 'type' => 'obmc',

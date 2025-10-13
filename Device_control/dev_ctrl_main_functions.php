@@ -132,6 +132,10 @@ class device_controller {
     public function upload_boards_FW_file() {
         
     }
+    
+    public function reset_ser2net_service() {
+        
+    }
 }
 
 
