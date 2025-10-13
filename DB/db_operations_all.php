@@ -296,7 +296,7 @@ class daily_repository {
                 'GUID' => '5601MS'
             ]
         ],
-        'master_rel_1.04_20250811' => [
+        'master_rel_1.02_20250609' => [
             'x14rot' => [
                 'path' => 'dailybuild_obmc_rel/',
                 'type' => 'obmc',

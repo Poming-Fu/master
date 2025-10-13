@@ -107,7 +107,11 @@ $mp510_groups = $boards_info['mp510_groups'];
                 <a href="boards_mgmt/insert.php?mp_num=<?php echo $mp_num; ?>&mp_ip=<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&Locate=<?php echo urlencode($boards[0]['Locate']); ?>">
                     <img src="/web1/web_picture/insert.png" style="width: 30px; height: 30px; cursor: pointer; vertical-align: middle;" alt="Insert">
                 </a>
-                
+                <i class="bi bi-bootstrap-reboot resetMP510ser2net-icon"
+                data-mp_ip="<?php echo htmlspecialchars($boards[0]['mp_ip']) ?>"
+                style="font-size: 30px; cursor: pointer;"
+                title="reset ser2net service">
+                </i>
             </div>
 
             <div id="<?php echo $mp_id; ?>">

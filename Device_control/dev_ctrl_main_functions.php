@@ -100,7 +100,7 @@ class device_controller {
             $stmt->execute();
             $stmt->close();
 
-            return json_encode(["success" => true, "message" => "Reload & Ping pass\nCurrent password: $password\nRequest: $get_bmc_info"]);
+            return json_encode(["success" => true, "message" => "Reload & Ping pass IP: $ip\nCurrent password: $password\nRequest: $get_bmc_info"]);
         } else {
             $stmt = $this->conn->prepare("UPDATE boards SET B_id = NULL, version = NULL WHERE IP = ?");
             $stmt->bind_param("s", $ip);
@@ -133,8 +133,43 @@ class device_controller {
         
     }
     
-    public function reset_ser2net_service() {
+    public function reset_ser2net_service($mp_ip) {
+        if (empty($mp_ip)) {
+            header('Content-Type: application/json');
+            return json_encode([
+                'success' => false,
+                'message' => 'MP510 IP is empty'
+            ]);
+        }
+        $mp_user      = "one";
+        $mp_password  = "1234";
+        // 重啟服務
+        shell_exec(sprintf(
+            'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "echo %s | sudo -S systemctl restart ser2net.service" >/dev/null 2>&1',
+            escapeshellarg($mp_password),
+            escapeshellarg($mp_user),
+            escapeshellarg($mp_ip),
+            escapeshellarg($mp_password)
+        ));
         
+        sleep(2);
+        
+        // 檢查狀態
+        $output = shell_exec(sprintf(
+            'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "systemctl is-active ser2net.service" 2>&1',
+            escapeshellarg($mp_password),
+            escapeshellarg($mp_user),
+            escapeshellarg($mp_ip)
+        ));
+        
+        // 用 strpos 找 active
+        $success = (strpos($output, 'active') !== false);
+        
+        header('Content-Type: application/json');
+        return json_encode([
+            'success' => $success,
+            'message' => $success ? 'ser2net.service reset succesfully' : 'ser2net.service reset fail'
+        ]);
     }
 }
 
@@ -170,6 +205,9 @@ if (isset($_GET['action'])) {
                 break;
             case 'get_boards_alive':
                 $response = $controller->get_boards_alive();
+                break;
+            case 'reset_ser2net_service':
+                $response = $controller->reset_ser2net_service($_POST['mp_ip']);
                 break;
             default:
                 throw new Exception('Invalid action');

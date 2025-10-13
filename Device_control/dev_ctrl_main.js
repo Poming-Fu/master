@@ -240,6 +240,33 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('.resetMP510ser2net-icon').click(function() {
+        let mp_ip        = $(this).data('mp_ip');
+        if (!confirm("MP510 : " + mp_ip + "\nAre you sure to reset ser2net.service ?")) {
+            return;
+        }
+        let data = {
+            mp_ip: mp_ip
+        };
+        $.ajax({
+            url: 'dev_ctrl_main_functions.php?action=reset_ser2net_service',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert('Success: \n' + response.message);
+                } else {
+                    alert('Failed: \n' + response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error occurred while sending reload command.');
+            }
+        });
+    });
+
     
     $(document).on('submit', '.enableForm', function(event) {
         //動態生成表格用 class=enableForm去指定比較好，用id=會bug
