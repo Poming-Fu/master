@@ -237,7 +237,7 @@ class daily_repository {
     private static $branch_maps = [
         'master' => [
             'x13rot' => [
-                'path' => 'daily_master/',
+                'path' => 'dailybuild_master/',
                 'type' => 'lbmc',
                 'name' => 'sx13_rot2hw2_ast26_p',
                 'GUID' => 'C301MS'
@@ -245,7 +245,7 @@ class daily_repository {
         ],
         'master_x12' => [
             'x12rot' => [
-                'path' => 'daily_master_x12/',
+                'path' => 'dailybuild_master_x12/',
                 'type' => 'lbmc',
                 'name' => 'sx12_rot_ast26_p',
                 'GUID' => '5201MS'

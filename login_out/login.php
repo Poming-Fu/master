@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../DB/db_operations.php';
+require_once __DIR__ . '/../DB/db_operations_all.php';
 // 檢查是否為 POST 請求
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 從表單獲取用戶名和密碼，用戶名要轉小寫，因LDAP沒有嚴格規定大小寫。
@@ -23,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (@ldap_bind($ds, $user_dn, $password)) {
 	// LDAP 驗證成功，接下來檢查資料庫，function 都在db_operations.php
     $conn = connect_to_db();
+    //$conn = database_connection::connect_to_db();
 	$user = check_user_in_db($conn, $username);
 	if ($user) {
 		update_user_last_login($conn, $username);

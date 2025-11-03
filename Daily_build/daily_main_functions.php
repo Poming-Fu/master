@@ -26,15 +26,13 @@ if (isset($_GET['action'])) {
             case 'view_build_log':
                 if (isset($_GET['path'])) {
                     $file_path = $_GET['path'];
+                    $extension = pathinfo($file_path, PATHINFO_EXTENSION);
                     
-                    if (file_exists($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'txt') {
+                    // 允許 txt 和 log 檔案
+                    if (file_exists($file_path) && in_array($extension, ['txt', 'log'])) {
                         header('Content-Type: text/plain');
                         
-                        // 完整讀取檔案 暫停用
-                        //readfile($file_path);
-                        
-                        // 使用 tail 命令讀取最後 1000 行
-                        $content = shell_exec("tail -n 1000 " . $file_path);
+                        $content = shell_exec("tail -n 1000 " . escapeshellarg($file_path));
                         echo "=== Showing last 1000 lines of the log ===\n";
                         echo $content;
                     } else {
