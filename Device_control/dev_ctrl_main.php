@@ -166,7 +166,12 @@ $mp510_groups = $boards_info['mp510_groups'];
                                     </div>
                                     <div>BMC ver = <?php echo htmlspecialchars($board['version']); ?></div>
                                     <div>BMC MAC = <?php echo htmlspecialchars($board['bmc_nc_mac']); ?></div>
-                                    <div>Unique pw = <?php echo htmlspecialchars($board['unique_pw']); ?></div>
+                                    <div class="d-flex align-items-center">
+                                        <span>Unique pw = <?php echo htmlspecialchars($board['unique_pw']); ?></span>
+                                        <button title="copy" class="btn btn-sm copy-button" data-unique_pw="<?php echo htmlspecialchars($board['unique_pw']); ?>">
+                                            <i class="bi bi-copy"></i>
+                                        </button>
+                                    </div>
                                 </td>
                                 <td>
                                     <?php if ($board['pw_num'] != 0): ?>
@@ -264,6 +269,7 @@ $mp510_groups = $boards_info['mp510_groups'];
 <button id="backToTopBtn" class="backToTopBtn" title="回到頂部">↑</button>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.0/clipboard.js"></script>
 <script src="dev_ctrl_main.js"></script>
 <script src="powerbox/dev_ctrl_power_fetch.js"></script>
 <script>

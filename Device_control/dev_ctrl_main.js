@@ -267,7 +267,37 @@ $(document).ready(function() {
         });
     });
 
-    
+    $('.copy-button').click(function() {
+        let password = $(this).data('unique_pw');
+        let button = $(this);
+        
+        // HTTPS 使用現代 API (HTTPS)
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(password).then(function() {
+                button.find('i').removeClass('bi-copy').addClass('bi-check-lg');
+                button.addClass('copied');
+                // 1.5秒後恢復
+                setTimeout(function() {
+                    button.find('i').removeClass('bi-check-lg').addClass('bi-copy');
+                    button.removeClass('copied');
+                }, 1500);
+            });
+        } else {
+            // HTTP 環境或不支援,直接用傳統方法
+            let $temp = $('<textarea>').val(password).appendTo('body');
+            $temp[0].select();
+            document.execCommand('copy'); // 老方法還能再戰十年
+            $temp.remove();
+            
+            button.find('i').removeClass('bi-copy').addClass('bi-check-lg');
+            button.addClass('copied');
+            // 1.5秒後恢復
+            setTimeout(function() {
+            button.find('i').removeClass('bi-check-lg').addClass('bi-copy');
+            button.removeClass('copied');
+        }, 1500);
+        }
+    });
     $(document).on('submit', '.enableForm', function(event) {
         //動態生成表格用 class=enableForm去指定比較好，用id=會bug
         event.preventDefault(); // Prevent default form submission
