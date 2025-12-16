@@ -18,7 +18,7 @@ $conn = database_connection::get_connection();
 $user = users_repository::check_user_in_db($username);
 
 // 使用query_boards_info 獲取板子info
-$boards_info  = boards_repository::query_boards_info();
+$boards_info  = boards_repository::query_boards_info($user['u_lev']);
 $ip_list      = $boards_info['ip_list'];
 $mp510_groups = $boards_info['mp510_groups'];
 

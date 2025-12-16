@@ -420,10 +420,19 @@ class daily_repository {
 
 
 class boards_repository {
-    public static function query_boards_info() {
-        $conn    = database_connection::get_connection();
-        $sql     = "SELECT * FROM boards ORDER BY mp_num";
-        $result  = $conn->query($sql);
+    public static function query_boards_info($user_level = 'low') {
+        $conn = database_connection::get_connection();
+        
+        // 根據使用者等級決定 SQL 查詢條件
+        if ($user_level == 'high') {
+            // high level 可以看到所有板子（包含 keep=1）
+            $sql = "SELECT * FROM boards ORDER BY mp_num";
+        } else {
+            // 一般使用者只能看到 keep=0 的板子
+            $sql = "SELECT * FROM boards WHERE keep = 0 ORDER BY mp_num";
+        }
+        
+        $result = $conn->query($sql);
         
         $ip_list = [];
         $mp510_groups = [];
