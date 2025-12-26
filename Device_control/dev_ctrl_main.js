@@ -293,9 +293,9 @@ $(document).ready(function() {
             button.addClass('copied');
             // 1.5秒後恢復
             setTimeout(function() {
-            button.find('i').removeClass('bi-check-lg').addClass('bi-copy');
-            button.removeClass('copied');
-        }, 1500);
+                button.find('i').removeClass('bi-check-lg').addClass('bi-copy');
+                button.removeClass('copied');
+            }, 1500);
         }
     });
     $(document).on('submit', '.enableForm', function(event) {
