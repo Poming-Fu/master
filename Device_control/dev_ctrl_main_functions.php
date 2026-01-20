@@ -2,12 +2,12 @@
 //require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
+require_once '../common/constants.php';
 
 class device_controller {
     private $username = "ADMIN";
     private $password = "ADMIN";
     private $conn;
-
     public function __construct() {
         //$this->conn = connect_to_db();
         $this->conn = database_connection::get_connection();
@@ -130,7 +130,7 @@ class device_controller {
     }
 
     public function upload_boards_FW_file() {
-        
+        // ** Make function to upload
     }
     
     public function reset_ser2net_service($mp_ip) {
@@ -141,8 +141,8 @@ class device_controller {
                 'message' => 'MP510 IP is empty'
             ]);
         }
-        $mp_user      = "one";
-        $mp_password  = "1234";
+        $mp_user      = MP_USER;
+        $mp_password  = MP_PASSWORD;
         // 重啟服務
         shell_exec(sprintf(
             'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "echo %s | sudo -S systemctl restart ser2net.service" >/dev/null 2>&1',
