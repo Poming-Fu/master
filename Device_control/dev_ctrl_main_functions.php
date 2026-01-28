@@ -2,12 +2,12 @@
 //require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
-require_once '../common/constants.php';
 
 class device_controller {
     private $username = "ADMIN";
     private $password = "ADMIN";
     private $conn;
+
     public function __construct() {
         //$this->conn = connect_to_db();
         $this->conn = database_connection::get_connection();
@@ -58,8 +58,7 @@ class device_controller {
     }
 
     private function get_board_id_and_ver($ip, $account, $password, $unique_pw, $custom_pw) {
-        $status     = boards_repository::query_boards_status($ip);
-        $boardname  = boards_repository::query_boards_name($ip);
+        $status = boards_repository::query_boards_status($ip);
         if ($status == "online") {
             $passwords = [$password, $unique_pw];
             if ($custom_pw) {
@@ -88,19 +87,14 @@ class device_controller {
 
             $bmc_info_parts = explode(" ", $get_bmc_info);
             $board_id = $bmc_info_parts[10] . $bmc_info_parts[9];
-            $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11] . "." .$bmc_info_parts[14];
-            
-            //# x10 x11 x12 x13 h系列也是 都使用3組 version
-            if (preg_match('/[xXhH]1[123]/', $boardname)) {
-                $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
-            }
+            $version = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
 
             $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
             $stmt->bind_param("sss", $board_id, $version, $ip);
             $stmt->execute();
             $stmt->close();
 
-            return json_encode(["success" => true, "message" => "Reload & Ping pass IP: $ip\nCurrent password: $password\nRequest: $get_bmc_info"]);
+            return json_encode(["success" => true, "message" => "Reload & Ping pass\nCurrent password: $password\nRequest: $get_bmc_info"]);
         } else {
             $stmt = $this->conn->prepare("UPDATE boards SET B_id = NULL, version = NULL WHERE IP = ?");
             $stmt->bind_param("s", $ip);
@@ -125,51 +119,11 @@ class device_controller {
     }
 
     public function get_boards_alive() {
-        // return total_count & alive_count
         return json_encode(boards_repository::query_boards_alive());
     }
 
     public function upload_boards_FW_file() {
-        // ** Make function to upload
-    }
-    
-    public function reset_ser2net_service($mp_ip) {
-        if (empty($mp_ip)) {
-            header('Content-Type: application/json');
-            return json_encode([
-                'success' => false,
-                'message' => 'MP510 IP is empty'
-            ]);
-        }
-        $mp_user      = MP_USER;
-        $mp_password  = MP_PASSWORD;
-        // 重啟服務
-        shell_exec(sprintf(
-            'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "echo %s | sudo -S systemctl restart ser2net.service" >/dev/null 2>&1',
-            escapeshellarg($mp_password),
-            escapeshellarg($mp_user),
-            escapeshellarg($mp_ip),
-            escapeshellarg($mp_password)
-        ));
         
-        sleep(2);
-        
-        // 檢查狀態
-        $output = shell_exec(sprintf(
-            'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "systemctl is-active ser2net.service" 2>&1',
-            escapeshellarg($mp_password),
-            escapeshellarg($mp_user),
-            escapeshellarg($mp_ip)
-        ));
-        
-        // 用 strpos 找 active
-        $success = (strpos($output, 'active') !== false);
-        
-        header('Content-Type: application/json');
-        return json_encode([
-            'success' => $success,
-            'message' => $success ? 'ser2net.service reset succesfully' : 'ser2net.service reset fail'
-        ]);
     }
 }
 
@@ -205,9 +159,6 @@ if (isset($_GET['action'])) {
                 break;
             case 'get_boards_alive':
                 $response = $controller->get_boards_alive();
-                break;
-            case 'reset_ser2net_service':
-                $response = $controller->reset_ser2net_service($_POST['mp_ip']);
                 break;
             default:
                 throw new Exception('Invalid action');
