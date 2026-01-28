@@ -3,18 +3,18 @@
 $(document).ready(function() {
 
     // 捕捉insert事件
-    $('a img[src*="insert.png"]').click(function() {
-        log_user_actions_collect('click_insert_image', $(this), 'image');
+    $('.mp510-actions .action-icon[title="新增主板"]').click(function() {
+        log_user_actions_collect('click_insert', $(this), 'button');
     });
 
-    // 捕捉AC button click事件
-    $('.AC-button img').click(function() {
-        const element     = $(this).closest('.AC-button');
+    // 捕捉AC button click事件 (PowerBox 控制)
+    $('.AC-button').click(function() {
+        const element     = $(this);
         const element_id  = element.attr('id') || 'undefined';
-        
+
         log_user_actions_collect('click_power_control', element, 'button');
 
-        const confirmed   = confirm(`你確定要執行${element_id} 嗎？`);
+        const confirmed   = confirm(`你確定要執行 ${element_id} 嗎？`);
         if (confirmed) {
             log_user_actions_collect('click_power_control', element, 'confirm');
 
@@ -29,32 +29,31 @@ $(document).ready(function() {
     });
 
     // 捕捉BMC Console按钮click事件
-    $('.telnet-console img').click(function() {
-        const element_img = $(this);
-        log_user_actions_collect('click_bmc_console', element_img, 'button');
-    });
-
-    // 捕捉delete事件
-    $('a img[src*="bin.png"]').click(function(event) {
-        event.preventDefault(); // 防默認提交
-        const element_img = $(this);
-        const element     = element_img.closest('a'); // 找最靠近 a 的元素
-        const confirmed   = confirm('確定要刪除表單嗎？');
-        log_user_actions_collect('click_delete_image', element_img, 'button');
-        
-        if (confirmed) {
-            log_user_actions_collect('click_delete_image', element_img, 'confirm');
-            window.location.href = element.attr('href'); // 導航到 a 的href屬性
-        } else {
-            log_user_actions_collect('click_delete_image', element_img, 'cancel');
-            
+    $('.telnet-console').click(function() {
+        const element = $(this);
+        if (!element.hasClass('disabled')) {
+            log_user_actions_collect('click_bmc_console', element, 'button');
         }
     });
 
-    // 捕捉update事件
-    $('a img[src*="modify.png"]').click(function() {
-        const element_img = $(this);
-        log_user_actions_collect('click_modify', element_img, 'button');
+    // 捕捉delete事件
+    $('.delete-btn').click(function(event) {
+        event.preventDefault();
+        const element = $(this);
+        const confirmed = confirm('確定要刪除這個主板嗎？');
+        log_user_actions_collect('click_delete', element, 'button');
+
+        if (confirmed) {
+            log_user_actions_collect('click_delete', element, 'confirm');
+            window.location.href = element.attr('href');
+        } else {
+            log_user_actions_collect('click_delete', element, 'cancel');
+        }
+    });
+
+    // 捕捉modify事件
+    $('.icon-btn[title="修改"]').click(function() {
+        log_user_actions_collect('click_modify', $(this), 'button');
     });
 });
 
@@ -222,51 +221,6 @@ $(document).ready(function() {
             }
         });
     });
-
-    $('#rawForm').on('submit', function(event) {
-        event.preventDefault();
-
-        $.ajax({
-            url: 'dev_ctrl_main_functions.php?action=execute_raw_command',
-            type: 'POST',
-            data: $(this).serialize(),
-            dataType: 'json',
-            success: function(response) {
-                $('#cmd').text(response.command);
-                $('#result').text(response.result);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error:', textStatus, errorThrown);
-            }
-        });
-    });
-
-    $('.resetMP510ser2net-icon').click(function() {
-        let mp_ip        = $(this).data('mp_ip');
-        if (!confirm("MP510 : " + mp_ip + "\nAre you sure to reset ser2net.service ?")) {
-            return;
-        }
-        let data = {
-            mp_ip: mp_ip
-        };
-        $.ajax({
-            url: 'dev_ctrl_main_functions.php?action=reset_ser2net_service',
-            type: 'POST',
-            data: data,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    alert('Success: \n' + response.message);
-                } else {
-                    alert('Failed: \n' + response.message);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert('Error occurred while sending reload command.');
-            }
-        });
-    });
-
     $('.copy-button').click(function() {
         let password = $(this).data('unique_pw');
         let button = $(this);
@@ -298,6 +252,24 @@ $(document).ready(function() {
         }, 1500);
         }
     });
+    $('#rawForm').on('submit', function(event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: 'dev_ctrl_main_functions.php?action=execute_raw_command',
+            type: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(response) {
+                $('#cmd').text(response.command);
+                $('#result').text(response.result);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error:', textStatus, errorThrown);
+            }
+        });
+    });
+    
     $(document).on('submit', '.enableForm', function(event) {
         //動態生成表格用 class=enableForm去指定比較好，用id=會bug
         event.preventDefault(); // Prevent default form submission

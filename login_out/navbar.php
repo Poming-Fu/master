@@ -109,6 +109,11 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
+                        <a class="nav-link" href="#" style="pointer-events: none; cursor: default;">
+                            <i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($_SESSION['username']) ?>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/web1/login_out/logout.php">
                             <i class="bi bi-box-arrow-right me-1"></i>Logout
                         </a>
