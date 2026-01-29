@@ -4,7 +4,6 @@ require_once 'dev_ctrl_main_functions.php';
 //require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
-require_once 'users_mgmt/log_user_action.php';
 
 include '../login_out/navbar.php';
 
@@ -344,6 +343,7 @@ $mp510_groups = $boards_info['mp510_groups'];
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>window.LOG_USER_ACC = '<?php echo htmlspecialchars($_SESSION['username']); ?>';</script>
 <script src="dev_ctrl_main.js"></script>
 <script src="powerbox/dev_ctrl_power_fetch.js"></script>
 <script>

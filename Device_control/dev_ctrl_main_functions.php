@@ -174,6 +174,16 @@ if (isset($_GET['action'])) {
             case 'get_boards_alive':
                 $response = $controller->get_boards_alive();
                 break;
+            case 'log_user_action':
+                users_repository::log_user_actions(
+                    $_POST['u_acc'],
+                    $_POST['action_name'],
+                    $_POST['element_id'],
+                    $_POST['element_type'],
+                    $_POST['page_url']
+                );
+                $response = json_encode(['status' => 'success']);
+                break;
             default:
                 throw new Exception('Invalid action');
         }

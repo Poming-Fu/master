@@ -1,5 +1,26 @@
-// control.js
-//捕捉事件
+// dev_ctrl_main.js
+
+// ===== Log User Action =====
+function log_user_actions_collect(action, element, element_type) {
+    const u_acc = window.LOG_USER_ACC;
+    if (!u_acc) return;
+
+    const element_id = element.attr('id')
+        || element.data('id')
+        || element.parent().attr('id')
+        || element.parent().attr('href')
+        || 'undefined';
+
+    $.post('dev_ctrl_main_functions.php?action=log_user_action', {
+        u_acc: u_acc,
+        action_name: action,
+        element_id: element_id,
+        element_type: element_type,
+        page_url: window.location.href
+    });
+}
+
+// ===== Event Handlers =====
 $(document).ready(function() {
 
     // 捕捉insert事件

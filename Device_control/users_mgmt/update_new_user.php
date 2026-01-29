@@ -1,187 +1,156 @@
 <?php
-//這頁是整合 列出用戶 -> edit 後填入表單 -> submit -> 更改用戶資訊
 session_start();
-//require_once '../../DB/db_operations.php';
 require_once '../../DB/db_operations_all.php';
-$conn       = database_connection::get_connection();
+$conn  = database_connection::get_connection();
+$users = users_repository::query_users_info();
 
-//下面user表格用到
-$users      = users_repository::query_users_info();
+$message = null;
+$success = false;
 
-// 檢查是否有更新或刪除請求
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update'])) {
-        $id     = $_POST['id'];
-        $u_acc  = $_POST['u_acc'];
-        $u_lev  = $_POST['u_lev'];
+        $id    = $_POST['id'];
+        $u_acc = $_POST['u_acc'];
+        $u_lev = $_POST['u_lev'];
 
         if (users_repository::update_new_user($u_acc, $u_lev, $id)) {
-            $message = "用戶訊息已更新。";
+            $message = "User updated successfully!";
+            $success = true;
+            // Refresh user list
+            $users = users_repository::query_users_info();
         } else {
-            $message = "更新用戶訊息發生錯誤。";
+            $message = "Failed to update user.";
+            $success = false;
         }
     } elseif (isset($_POST['delete'])) {
         $id = $_POST['id'];
 
         if (users_repository::delete_new_user($id)) {
-            $message = "用戶已刪除。";
+            $message = "User deleted successfully!";
+            $success = true;
+            // Refresh user list
+            $users = users_repository::query_users_info();
         } else {
-            $message = "刪除用戶發生錯誤。";
+            $message = "Failed to delete user.";
+            $success = false;
         }
     }
 }
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>IPMI web service - user list</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .delete-button {
-            background-color: #f44336;
-        }
-        .delete-button:hover {
-            background-color: #e53935;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-bottom: 5px;
-            color: #333;
-        }
-        input[type="text"], select {
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        input[type="submit"] {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .message {
-            text-align: center;
-            color: red;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="users_mgmt.css" rel="stylesheet">
 </head>
 <body>
 
-<div class="container">
-    <h2>User List</h2>
-    <?php if (isset($message)): ?>
-        <p class="message"><?php echo $message; ?></p>
-    <?php endif; ?>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>帳號</th>
-            <th>等級</th>
-            <th>操作</th>
-        </tr>
-        <?php foreach ($users as $user): ?>
-            <tr>
-                <td><?php echo htmlspecialchars($user['id']); ?></td>
-                <td><?php echo htmlspecialchars($user['u_acc']); ?></td>
-                <td><?php echo htmlspecialchars($user['u_lev']); ?></td>
-                <td>
-                    <button onclick="update_user('<?php echo $user['id']; ?>', '<?php echo $user['u_acc']; ?>', '<?php echo $user['u_lev']; ?>')">編輯</button>
-                    <form action="" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
-                        <input type="hidden" name="delete" value="1">
-                        <button type="submit" class="delete-button">刪除</button>
-                    </form>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
+<div class="page-container">
+    <!-- User List -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-people"></i>
+            <h2>User List</h2>
+        </div>
+        <div class="card-body">
+            <?php if ($message): ?>
+            <div class="alert <?php echo $success ? 'alert-success' : 'alert-error'; ?>">
+                <i class="bi <?php echo $success ? 'bi-check-circle' : 'bi-exclamation-circle'; ?>"></i>
+                <?php echo $message; ?>
+            </div>
+            <?php endif; ?>
 
-    <h2 id="update_user_form">編輯用戶信息</h2>
-    <form action="" method="post">
-        <input type="hidden" id="id" name="id">
-        <input type="hidden" name="update" value="1">
-        <label for="u_acc">帳號:</label>
-        <input type="text" id="u_acc" name="u_acc" required>
-        <label for="u_lev">等級:</label>
-        <select id="u_lev" name="u_lev">
-            <option value="low">low</option>
-            <option value="medium">medium</option>
-            <option value="high">high</option>
-        </select>
-        <input type="submit" value="更新">
-    </form>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Account</th>
+                        <th>Level</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $user): ?>
+                    <tr>
+                        <td class="user-id"><?php echo htmlspecialchars($user['id']); ?></td>
+                        <td class="user-account"><?php echo htmlspecialchars($user['u_acc']); ?></td>
+                        <td>
+                            <span class="level-badge <?php echo htmlspecialchars($user['u_lev']); ?>">
+                                <?php echo ucfirst(htmlspecialchars($user['u_lev'])); ?>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button type="button" class="btn-icon edit"
+                                        onclick="editUser('<?php echo $user['id']; ?>', '<?php echo htmlspecialchars($user['u_acc']); ?>', '<?php echo $user['u_lev']; ?>')"
+                                        title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                    <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
+                                    <input type="hidden" name="delete" value="1">
+                                    <button type="submit" class="btn-icon delete" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="card" id="edit-form">
+        <div class="card-header">
+            <i class="bi bi-pencil-square"></i>
+            <h2>Edit User</h2>
+        </div>
+        <div class="card-body">
+            <form action="" method="post">
+                <input type="hidden" id="edit_id" name="id">
+                <input type="hidden" name="update" value="1">
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="edit_u_acc">Account</label>
+                        <input type="text" id="edit_u_acc" name="u_acc" placeholder="Select a user to edit" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="edit_u_lev">Level</label>
+                        <select id="edit_u_lev" name="u_lev">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.close()">
+                        <i class="bi bi-x-lg"></i> Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    function update_user(id, u_acc, u_lev) {
-        //document.getElementById('id').value = id;
-        //document.getElementById('u_acc').value = u_acc;
-        //document.getElementById('u_lev').value = u_lev;
-        $('#id').val(id);
-        $('#u_acc').val(u_acc);
-        $('#u_lev').val(u_lev);
-        window.location = '#update_user_form';
-    }
+function editUser(id, u_acc, u_lev) {
+    document.getElementById('edit_id').value = id;
+    document.getElementById('edit_u_acc').value = u_acc;
+    document.getElementById('edit_u_lev').value = u_lev;
+    document.getElementById('edit-form').scrollIntoView({ behavior: 'smooth' });
+}
 </script>
-
 </body>
 </html>
