@@ -76,9 +76,10 @@
         $mp_num     = ($_POST['mp_num'] !== '' && $_POST['mp_num'] !== '0') ? $_POST['mp_num'] : NULL;
         $mp_com     = ($_POST['mp_com'] !== '' && $_POST['mp_com'] !== '0') ? $_POST['mp_com'] : NULL;
         $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
+        $current_pw = !empty($_POST['current_pw']) ? $_POST['current_pw'] : NULL;
 
 
-        if (boards_repository::modify_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id)) {
+        if (boards_repository::modify_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $current_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id)) {
             // 改用 JavaScript 來處理跳轉
             echo "<script>
                     alert('更新成功');
@@ -114,6 +115,7 @@
                 <tr><td>BMC_MAC</td><td><input type="text" name="bmc_nc_mac" value="<?php echo htmlspecialchars($board['bmc_nc_mac']); ?>" placeholder="選填"></td></tr>
                 <tr><td>L1_MAC</td><td><input type="text" name="L1_MAC" value="<?php echo htmlspecialchars($board['L1_MAC']); ?>" placeholder="選填"></td></tr>
                 <tr><td>Unique_pw</td><td><input type="text" name="unique_pw" value="<?php echo htmlspecialchars($board['unique_pw']); ?>" placeholder="選填"></td></tr>
+                <tr><td>Current Password</td><td><input type="text" name="current_pw" value="<?php echo htmlspecialchars($board['current_pw']); ?>" placeholder="目前使用的密碼"></td></tr>
                 <tr><td>位置</td><td><input type="text" name="Locate" value="<?php echo htmlspecialchars($board['Locate']); ?>" required <?php if ($user['u_lev'] !== 'high') echo 'readonly'; ?>></td></tr>
                 <tr><td>電源IP</td><td><input type="text" name="pw_ip" value="<?php echo htmlspecialchars($board['pw_ip']); ?>" <?php if ($user['u_lev'] !== 'high') echo 'readonly'; ?>></td></tr>
                 <tr><td>電源編號</td><td><input type="number" name="pw_num" value="<?php echo htmlspecialchars($board['pw_num']); ?>" <?php if ($user['u_lev'] !== 'high') echo 'readonly'; ?>></td></tr>

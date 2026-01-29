@@ -17,8 +17,8 @@ $username = $_SESSION['username'];
 $conn = database_connection::get_connection();
 $user = users_repository::check_user_in_db($username);
 
-// 使用query_boards_info 獲取板子info
-$boards_info  = boards_repository::query_boards_info();
+// 使用query_boards_info 獲取板子info (傳入用戶等級)
+$boards_info  = boards_repository::query_boards_info($user['u_lev']);
 $ip_list      = $boards_info['ip_list'];
 $mp510_groups = $boards_info['mp510_groups'];
 
@@ -79,7 +79,8 @@ $mp510_groups = $boards_info['mp510_groups'];
                     <input autocomplete="off" list="boardList" id="board_number" name="board_number" class="form-control" placeholder="選擇或輸入 IP">
                     <datalist id="boardList">
                         <?php foreach ($ip_list as $i => $board): ?>
-                            <option value="<?php echo htmlspecialchars($board['IP']); ?>">
+                            <option value="<?php echo htmlspecialchars($board['IP']); ?>"
+                                    data-current_pw="<?php echo htmlspecialchars($board['current_pw']); ?>">
                                 <?php echo htmlspecialchars($board['B_Name']); ?> - <?php echo htmlspecialchars($board['IP']); ?>
                             </option>
                         <?php endforeach; ?>
@@ -225,6 +226,17 @@ $mp510_groups = $boards_info['mp510_groups'];
                             </div>
                         </div>
                         <div class="info-item">
+                            <label>Current Password</label>
+                            <div class="value password-field">
+                                <span class="mono"><?php echo htmlspecialchars($board['current_pw']) ?: '-'; ?></span>
+                                <?php if ($board['current_pw']): ?>
+                                <button class="copy-btn copy-button" data-unique_pw="<?php echo htmlspecialchars($board['current_pw']); ?>" title="Copy">
+                                    <i class="bi bi-copy"></i>
+                                </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="info-item">
                             <label>PowerBox</label>
                             <div class="value powerbox-status">
                                 <?php if ($board['pw_num'] != 0): ?>
@@ -273,6 +285,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                         <!-- Enable Console -->
                         <form class="enableForm" style="flex: 1;">
                             <input type="hidden" name="ip" value="<?php echo htmlspecialchars($board['IP']); ?>">
+                            <input type="hidden" name="current_pw" value="<?php echo htmlspecialchars($board['current_pw']); ?>">
                             <button type="submit" name="BMC_enable_console_btn" class="action-btn">
                                 <i class="bi bi-unlock"></i> Enable
                             </button>
@@ -281,6 +294,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                         <!-- Power Actions -->
                         <form class="actionForm" style="flex: 2; display: flex; gap: 8px;">
                             <input type="hidden" name="ip" value="<?php echo htmlspecialchars($board['IP']); ?>">
+                            <input type="hidden" name="current_pw" value="<?php echo htmlspecialchars($board['current_pw']); ?>">
                             <select name="action" class="action-select">
                                 <option value="NA">Power Action...</option>
                                 <option value="bmc_default_uni_ADMIN">BMC Default</option>

@@ -473,19 +473,19 @@ class boards_repository {
         return $result;
     }
 
-    public static function modify_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id) {
+    public static function modify_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $current_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id) {
         $conn = database_connection::get_connection();
-        $stmt = $conn->prepare("UPDATE boards SET B_Name=?, IP=?, bmc_nc_mac=?, L1_MAC=?, unique_pw=?, Locate=?, pw_ip=?, pw_num=?, pw_port=?, mp_ip=?, mp_num=?, mp_com=?, note=? WHERE id=?");
-        $stmt->bind_param("sssssssiisiisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id);
+        $stmt = $conn->prepare("UPDATE boards SET B_Name=?, IP=?, bmc_nc_mac=?, L1_MAC=?, unique_pw=?, current_pw=?, Locate=?, pw_ip=?, pw_num=?, pw_port=?, mp_ip=?, mp_num=?, mp_com=?, note=? WHERE id=?");
+        $stmt->bind_param("ssssssssiisiisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $current_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note, $id);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public static function insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note){
+    public static function insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $current_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note){
         $conn = database_connection::get_connection();
-        $stmt = $conn->prepare("INSERT INTO boards (B_Name, IP, bmc_nc_mac, L1_MAC, unique_pw, Locate, pw_ip, pw_num, pw_port, mp_ip, mp_num, mp_com, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssssisisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
+        $stmt = $conn->prepare("INSERT INTO boards (B_Name, IP, bmc_nc_mac, L1_MAC, unique_pw, current_pw, Locate, pw_ip, pw_num, pw_port, mp_ip, mp_num, mp_com, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssssisisi", $B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $current_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
         $result = $stmt->execute();
         if ($result) {
             $new_id = $conn->insert_id;  // Get 新ID原生語法

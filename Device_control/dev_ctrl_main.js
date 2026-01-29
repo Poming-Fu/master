@@ -252,6 +252,20 @@ $(document).ready(function() {
         }, 1500);
         }
     });
+    // Board Raw 小工具 - 選擇 IP 時自動帶入密碼
+    $('#board_number').on('input', function() {
+        let selectedIP = $(this).val();
+        let option = $('#boardList option[value="' + selectedIP + '"]');
+        if (option.length) {
+            let currentPw = option.data('current_pw');
+            if (currentPw) {
+                $('#pass_value').val(currentPw);
+            } else {
+                $('#pass_value').val('ADMIN');
+            }
+        }
+    });
+
     $('#rawForm').on('submit', function(event) {
         event.preventDefault();
 

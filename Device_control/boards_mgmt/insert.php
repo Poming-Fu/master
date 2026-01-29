@@ -68,6 +68,7 @@
         $BMC_MAC    = !empty($_POST['bmc_nc_mac']) ? $_POST['bmc_nc_mac'] : NULL;
         $L1_MAC     = !empty($_POST['L1_MAC']) ? $_POST['L1_MAC'] : NULL;
         $Unique_pw  = !empty($_POST['unique_pw']) ? $_POST['unique_pw'] : NULL;
+        $current_pw = !empty($_POST['current_pw']) ? $_POST['current_pw'] : NULL;
         $Locate     = !empty($_POST['Locate']) ? $_POST['Locate'] : NULL;
         $pw_ip      = !empty($_POST['pw_ip']) ? $_POST['pw_ip'] : NULL;
         $pw_num     = ($_POST['pw_num'] !== '' && $_POST['pw_num'] !== '0') ? $_POST['pw_num'] : NULL;
@@ -78,7 +79,7 @@
         $note       = !empty($_POST['note']) ? $_POST['note'] : NULL;
 
         // prepare bind 語法
-        $new_id = boards_repository::insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
+        $new_id = boards_repository::insert_boards_info($B_Name, $IP, $BMC_MAC, $L1_MAC, $Unique_pw, $current_pw, $Locate, $pw_ip, $pw_num, $pw_port, $mp_ip, $mp_num, $mp_com, $note);
         if ($new_id) {       
             echo "<script>
                     alert('新增成功，ID: ' + " . $new_id . ");
@@ -133,6 +134,10 @@
             <tr>
                 <td>Unique_pw</td>
                 <td><input type="text" name="unique_pw" placeholder="選填"></td>
+            </tr>
+            <tr>
+                <td>Current_password</td>
+                <td><input type="text" name="current_pw" placeholder="選填"></td>
             </tr>
             <tr>
                 <td>位置</td>

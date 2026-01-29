@@ -22,19 +22,22 @@ class device_controller {
         ]);
     }
 
-    public function perform_action($ip, $action) {
+    public function perform_action($ip, $action, $current_pw = null) {
+        // 優先使用 current_pw，否則用預設 ADMIN
+        $password = !empty($current_pw) ? $current_pw : $this->password;
+
         switch ($action) {
             case 'bmc_default_uni_ADMIN':
-                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $this->password raw 0x06 0x1";
+                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $password raw 0x06 0x1";
                 break;
             case 'reset':
-                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $this->password power reset";
+                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $password power reset";
                 break;
             case 'on':
-                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $this->password power on";
+                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $password power on";
                 break;
             case 'off':
-                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $this->password power off";
+                $command = "ipmitool -I lanplus -H $ip -U $this->username -P $password power off";
                 break;
             case 'NA':
                 return json_encode(['success' => false, 'message' => 'Choose an option.']);
@@ -89,8 +92,9 @@ class device_controller {
             $board_id = $bmc_info_parts[10] . $bmc_info_parts[9];
             $version = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
 
-            $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
-            $stmt->bind_param("sss", $board_id, $version, $ip);
+            // 更新 B_id, version 和 current_pw
+            $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ?, current_pw = ? WHERE IP = ?");
+            $stmt->bind_param("ssss", $board_id, $version, $password, $ip);
             $stmt->execute();
             $stmt->close();
 
@@ -105,15 +109,18 @@ class device_controller {
         }
     }
 
-    public function enable_console($ip) {
-        $command1 = "ipmitool -I lanplus -H $ip -U $this->username -P $this->password raw 0x30 0x70 0x49 0x01 0x01";
-        $command2 = "ipmitool -I lanplus -H $ip -U $this->username -P $this->password raw 0x06 0x02";
+    public function enable_console($ip, $current_pw = null) {
+        // 優先使用 current_pw，否則用預設 ADMIN
+        $password = !empty($current_pw) ? $current_pw : $this->password;
+
+        $command1 = "ipmitool -I lanplus -H $ip -U $this->username -P $password raw 0x30 0x70 0x49 0x01 0x01";
+        $command2 = "ipmitool -I lanplus -H $ip -U $this->username -P $password raw 0x06 0x02";
 
         $result1 = shell_exec($command1 . " 2>&1");
         $result2 = shell_exec($command2 . " 2>&1");
 
         return json_encode([
-            'success' => true, 
+            'success' => true,
             'message' => $result1 . "\n" . $result2
         ]);
     }
@@ -145,7 +152,11 @@ if (isset($_GET['action'])) {
                 );
                 break;
             case 'perform_action':
-                $response = $controller->perform_action($_POST['ip'], $_POST['action']);
+                $response = $controller->perform_action(
+                    $_POST['ip'],
+                    $_POST['action'],
+                    $_POST['current_pw'] ?? null
+                );
                 break;
             case 'reload_status':
                 $response = $controller->reload_status(
@@ -155,7 +166,10 @@ if (isset($_GET['action'])) {
                 );
                 break;
             case 'enable_console':
-                $response = $controller->enable_console($_POST['ip']);
+                $response = $controller->enable_console(
+                    $_POST['ip'],
+                    $_POST['current_pw'] ?? null
+                );
                 break;
             case 'get_boards_alive':
                 $response = $controller->get_boards_alive();
