@@ -252,6 +252,31 @@ $(document).ready(function() {
         }, 1500);
         }
     });
+
+    // 一鍵複製板子所有資訊
+    $('.copy-all-btn').click(function() {
+        let btn = $(this);
+        let ip = btn.data('ip');
+        let mp_ip = btn.data('mp_ip');
+        let mp_com = btn.data('mp_com');
+        let bmcLink = `http://${ip}`;
+        let consoleLink = `http://${window.location.hostname}/web1/Device_control/websocket-terminal/bmc-console.html?host=${mp_ip}&port=${mp_com}&IP=${ip}`;
+
+        let info = [
+            `Board Name: ${btn.data('name')}`,
+            `BMC IP: ${ip}`,
+            `BMC Link: ${bmcLink}`,
+            `Board ID: ${btn.data('bid') || '-'}`,
+            `BMC Version: ${btn.data('version') || '-'}`,
+            `BMC MAC: ${btn.data('mac') || '-'}`,
+            `Unique PW: ${btn.data('unique_pw') || '-'}`,
+            `Current PW: ${btn.data('current_pw') || '-'}`,
+            `Console: ${consoleLink}`
+        ].join('\n');
+
+        copyToClipboard(info, btn);
+    });
+
     // Board Raw 小工具 - 選擇 IP 時自動帶入密碼
     $('#board_number').on('input', function() {
         let selectedIP = $(this).val();
@@ -349,6 +374,34 @@ $(document).ready(function() {
 });
 
 //function區
+
+// 通用複製到剪貼簿函數
+function copyToClipboard(text, btn) {
+    let icon = btn.find('i');
+    let originalClass = icon.attr('class');
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function() {
+            showCopySuccess(btn, icon, originalClass);
+        });
+    } else {
+        let $temp = $('<textarea>').val(text).appendTo('body');
+        $temp[0].select();
+        document.execCommand('copy');
+        $temp.remove();
+        showCopySuccess(btn, icon, originalClass);
+    }
+}
+
+function showCopySuccess(btn, icon, originalClass) {
+    icon.attr('class', 'bi bi-check-lg');
+    btn.addClass('copied');
+    setTimeout(function() {
+        icon.attr('class', originalClass);
+        btn.removeClass('copied');
+    }, 1500);
+}
+
 //獲取板子存活狀態
 function fetchBoardAliveData() {
     $.ajax({
@@ -369,4 +422,5 @@ function fetchBoardAliveData() {
 function openTelnetSession(host, port, IP) {
     const url = `http://${window.location.hostname}/web1/Device_control/websocket-terminal/bmc-console.html?host=${host}&port=${port}&IP=${IP}`;
     window.open(url, '_blank');
-  }
+}
+

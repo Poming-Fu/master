@@ -128,58 +128,78 @@ body {
     max-width: 400px;
 }
 
-/* ===== MP510 群組標題 ===== */
+/* ===== MP510 群組 ===== */
 .mp510-group {
     margin-bottom: 32px;
 }
 
+/* ===== MP510 容器 ===== */
+.mp510-box {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* MP510 標題列 */
 .mp510-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid var(--gray-200);
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-bottom: 3px solid var(--primary-color);
 }
 
-.mp510-header h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--gray-800);
-    margin: 0;
+.mp510-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    color: white;
 }
 
-.mp510-header h2::before {
-    content: "📡";
-    font-size: 20px;
+.mp510-title i {
+    font-size: 24px;
+    opacity: 0.8;
 }
 
-.mp510-header .mp510-actions {
+.mp510-ip {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.mp510-location {
+    font-size: 18px;
+    color: white;
+    padding-left: 12px;
+    border-left: 1px solid #475569;
+}
+
+.mp510-actions {
     display: flex;
     gap: 8px;
 }
 
-.mp510-header .action-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm);
-    background: var(--gray-100);
+.mp510-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    border: none;
-    color: var(--gray-600);
+    transition: all 0.2s;
+    color: white;
     font-size: 16px;
+    text-decoration: none;
 }
 
-.mp510-header .action-icon:hover {
+.mp510-btn:hover {
     background: var(--primary-color);
-    color: white;
+    border-color: var(--primary-color);
     transform: scale(1.05);
 }
 
@@ -188,6 +208,8 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 20px;
+    padding: 20px;
+    background: var(--gray-50);
 }
 
 /* ===== 主板卡片 ===== */
@@ -222,22 +244,6 @@ body {
     gap: 10px;
 }
 
-.board-card .card-header .status-badge {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.board-card .card-header .status-badge.online {
-    background: var(--success-color);
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
-}
-
-.board-card .card-header .status-badge.offline {
-    background: var(--danger-color);
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
-}
 
 .board-card .card-header .card-actions {
     display: flex;
@@ -261,6 +267,11 @@ body {
 .board-card .card-header .icon-btn:hover {
     background: var(--gray-100);
     color: var(--gray-700);
+}
+
+.board-card .card-header .icon-btn.copied {
+    background: var(--success-color);
+    color: white;
 }
 
 /* 卡片內容 */
@@ -458,25 +469,33 @@ body {
 
 /* Note 區域 */
 .board-card .note-area {
-    margin-top: 12px;
-    padding: 10px 12px;
-    background: rgba(245, 158, 11, 0.1);
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.08);
     border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: var(--warning-color);
+    border-left: 3px solid var(--warning-color);
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
+}
+
+.board-card .note-area i {
+    color: var(--warning-color);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.board-card .note-area span {
+    font-size: 13px;
+    color: var(--gray-700);
+    font-family: inherit;
+    line-height: 1.4;
 }
 
 .board-card .note-area:empty {
     display: none;
 }
 
-.board-card .note-area::before {
-    content: "📝";
-    flex-shrink: 0;
-}
 
 /* ===== 回到頂部按鈕 ===== */
 .backToTopBtn {
@@ -543,6 +562,7 @@ body {
 @media (max-width: 768px) {
     .board-grid {
         grid-template-columns: 1fr;
+        padding: 16px;
     }
 
     .status-bar {
@@ -559,6 +579,23 @@ body {
     }
 
     .board-card .action-btn {
+        width: 100%;
+    }
+
+    /* MP510 響應式 */
+    .mp510-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .mp510-title {
+        flex-wrap: wrap;
+    }
+
+    .mp510-location {
+        border-left: none;
+        padding-left: 0;
         width: 100%;
     }
 }

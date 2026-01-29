@@ -128,38 +128,57 @@ $mp510_groups = $boards_info['mp510_groups'];
         $mp_id = 'mp510_group_' . $mp_num;
     ?>
     <div class="mp510-group" id="<?php echo $mp_id; ?>">
-        <!-- MP510 群組標題 -->
-        <div class="mp510-header">
-            <h2>
-                <?php echo htmlspecialchars($boards[0]['mp_ip']); ?>
-                <span class="text-muted" style="font-size: 14px; font-weight: normal;">
-                    (<?php echo htmlspecialchars($boards[0]['Locate']); ?>)
-                </span>
-            </h2>
-            <div class="mp510-actions">
-                <a href="boards_mgmt/insert.php?mp_num=<?php echo $mp_num; ?>&mp_ip=<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&Locate=<?php echo urlencode($boards[0]['Locate']); ?>"
-                   class="action-icon" title="新增主板">
-                    <i class="bi bi-plus-lg"></i>
-                </a>
-                <button class="action-icon resetMP510ser2net-icon"
-                        data-mp_ip="<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>"
-                        title="Reset ser2net service">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
+        <!-- MP510 容器 -->
+        <div class="mp510-box">
+            <!-- MP510 標題列 -->
+            <div class="mp510-header">
+                <div class="mp510-title">
+                    <i class="bi bi-pc-display-horizontal"></i>
+                    <span class="mp510-ip"><?php echo htmlspecialchars($boards[0]['mp_ip']); ?></span>
+                    <span class="mp510-location"><?php echo htmlspecialchars($boards[0]['Locate']); ?></span>
+                </div>
+                <div class="mp510-actions">
+                    <a href="boards_mgmt/insert.php?mp_num=<?php echo $mp_num; ?>&mp_ip=<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&Locate=<?php echo urlencode($boards[0]['Locate']); ?>"
+                       class="mp510-btn" title="新增主板">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                    <button class="mp510-btn resetMP510ser2net-icon"
+                            data-mp_ip="<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>"
+                            title="Reset ser2net">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- 卡片網格 -->
-        <div class="board-grid">
+            <!-- 板子卡片網格 -->
+            <div class="board-grid">
             <?php foreach ($boards as $board): ?>
             <div class="board-card" id="board_<?php echo htmlspecialchars($board['id']); ?>">
                 <!-- 卡片標題 -->
                 <div class="card-header">
                     <div class="board-name">
-                        <span class="status-badge <?php echo $board['status'] == 'online' ? 'online' : 'offline'; ?>"></span>
+                        <?php if ($board['status'] == 'online'): ?>
+                            <i class="bi bi-wifi text-success" title="Online"></i>
+                        <?php else: ?>
+                            <i class="bi bi-wifi-off text-danger" title="Offline"></i>
+                        <?php endif; ?>
                         <?php echo htmlspecialchars($board['B_Name']); ?>
                     </div>
                     <div class="card-actions">
+                        <!-- Copy All Info -->
+                        <button class="icon-btn copy-all-btn"
+                                data-name="<?php echo htmlspecialchars($board['B_Name']); ?>"
+                                data-ip="<?php echo htmlspecialchars($board['IP']); ?>"
+                                data-bid="<?php echo htmlspecialchars($board['B_id']); ?>"
+                                data-version="<?php echo htmlspecialchars($board['version']); ?>"
+                                data-mac="<?php echo htmlspecialchars($board['bmc_nc_mac']); ?>"
+                                data-unique_pw="<?php echo htmlspecialchars($board['unique_pw']); ?>"
+                                data-current_pw="<?php echo htmlspecialchars($board['current_pw']); ?>"
+                                data-mp_ip="<?php echo htmlspecialchars($board['mp_ip']); ?>"
+                                data-mp_com="<?php echo htmlspecialchars($board['mp_com']); ?>"
+                                title="Copy All Info">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
                         <!-- Reload -->
                         <button class="icon-btn reload-icon"
                                 data-ip="<?php echo htmlspecialchars($board['IP']); ?>"
@@ -175,16 +194,16 @@ $mp510_groups = $boards_info['mp510_groups'];
                             <input type="hidden" name="status" value="<?php echo htmlspecialchars($board['status']); ?>">
                             <input type="hidden" name="unique_pw" value="<?php echo htmlspecialchars($board['unique_pw']); ?>">
                             <button type="button" class="icon-btn fw-button" name="RF_recovery" title="Recovery BMC">
-                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <i class="bi bi-bootstrap"></i>
                             </button>
                         </form>
                         <!-- Modify -->
-                        <a href="boards_mgmt/modify.php?id=<?php echo htmlspecialchars($board['id']); ?>" class="icon-btn" title="修改">
+                        <a href="boards_mgmt/modify.php?id=<?php echo htmlspecialchars($board['id']); ?>" class="icon-btn" title="Modify info">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <!-- Delete -->
                         <?php if (isset($user['u_lev']) && $user['u_lev'] == 'high'): ?>
-                        <a href="boards_mgmt/delete.php?id=<?php echo htmlspecialchars($board['id']); ?>" class="icon-btn delete-btn" title="刪除">
+                        <a href="boards_mgmt/delete.php?id=<?php echo htmlspecialchars($board['id']); ?>" class="icon-btn delete-btn" title="Delete">
                             <i class="bi bi-trash"></i>
                         </a>
                         <?php endif; ?>
@@ -265,7 +284,10 @@ $mp510_groups = $boards_info['mp510_groups'];
 
                     <!-- Note -->
                     <?php if (!empty($board['note'])): ?>
-                    <div class="note-area"><?php echo htmlspecialchars($board['note']); ?></div>
+                        <div class="note-area">
+                            <i class="bi bi-card-text"></i>
+                            <span><?php echo htmlspecialchars($board['note']); ?></span>
+                        </div>
                     <?php endif; ?>
                 </div>
 
@@ -310,6 +332,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                 </div>
             </div>
             <?php endforeach; ?>
+            </div>
         </div>
     </div>
     <?php endforeach; ?>
