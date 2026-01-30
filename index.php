@@ -21,78 +21,49 @@ $quick_links = [
 ];
 
 // ============================================================
-// Branch Info - 手動編輯
+// Branch Info - 從 common/rf_schedule.csv 讀取
 // ============================================================
-$rf_schedules = [
-    [
-        'quarter' => 'Q2 Jun/E',
-        'rf' => 'RF1.21.1-00.01',
-        'gen12' => 'master_x12_rel_1.07_20250818',
-        'gen13' => 'master_rel_1.05_20250818',
-        'gen13_hw1' => 'master_hw1_rel_1.05_20250818',
-        'gen14' => '1.03',
-        'lbmc' => 'master_rel_1.05_20250818',
-        'obmc' => 'master_rel_1.03_20251031',
-    ],
-    [
-        'quarter' => 'Q3 Sep/E',
-        'rf' => 'RF1.21.1-00.02',
-        'gen12' => 'master_x12_rel_1.08_20251027',
-        'gen13' => 'master_rel_1.06_20251027',
-        'gen13_hw1' => 'master_hw1_rel_1.06_20251027',
-        'gen14' => '1.04',
-        'lbmc' => 'master_rel_1.06_20251027',
-        'obmc' => 'master_rel_1.04_20251120',
-    ],
-    [
-        'quarter' => 'Q4 Oct/E',
-        'rf' => 'RF1.21.1-00.02',
-        'gen12' => 'master_x12_rel_1.09_20251125',
-        'gen13' => 'master_rel_1.07_20251125',
-        'gen13_hw1' => 'master_hw1_rel_1.07_20251125',
-        'gen14' => '1.05',
-        'lbmc' => 'master_rel_1.07_20251125',
-        'obmc' => 'master_rel_1.05_20251209',
-    ],
-    [
-        'quarter' => 'Q4 Nov/E',
-        'rf' => 'RF_1_22_2-00_00_API_full_list_2025-Q4_Nov',
-        'gen12' => 'master_x12_rel_1.10_2025',
-        'gen13' => 'master_rel_1.08_20251125',
-        'gen13_hw1' => 'master_hw1_rel_1.08_20251125',
-        'gen14' => '1.06',
-        'lbmc' => 'master_rel_1.08_20251125',
-        'obmc' => 'master_rel_1.06_XX/aspeed_master',
-    ],
-    [
-        'quarter' => 'Q4 Dec/E',
-        'rf' => 'RF_1_22_2-00_01_API_full_list_2025-Q4_Dec',
-        'gen12' => 'master_x12_rel_1.11_20260121',
-        'gen13' => 'master_rel_1.09_20260121',
-        'gen13_hw1' => 'master_hw1_rel_1.09_20260121',
-        'gen14' => '1.07',
-        'lbmc' => 'master_hw1_rel_1.09_20260121',
-        'obmc' => 'master_rel_1.07_XX',
-    ],
-    [
-        'quarter' => 'Q1 Jan/E',
-        'rf' => 'RF_1_22_2-00_02_API_full_list_2026-Q1_Jan',
-        'gen12' => 'master_x12',
-        'gen13' => 'master',
-        'gen13_hw1' => 'master_hw1',
-        'gen14' => '',
-        'lbmc' => '',
-        'obmc' => '',
-    ],
-];
+$rf_schedules = [];
+$rf_csv_path = __DIR__ . '/common/rf_schedule.csv';
+if (($handle = fopen($rf_csv_path, 'r')) !== false) {
+    $header = fgetcsv($handle); // quarter,rf,gen12,gen13,gen13_hw1,gen14,lbmc,obmc
+    while (($row = fgetcsv($handle)) !== false) {
+        if (count($row) >= 8) {
+            $rf_schedules[] = [
+                'quarter'   => $row[0],
+                'rf'        => $row[1],
+                'gen12'     => $row[2],
+                'gen13'     => $row[3],
+                'gen13_hw1' => $row[4],
+                'gen14'     => $row[5],
+                'lbmc'      => $row[6],
+                'obmc'      => $row[7],
+            ];
+        }
+    }
+    fclose($handle);
+}
 
 // ============================================================
-// Announcements - 手動編輯 (支援 HTML)
-// type: info / warning / success / danger
+// Team Members - 從 common/member.csv 讀取
+// CSV 格式: id,name,email,highlight (highlight: 1=標註, 0=正常)
 // ============================================================
-$announcements = [
-    // ['type' => 'warning', 'title' => 'Maintenance', 'content' => 'Build server down: 2025-02-01 10:00-12:00.', 'date' => '2025-01-28'],
-];
+$team_members = [];
+$csv_path = __DIR__ . '/common/member.csv';
+if (($handle = fopen($csv_path, 'r')) !== false) {
+    $header = fgetcsv($handle); // 跳過標題列
+    while (($row = fgetcsv($handle)) !== false) {
+        if (count($row) >= 4) {
+            $team_members[] = [
+                'id'        => $row[0],
+                'name'      => $row[1],
+                'email'     => $row[2],
+                'highlight' => (bool)$row[3],
+            ];
+        }
+    }
+    fclose($handle);
+}
 ?>
 
 <!DOCTYPE html>
@@ -130,71 +101,111 @@ $announcements = [
         <?php endif; ?>
     </div>
 
-    <!-- Announcements -->
-    <?php if (!empty($announcements)): ?>
+    <!-- Tab Navigation -->
     <div class="container py-4">
-        <div class="announcements">
-            <?php foreach ($announcements as $ann): ?>
-            <div class="announcement <?php echo $ann['type']; ?>">
-                <i class="bi <?php
-                    echo match($ann['type']) {
-                        'info'    => 'bi-info-circle-fill',
-                        'warning' => 'bi-exclamation-triangle-fill',
-                        'success' => 'bi-check-circle-fill',
-                        'danger'  => 'bi-x-circle-fill',
-                        default   => 'bi-info-circle-fill'
-                    };
-                ?> announcement-icon"></i>
-                <div class="announcement-content">
-                    <div class="announcement-title"><?php echo $ann['title']; ?></div>
-                    <div class="announcement-text"><?php echo $ann['content']; ?></div>
+        <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">
+                    <i class="bi bi-calendar-event me-2"></i>Release Schedule
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">
+                    <i class="bi bi-people me-2"></i>Team Members
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="mainTabsContent">
+            <!-- Release Schedule Tab -->
+            <div class="tab-pane fade show active" id="schedule" role="tabpanel">
+                <!-- Branch Board -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="mb-4 fw-semibold">
+                            <a href="https://mysupermicro-my.sharepoint.com/:x:/r/personal/jerry_wang_supermicro_com/_layouts/15/Doc.aspx?sourcedoc=%7BB1E28C19-B698-45D9-821E-379E81F6357A%7D&file=bmc-projects.xlsx&action=default&mobileredirect=true"
+                            target="_blank"
+                            class="text-decoration-none text-dark">
+                                <i class="bi bi-calendar-event me-2"></i>RF Release Schedule
+                            </a>
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>Quarter</th>
+                                        <th>RF Version</th>
+                                        <th>Gen12</th>
+                                        <th>Gen13</th>
+                                        <th>Gen13 HW1</th>
+                                        <th>Gen14</th>
+                                        <th>LBMC<br><small class="text-muted">(Gen14)</small></th>
+                                        <th>OBMC<br><small class="text-muted">(Gen14)</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($rf_schedules as $rf_schedule): ?>
+                                    <tr>
+                                        <td class="fw-semibold text-center"><?php echo $rf_schedule['quarter']; ?></td>
+                                        <td><?php echo $rf_schedule['rf']; ?></td>
+                                        <td><?php echo $rf_schedule['gen12'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo $rf_schedule['gen13'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo $rf_schedule['gen13_hw1'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td class="text-center"><?php echo $rf_schedule['gen14'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo $rf_schedule['lbmc'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo $rf_schedule['obmc'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="announcement-date"><?php echo $ann['date']; ?></div>
             </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php endif; ?>
-    <!-- Branch Board -->
-    <div class="container py-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="mb-4 fw-semibold">
-                    <a href="https://mysupermicro-my.sharepoint.com/:x:/r/personal/jerry_wang_supermicro_com/_layouts/15/Doc.aspx?sourcedoc=%7BB1E28C19-B698-45D9-821E-379E81F6357A%7D&file=bmc-projects.xlsx&action=default&mobileredirect=true"
-                    target="_blank"
-                    class="text-decoration-none text-dark">
-                        <i class="bi bi-calendar-event me-2"></i>RF Release Schedule
-                    </a>
-                </h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle">
-                        <thead class="table-light text-center">
-                            <tr>
-                                <th>Quarter</th>
-                                <th>RF Version</th>
-                                <th>Gen12</th>
-                                <th>Gen13</th>
-                                <th>Gen13 HW1</th>
-                                <th>Gen14</th>
-                                <th>LBMC<br><small class="text-muted">(Gen14)</small></th>
-                                <th>OBMC<br><small class="text-muted">(Gen14)</small></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rf_schedules as $rf_schedule): ?>
-                            <tr>
-                                <td class="fw-semibold text-center"><?php echo $rf_schedule['quarter']; ?></td>
-                                <td><?php echo $rf_schedule['rf']; ?></td>
-                                <td><?php echo $rf_schedule['gen12'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                <td><?php echo $rf_schedule['gen13'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                <td><?php echo $rf_schedule['gen13_hw1'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                <td class="text-center"><?php echo $rf_schedule['gen14'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                <td><?php echo $rf_schedule['lbmc'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                <td><?php echo $rf_schedule['obmc'] ?: '<span class="text-muted">—</span>'; ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+            <!-- Team Members Tab -->
+            <div class="tab-pane fade" id="staff" role="tabpanel">
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="mb-4 fw-semibold">
+                            <i class="bi bi-people me-2"></i>Team Members
+                            <span class="badge bg-secondary ms-2"><?php echo count($team_members); ?> 人</span>
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle" id="staffTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 80px;">#</th>
+                                        <th style="width: 100px;">工號</th>
+                                        <th style="width: 150px;">姓名</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($team_members as $index => $member): ?>
+                                    <tr>
+                                        <td class="text-center text-muted"><?php echo $index + 1; ?></td>
+                                        <td><?php echo htmlspecialchars($member['id']); ?></td>
+                                        <td>
+                                            <?php echo htmlspecialchars($member['name']); ?>
+                                            <?php if ($member['highlight']): ?>
+                                            <span class="manager-badge" title="Manager">M</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <a href="mailto:<?php echo htmlspecialchars($member['email']); ?>" class="text-primary text-decoration-none">
+                                                <i class="bi bi-envelope me-1"></i><?php echo htmlspecialchars($member['email']); ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-muted mt-3 mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            編輯 <code>common/member.csv</code> 管理人員，highlight 欄位設為 <code>1</code> 會顯示 <span class="manager-badge">M</span> (Manager)
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

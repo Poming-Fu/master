@@ -244,6 +244,83 @@
         white-space: nowrap;
     }
 
+    /* Tabs */
+    .nav-tabs {
+        border-bottom: 2px solid #e5e7eb;
+        gap: 4px;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6b7280;
+        font-weight: 500;
+        padding: 12px 20px;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.2s;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #374151;
+        background: #f3f4f6;
+        border-color: transparent;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #667eea;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-bottom: 2px solid white;
+        margin-bottom: -2px;
+    }
+
+    .tab-content {
+        background: transparent;
+    }
+
+    .tab-pane {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Staff Table */
+    #staffTable {
+        font-size: 14px;
+    }
+
+    #staffTable thead th {
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    #staffTable tbody tr:hover {
+        background-color: #f9fafb;
+    }
+
+    #staffTable td a:hover {
+        text-decoration: underline !important;
+    }
+
+    /* Manager Badge */
+    .manager-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 4px;
+        margin-left: 6px;
+        vertical-align: middle;
+    }
+
     /* 響應式 */
     @media (max-width: 992px) {
         .col-md-3 {

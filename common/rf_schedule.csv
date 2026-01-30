@@ -1,0 +1,7 @@
+quarter,rf,gen12,gen13,gen13_hw1,gen14,lbmc,obmc
+Q2 Jun/E,RF1.21.1-00.01,master_x12_rel_1.07_20250818,master_rel_1.05_20250818,master_hw1_rel_1.05_20250818,1.03,master_rel_1.05_20250818,master_rel_1.03_20251031
+Q3 Sep/E,RF1.21.1-00.02,master_x12_rel_1.08_20251027,master_rel_1.06_20251027,master_hw1_rel_1.06_20251027,1.04,master_rel_1.06_20251027,master_rel_1.04_20251120
+Q4 Oct/E,RF1.21.1-00.02,master_x12_rel_1.09_20251125,master_rel_1.07_20251125,master_hw1_rel_1.07_20251125,1.05,master_rel_1.07_20251125,master_rel_1.05_20251209
+Q4 Nov/E,RF_1_22_2-00_00_API_full_list_2025-Q4_Nov,master_x12_rel_1.10_2025,master_rel_1.08_20251125,master_hw1_rel_1.08_20251125,1.06,master_rel_1.08_20251125,master_rel_1.06_XX/aspeed_master
+Q4 Dec/E,RF_1_22_2-00_01_API_full_list_2025-Q4_Dec,master_x12_rel_1.11_20260121,master_rel_1.09_20260121,master_hw1_rel_1.09_20260121,1.07,master_hw1_rel_1.09_20260121,master_rel_1.07_XX
+Q1 Jan/E,RF_1_22_2-00_02_API_full_list_2026-Q1_Jan,master_x12,master,master_hw1,,,
