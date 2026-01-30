@@ -201,10 +201,6 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
                                 </tbody>
                             </table>
                         </div>
-                        <p class="text-muted mt-3 mb-0">
-                            <i class="bi bi-info-circle me-1"></i>
-                            編輯 <code>common/member.csv</code> 管理人員，highlight 欄位設為 <code>1</code> 會顯示 <span class="manager-badge">M</span> (Manager)
-                        </p>
                     </div>
                 </div>
             </div>
