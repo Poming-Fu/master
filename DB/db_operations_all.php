@@ -529,6 +529,22 @@ class boards_repository {
         $stmt->close();
     }
 
+    public static function update_board_id_version($board_id, $version, $ip) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
+        $stmt->bind_param("sss", $board_id, $version, $ip);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public static function clear_board_id_version($ip) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("UPDATE boards SET B_id = NULL, version = NULL WHERE IP = ?");
+        $stmt->bind_param("s", $ip);
+        $stmt->execute();
+        $stmt->close();
+    }
+
     public static function query_boards_status($ip) {
         $conn = database_connection::get_connection();
         $stmt = $conn->prepare("SELECT status FROM boards WHERE IP = ?");

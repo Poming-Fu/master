@@ -6,12 +6,6 @@ require_once '../common/common.php';
 class device_controller {
     private $username = "ADMIN";
     private $password = "ADMIN";
-    private $conn;
-
-    public function __construct() {
-        //$this->conn = connect_to_db();
-        $this->conn = database_connection::get_connection();
-    }
 
     public function execute_raw_command($board_number, $user_value, $pass_value, $raw_value) {
         $command = "ipmitool -I lanplus -H $board_number -U $user_value -P $pass_value raw $raw_value";
@@ -105,21 +99,14 @@ class device_controller {
             if (preg_match('/[xXhH]1[123]/', $boardname)) {
                 $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
             }
-            // 更新 B_id 和 version
-            $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
-            $stmt->bind_param("sss", $board_id, $version, $ip);
-            $stmt->execute();
-            $stmt->close();
-
-            // 更新 current_pw
+            // 更新 B_id, version 和 current_pw
+            boards_repository::update_board_id_version($board_id, $version, $ip);
             boards_repository::update_current_pw($password, $ip);
 
             return json_encode(["success" => true, "message" => "Reload & Ping pass\nCurrent password: $password\nRequest: $get_bmc_info"]);
         } else {
-            $stmt = $this->conn->prepare("UPDATE boards SET B_id = NULL, version = NULL WHERE IP = ?");
-            $stmt->bind_param("s", $ip);
-            $stmt->execute();
-            $stmt->close();
+            // offline 時清空 B_id 和 version
+            boards_repository::clear_board_id_version($ip);
 
             return json_encode(["success" => false, "message" => "ping $ip fail, please check network"]);
         }

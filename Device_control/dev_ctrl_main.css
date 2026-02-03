@@ -107,7 +107,7 @@ body {
     padding: 12px 16px;
     margin-top: 16px;
     font-family: 'Monaco', 'Menlo', monospace;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--gray-700);
 }
 
@@ -296,7 +296,7 @@ body {
 }
 
 .board-card .info-item label {
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--gray-400);
@@ -304,7 +304,7 @@ body {
 }
 
 .board-card .info-item .value {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--gray-700);
     font-weight: 500;
 }
@@ -320,7 +320,7 @@ body {
 
 .board-card .info-item .value.mono {
     font-family: 'Monaco', 'Menlo', monospace;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .board-card .password-field {
