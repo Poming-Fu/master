@@ -49,9 +49,9 @@ class device_controller {
         return json_encode(['success' => true, 'message' => $output]);
     }
 
-    public function reload_status($ip, $unique_pw, $custom_pw = null) {
+    public function reload_status($ip, $unique_pw, $current_pw = null, $custom_pw = null) {
         $this->ping_and_get_ip_status($ip);
-        return $this->get_board_id_and_ver($ip, $this->username, $this->password, $unique_pw, $custom_pw);
+        return $this->get_board_id_and_ver($ip, $this->username, $this->password, $unique_pw, $current_pw, $custom_pw);
     }
 
     private function ping_and_get_ip_status($ip) {
@@ -60,11 +60,17 @@ class device_controller {
         boards_repository::update_boards_status($status, $ip);
     }
 
-    private function get_board_id_and_ver($ip, $account, $password, $unique_pw, $custom_pw) {
+    private function get_board_id_and_ver($ip, $account, $password, $unique_pw, $current_pw, $custom_pw) {
         $status = boards_repository::query_boards_status($ip);
         $boardname  = boards_repository::query_boards_name($ip);
         if ($status == "online") {
-            $passwords = [$password, $unique_pw];
+            // 密碼嘗試順序: current_pw (最可能正確) -> ADMIN -> unique_pw -> custom_pw
+            $passwords = [];
+            if ($current_pw) {
+                $passwords[] = $current_pw;
+            }
+            $passwords[] = $password;  // ADMIN
+            $passwords[] = $unique_pw;
             if ($custom_pw) {
                 $passwords[] = $custom_pw;
             }
@@ -83,7 +89,9 @@ class device_controller {
             if (!$success) {
                 if (!$custom_pw) {
                     //前端需要needCustomPassword 去判定要不要輸入新密碼
-                    return json_encode(["success" => false, "needCustomPassword" => true, "message" => "Both password \"ADMIN\" and \"$unique_pw\" are login failed.\nPlease enter your custom password."]);
+                    $tried_passwords = array_filter([$current_pw, "ADMIN", $unique_pw]);
+                    $tried_list = implode(", ", array_map(function($pw) { return "\"$pw\""; }, $tried_passwords));
+                    return json_encode(["success" => false, "needCustomPassword" => true, "message" => "Passwords $tried_list login failed.\nPlease enter your custom password."]);
                 } else {
                     return json_encode(["success" => false, "message" => "custom password: $custom_pw login failed."]);
                 }
@@ -97,11 +105,14 @@ class device_controller {
             if (preg_match('/[xXhH]1[123]/', $boardname)) {
                 $version  = $bmc_info_parts[2] . "." . $bmc_info_parts[3] . "." . $bmc_info_parts[11];
             }
-            // 更新 B_id, version 和 current_pw
-            $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ?, current_pw = ? WHERE IP = ?");
-            $stmt->bind_param("ssss", $board_id, $version, $password, $ip);
+            // 更新 B_id 和 version
+            $stmt = $this->conn->prepare("UPDATE boards SET B_id = ?, version = ? WHERE IP = ?");
+            $stmt->bind_param("sss", $board_id, $version, $ip);
             $stmt->execute();
             $stmt->close();
+
+            // 更新 current_pw
+            boards_repository::update_current_pw($password, $ip);
 
             return json_encode(["success" => true, "message" => "Reload & Ping pass\nCurrent password: $password\nRequest: $get_bmc_info"]);
         } else {
@@ -167,6 +178,7 @@ if (isset($_GET['action'])) {
                 $response = $controller->reload_status(
                     $_POST['ip'],
                     $_POST['unique_pw'],
+                    $_POST['current_pw'] ?? null,
                     $_POST['custom_pw'] ?? null
                 );
                 break;

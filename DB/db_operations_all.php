@@ -521,6 +521,14 @@ class boards_repository {
         $stmt->close();
     }
 
+    public static function update_current_pw($current_pw, $ip) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("UPDATE boards SET current_pw = ? WHERE IP = ?");
+        $stmt->bind_param("ss", $current_pw, $ip);
+        $stmt->execute();
+        $stmt->close();
+    }
+
     public static function query_boards_status($ip) {
         $conn = database_connection::get_connection();
         $stmt = $conn->prepare("SELECT status FROM boards WHERE IP = ?");

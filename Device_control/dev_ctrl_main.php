@@ -182,6 +182,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                         <button class="icon-btn reload-icon"
                                 data-ip="<?php echo htmlspecialchars($board['IP']); ?>"
                                 data-unique_pw="<?php echo htmlspecialchars($board['unique_pw']); ?>"
+                                data-current_pw="<?php echo htmlspecialchars($board['current_pw']); ?>"
                                 title="Reload status">
                             <i class="bi bi-arrow-repeat"></i>
                         </button>
@@ -192,6 +193,7 @@ $mp510_groups = $boards_info['mp510_groups'];
                             <input type="hidden" name="FW_type" value="BMC">
                             <input type="hidden" name="status" value="<?php echo htmlspecialchars($board['status']); ?>">
                             <input type="hidden" name="unique_pw" value="<?php echo htmlspecialchars($board['unique_pw']); ?>">
+                            <input type="hidden" name="current_pw" value="<?php echo htmlspecialchars($board['current_pw']); ?>">
                             <button type="button" class="icon-btn fw-button" name="RF_recovery" title="Recovery BMC">
                                 <i class="bi bi-bootstrap"></i>
                             </button>

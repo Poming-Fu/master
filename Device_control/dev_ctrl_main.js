@@ -109,14 +109,16 @@ $(document).ready(function() {
 
     // Reload button click event
     $('.reload-icon').click(function() {
-        let ip        = $(this).data('ip');
-        let unique_pw = $(this).data('unique_pw');
-        let account   = "ADMIN";
-        let password  = "ADMIN";
+        let ip         = $(this).data('ip');
+        let unique_pw  = $(this).data('unique_pw');
+        let current_pw = $(this).data('current_pw');
+        let account    = "ADMIN";
+        let password   = "ADMIN";
         function sendRequest(customPassword = null) {
-            let data = { 
+            let data = {
                 ip: ip,
-                unique_pw: unique_pw, 
+                unique_pw: unique_pw,
+                current_pw: current_pw,
                 account: account,
                 password: password
             };
@@ -153,14 +155,15 @@ $(document).ready(function() {
 
     $('.fw-button').click(function(event) {
         event.preventDefault();
-        let name      = $(this).attr('name');
-        let form      = $(this).closest('form');
-        let ip        = form.find('input[name="ip"]').val();
-        let B_id      = form.find('input[name="B_id"]').val();
-        let FW_type   = form.find('input[name="FW_type"]').val();
-        let unique_pw = form.find('input[name="unique_pw"]').val();
-        let account   = "ADMIN";
-        let password  = "ADMIN";
+        let name       = $(this).attr('name');
+        let form       = $(this).closest('form');
+        let ip         = form.find('input[name="ip"]').val();
+        let B_id       = form.find('input[name="B_id"]').val();
+        let FW_type    = form.find('input[name="FW_type"]').val();
+        let unique_pw  = form.find('input[name="unique_pw"]').val();
+        let current_pw = form.find('input[name="current_pw"]').val();
+        let account    = "ADMIN";
+        let password   = "ADMIN";
         
         // 首先獲取最新的韌體名稱
         $.ajax({
@@ -195,14 +198,15 @@ $(document).ready(function() {
 
                 if (confirmation) {
                     function sendUpdateRequest(customPassword = null) {
-                        let data = { 
+                        let data = {
                             action: 'RF_recovery',
                             ip: ip,
                             B_id: B_id,
                             FW_type: FW_type,
                             account: account,
                             password: password,
-                            unique_pw: unique_pw
+                            unique_pw: unique_pw,
+                            current_pw: current_pw
                         };
 
                         if (customPassword) {

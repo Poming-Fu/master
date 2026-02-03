@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../DB/db_operations.php';
+#require_once __DIR__ . '/../DB/db_operations.php';
 require_once __DIR__ . '/../DB/db_operations_all.php';
 // 檢查是否為 POST 請求
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

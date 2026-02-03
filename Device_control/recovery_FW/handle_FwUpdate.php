@@ -4,9 +4,14 @@ require_once '../../DB/db_operations_all.php';
 $conn       = database_connection::get_connection();
 
 //BMC BIOS CPLD 要不要做一起
-function check_password($ip, $account, $password, $unique_pw, $custom_pw) {
-    $passwords = [$password, $unique_pw];
-    //$passwords = [$password];
+function check_password($ip, $account, $password, $unique_pw, $current_pw, $custom_pw) {
+    // 密碼嘗試順序: current_pw (最可能正確) -> ADMIN -> unique_pw -> custom_pw
+    $passwords = [];
+    if ($current_pw) {
+        $passwords[] = $current_pw;
+    }
+    $passwords[] = $password;  // ADMIN
+    $passwords[] = $unique_pw;
     if ($custom_pw) {
         $passwords[] = $custom_pw;
     }
@@ -14,15 +19,16 @@ function check_password($ip, $account, $password, $unique_pw, $custom_pw) {
     foreach ($passwords as $pw) {
         $get_bmc_info = shell_exec("ipmitool -I lanplus -H $ip -U $account -P $pw raw 0x6 0x1 2>&1");
         $get_bmc_info = trim($get_bmc_info);
-        
+
         if (strpos($get_bmc_info, 'Error') === false) {
             return ["success" => true, "message" => "Password verified successfully", "current_password" => $pw];
-            
         }
     }
 
     if (!$custom_pw) {
-        return ["success" => false, "needCustomPassword" => true, "message" => "Both password \"ADMIN\" and \"$unique_pw\" are login failed.\nPlease enter your custom password."];
+        $tried_passwords = array_filter([$current_pw, "ADMIN", $unique_pw]);
+        $tried_list = implode(", ", array_map(function($pw) { return "\"$pw\""; }, $tried_passwords));
+        return ["success" => false, "needCustomPassword" => true, "message" => "Passwords $tried_list login failed.\nPlease enter your custom password."];
     } else {
         return ["success" => false, "message" => "custom password: $custom_pw login failed."];
     }
@@ -94,10 +100,11 @@ function FW_update_operation($ip, $B_id, $FW_type, $GUID, $BMC_bin_path, $curren
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ip         = htmlspecialchars($_POST['ip'], ENT_QUOTES, 'UTF-8');
-    $table      = "boards";//DB 
+    $table      = "boards";//DB
     $account    = $_POST['account'];
     $password   = $_POST['password'];
     $unique_pw  = $_POST['unique_pw'];
+    $current_pw = isset($_POST['current_pw']) ? $_POST['current_pw'] : null;
     $custom_pw  = isset($_POST['custom_pw']) ? $_POST['custom_pw'] : null;
 
 
@@ -136,12 +143,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $directory = "/mnt/Golden_FW";
 
         // 先檢查密碼
-        $password_check = check_password($ip, $account, $password, $unique_pw, $custom_pw);
+        $password_check = check_password($ip, $account, $password, $unique_pw, $current_pw, $custom_pw);
         if (!$password_check['success']) {
             echo json_encode($password_check);
             exit;
         }
         $current_password = $password_check['current_password'];//這邊從return的值拿current_password ， 可以從function check_password找到
+
+        // 更新 current_pw 到資料庫
+        boards_repository::update_current_pw($current_password, $ip);
 
         $BMC_bin_path = get_latest_FW_bin($directory, $FW_type, $GUID);
 
