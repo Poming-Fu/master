@@ -1,0 +1,63 @@
+/**
+ * 樂透抽籤系統樣式
+ */
+
+/* ============================================================
+   Modal 樣式
+   ============================================================ */
+
+#lotteryModal .modal-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-bottom: none;
+}
+
+#lotteryModal .btn-close {
+    filter: invert(1);
+}
+
+/* ============================================================
+   結果卡片樣式
+   ============================================================ */
+
+#lotteryModal #resultCard {
+    border: 2px solid #22c55e;
+    animation: popIn 0.3s ease;
+}
+
+#lotteryModal #resultCard .list-group-item {
+    font-size: 1.1rem;
+    padding: 12px 16px;
+}
+
+/* ============================================================
+   已抽過列表樣式
+   ============================================================ */
+
+#lotteryModal #drawnList .badge {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* ============================================================
+   動畫效果
+   ============================================================ */
+
+@keyframes popIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+/* 抽籤按鈕 hover 效果 */
+#lotteryModal #drawBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+

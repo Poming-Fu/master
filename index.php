@@ -75,6 +75,7 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="index.css" rel="stylesheet">
+    <link href="Lottery/lottery.css" rel="stylesheet">
 </head>
 <body>
     <div class="p-5 text-center border-bottom">
@@ -166,9 +167,12 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
             <div class="tab-pane fade" id="staff" role="tabpanel">
                 <div class="card mt-3">
                     <div class="card-body">
-                        <h5 class="mb-4 fw-semibold">
+                        <h5 class="mb-4 fw-semibold d-flex align-items-center">
                             <i class="bi bi-people me-2"></i>Team Members
                             <span class="badge bg-secondary ms-2"><?php echo count($team_members); ?> 人</span>
+                            <button type="button" class="btn btn-outline-primary btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#lotteryModal">
+                                <i class="bi bi-dice-5 me-1"></i>抽籤
+                            </button>
                         </h5>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover align-middle" id="staffTable">
@@ -207,6 +211,59 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
         </div>
     </div>
 
+    <!-- Lottery Modal -->
+    <div class="modal fade" id="lotteryModal" tabindex="-1" aria-labelledby="lotteryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lotteryModalLabel">
+                        <i class="bi bi-dice-5 me-2"></i>抽籤系統
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 狀態資訊 -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>剩餘人數: <strong id="remainingCount">0</strong> / <strong id="totalCount">0</strong></span>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="resetLotteryBtn">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>重置
+                        </button>
+                    </div>
+
+                    <!-- 抽籤控制 -->
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">抽取人數</span>
+                        <input type="number" class="form-control" id="drawCount" value="1" min="1">
+                        <button class="btn btn-primary" type="button" id="drawBtn">
+                            <i class="bi bi-play-fill me-1"></i>開始抽籤
+                        </button>
+                    </div>
+
+                    <!-- 本次抽中結果 -->
+                    <div class="card mb-3" id="resultCard" style="display: none;">
+                        <div class="card-header bg-success text-white">
+                            <i class="bi bi-trophy me-2"></i>本次抽中
+                        </div>
+                        <ul class="list-group list-group-flush" id="resultList">
+                        </ul>
+                    </div>
+
+                    <!-- 已抽過的人 -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <i class="bi bi-check2-square me-2"></i>已抽過 (<span id="drawnCount">0</span> 人)
+                        </div>
+                        <div class="card-body" style="max-height: 150px; overflow-y: auto;">
+                            <div id="drawnList" class="d-flex flex-wrap gap-1">
+                                <span class="text-muted">尚無</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <p class="mb-0">
@@ -215,5 +272,13 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Lottery/lottery.js"></script>
+    <script>
+        // 初始化樂透系統
+        document.addEventListener('DOMContentLoaded', function() {
+            const teamMembers = <?php echo json_encode($team_members); ?>;
+            LotterySystem.init(teamMembers);
+        });
+    </script>
 </body>
 </html>

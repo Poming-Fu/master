@@ -321,6 +321,8 @@
         vertical-align: middle;
     }
 
+    /* Lottery Modal - 已移至 lottery.css */
+
     /* 響應式 */
     @media (max-width: 992px) {
         .col-md-3 {
