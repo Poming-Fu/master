@@ -211,24 +211,61 @@
             `${i + 1}. ${w.name} (${w.id})`
         ).join('\n');
 
-        // 複製到剪貼簿
-        navigator.clipboard.writeText(text).then(() => {
-            // 成功提示
-            const originalText = copyWinnersBtn.innerHTML;
-            copyWinnersBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
-            copyWinnersBtn.classList.remove('btn-light');
-            copyWinnersBtn.classList.add('btn-success');
+        // 嘗試使用現代 Clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showCopySuccess();
+            }).catch(err => {
+                console.error('Clipboard API 失敗:', err);
+                fallbackCopy(text);
+            });
+        } else {
+            // 使用舊方法作為備用方案
+            fallbackCopy(text);
+        }
+    }
 
-            // 2秒後恢復
-            setTimeout(() => {
-                copyWinnersBtn.innerHTML = originalText;
-                copyWinnersBtn.classList.remove('btn-success');
-                copyWinnersBtn.classList.add('btn-light');
-            }, 2000);
-        }).catch(err => {
+    /**
+     * 備用複製方法（使用 textarea + execCommand）
+     */
+    function fallbackCopy(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showCopySuccess();
+            } else {
+                alert('複製失敗，請手動複製');
+            }
+        } catch (err) {
             console.error('複製失敗:', err);
             alert('複製失敗，請手動複製');
-        });
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+
+    /**
+     * 顯示複製成功提示
+     */
+    function showCopySuccess() {
+        const originalText = copyWinnersBtn.innerHTML;
+        copyWinnersBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
+        copyWinnersBtn.classList.remove('btn-light');
+        copyWinnersBtn.classList.add('btn-success');
+
+        // 2秒後恢復
+        setTimeout(() => {
+            copyWinnersBtn.innerHTML = originalText;
+            copyWinnersBtn.classList.remove('btn-success');
+            copyWinnersBtn.classList.add('btn-light');
+        }, 2000);
     }
 
     /**
