@@ -19,7 +19,10 @@
     // DOM 元素
     let totalCountEl, remainingCountEl, drawnCountEl;
     let drawnListEl, resultCard, resultList;
-    let drawCountInput, drawBtn, resetBtn;
+    let drawCountInput, drawBtn, resetBtn, copyWinnersBtn;
+
+    // 儲存當前中獎者
+    let currentWinners = [];
 
     // ============================================================
     // 初始化函式
@@ -37,10 +40,12 @@
         drawCountInput = document.getElementById('drawCount');
         drawBtn = document.getElementById('drawBtn');
         resetBtn = document.getElementById('resetLotteryBtn');
+        copyWinnersBtn = document.getElementById('copyWinnersBtn');
 
         // 綁定事件
         drawBtn.addEventListener('click', draw);
         resetBtn.addEventListener('click', reset);
+        copyWinnersBtn.addEventListener('click', copyWinners);
         
         // Modal 開啟時更新 UI
         const modal = document.getElementById('lotteryModal');
@@ -162,6 +167,9 @@
         const shuffled = shuffleArray(remaining);
         const winners = shuffled.slice(0, count);
 
+        // 儲存當前中獎者
+        currentWinners = winners;
+
         // 更新已抽過的 ID
         const drawnIds = getDrawnIds();
         winners.forEach(w => drawnIds.push(w.id));
@@ -190,6 +198,40 @@
     }
 
     /**
+     * 複製中獎名單到剪貼簿
+     */
+    function copyWinners() {
+        if (currentWinners.length === 0) {
+            alert('目前沒有抽中的名單！');
+            return;
+        }
+
+        // 格式化名單
+        const text = currentWinners.map((w, i) =>
+            `${i + 1}. ${w.name} (${w.id})`
+        ).join('\n');
+
+        // 複製到剪貼簿
+        navigator.clipboard.writeText(text).then(() => {
+            // 成功提示
+            const originalText = copyWinnersBtn.innerHTML;
+            copyWinnersBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
+            copyWinnersBtn.classList.remove('btn-light');
+            copyWinnersBtn.classList.add('btn-success');
+
+            // 2秒後恢復
+            setTimeout(() => {
+                copyWinnersBtn.innerHTML = originalText;
+                copyWinnersBtn.classList.remove('btn-success');
+                copyWinnersBtn.classList.add('btn-light');
+            }, 2000);
+        }).catch(err => {
+            console.error('複製失敗:', err);
+            alert('複製失敗，請手動複製');
+        });
+    }
+
+    /**
      * 重置抽籤記錄
      */
     function reset() {
@@ -198,6 +240,7 @@
             localStorage.removeItem(HISTORY_KEY);
             resultCard.style.display = 'none';
             resultList.innerHTML = '';
+            currentWinners = [];
             updateUI();
         }
     }

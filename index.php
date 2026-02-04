@@ -241,8 +241,11 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
 
                     <!-- 本次抽中結果 -->
                     <div class="card mb-3" id="resultCard" style="display: none;">
-                        <div class="card-header bg-success text-white">
-                            <i class="bi bi-trophy me-2"></i>本次抽中
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-trophy me-2"></i>本次抽中</span>
+                            <button type="button" class="btn btn-sm btn-light" id="copyWinnersBtn" title="複製名單">
+                                <i class="bi bi-clipboard me-1"></i>複製
+                            </button>
                         </div>
                         <ul class="list-group list-group-flush" id="resultList">
                         </ul>
