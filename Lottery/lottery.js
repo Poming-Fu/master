@@ -202,12 +202,9 @@
     }
 
     /**
-     * 複製中獎名單到剪貼簿
+     * 複製中獎名單到剪貼簿（使用與 dev_ctrl_main.js 相同的方法）
      */
     function copyWinners() {
-        console.log('copyWinners 被呼叫');
-        console.log('currentWinners:', currentWinners);
-
         if (currentWinners.length === 0) {
             alert('目前沒有抽中的名單！');
             return;
@@ -218,50 +215,25 @@
             `${i + 1}. ${w.name} (${w.id})`
         ).join('\n');
 
-        console.log('準備複製的文字:', text);
+        // 使用與 Device_control 相同的複製方法
+        const $temp = $('<textarea>').val(text).appendTo('body');
+        $temp[0].select();
+        document.execCommand('copy');
+        $temp.remove();
 
-        // 建立臨時 textarea
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-9999px';
-        textarea.style.top = '0';
-        document.body.appendChild(textarea);
+        // 更新按鈕狀態
+        const btn = document.getElementById('copyWinnersBtn');
+        if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
+            btn.classList.remove('btn-light');
+            btn.classList.add('btn-success');
 
-        // 選取並複製
-        textarea.focus();
-        textarea.select();
-
-        console.log('textarea.value:', textarea.value);
-
-        let success = false;
-        try {
-            success = document.execCommand('copy');
-            console.log('execCommand 結果:', success);
-        } catch (err) {
-            console.error('複製失敗:', err);
-        }
-
-        // 移除臨時元素
-        document.body.removeChild(textarea);
-
-        // 顯示結果
-        if (success) {
-            const btn = document.getElementById('copyWinnersBtn');
-            if (btn) {
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
-                btn.classList.remove('btn-light');
-                btn.classList.add('btn-success');
-
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.classList.remove('btn-success');
-                    btn.classList.add('btn-light');
-                }, 2000);
-            }
-        } else {
-            alert('複製失敗，請手動複製');
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-light');
+            }, 2000);
         }
     }
 
