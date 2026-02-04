@@ -45,7 +45,11 @@
         // 綁定事件
         drawBtn.addEventListener('click', draw);
         resetBtn.addEventListener('click', reset);
-        copyWinnersBtn.addEventListener('click', copyWinners);
+
+        // 複製按鈕可能在 Modal 裡，需要確認存在才綁定
+        if (copyWinnersBtn) {
+            copyWinnersBtn.addEventListener('click', copyWinners);
+        }
         
         // Modal 開啟時更新 UI
         const modal = document.getElementById('lotteryModal');
@@ -201,6 +205,9 @@
      * 複製中獎名單到剪貼簿
      */
     function copyWinners() {
+        console.log('copyWinners 被呼叫');
+        console.log('currentWinners:', currentWinners);
+
         if (currentWinners.length === 0) {
             alert('目前沒有抽中的名單！');
             return;
@@ -211,61 +218,51 @@
             `${i + 1}. ${w.name} (${w.id})`
         ).join('\n');
 
-        // 嘗試使用現代 Clipboard API
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
-                showCopySuccess();
-            }).catch(err => {
-                console.error('Clipboard API 失敗:', err);
-                fallbackCopy(text);
-            });
-        } else {
-            // 使用舊方法作為備用方案
-            fallbackCopy(text);
-        }
-    }
+        console.log('準備複製的文字:', text);
 
-    /**
-     * 備用複製方法（使用 textarea + execCommand）
-     */
-    function fallbackCopy(text) {
+        // 建立臨時 textarea
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
+        textarea.style.left = '-9999px';
+        textarea.style.top = '0';
         document.body.appendChild(textarea);
+
+        // 選取並複製
+        textarea.focus();
         textarea.select();
 
+        console.log('textarea.value:', textarea.value);
+
+        let success = false;
         try {
-            const successful = document.execCommand('copy');
-            if (successful) {
-                showCopySuccess();
-            } else {
-                alert('複製失敗，請手動複製');
-            }
+            success = document.execCommand('copy');
+            console.log('execCommand 結果:', success);
         } catch (err) {
             console.error('複製失敗:', err);
-            alert('複製失敗，請手動複製');
-        } finally {
-            document.body.removeChild(textarea);
         }
-    }
 
-    /**
-     * 顯示複製成功提示
-     */
-    function showCopySuccess() {
-        const originalText = copyWinnersBtn.innerHTML;
-        copyWinnersBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
-        copyWinnersBtn.classList.remove('btn-light');
-        copyWinnersBtn.classList.add('btn-success');
+        // 移除臨時元素
+        document.body.removeChild(textarea);
 
-        // 2秒後恢復
-        setTimeout(() => {
-            copyWinnersBtn.innerHTML = originalText;
-            copyWinnersBtn.classList.remove('btn-success');
-            copyWinnersBtn.classList.add('btn-light');
-        }, 2000);
+        // 顯示結果
+        if (success) {
+            const btn = document.getElementById('copyWinnersBtn');
+            if (btn) {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
+                btn.classList.remove('btn-light');
+                btn.classList.add('btn-success');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-light');
+                }, 2000);
+            }
+        } else {
+            alert('複製失敗，請手動複製');
+        }
     }
 
     /**
