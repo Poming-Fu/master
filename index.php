@@ -75,7 +75,7 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="index.css" rel="stylesheet">
-    <link href="Lottery/lottery.css" rel="stylesheet">
+    <link href="Lottery/lottery.css?v=<?= filemtime('Lottery/lottery.css') ?>" rel="stylesheet">
 </head>
 <body>
     <div class="p-5 text-center border-bottom">
@@ -275,7 +275,7 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="Lottery/lottery.js"></script>
+    <script src="Lottery/lottery.js?v=<?= filemtime('Lottery/lottery.js') ?>"></script>
     <script>
         // 初始化樂透系統
         document.addEventListener('DOMContentLoaded', function() {
