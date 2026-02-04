@@ -4,6 +4,13 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: /web1/login_out/login.php');
     exit;
 }
+
+// 自動轉向 HTTPS（為了支援 Clipboard API）
+if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+    $redirect_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    header('Location: ' . $redirect_url, true, 301);
+    exit;
+}
 require_once 'DB/db_operations_all.php';
 require_once 'common/common.php';
 include 'login_out/navbar.php';
@@ -170,7 +177,8 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
                         <h5 class="mb-4 fw-semibold d-flex align-items-center">
                             <i class="bi bi-people me-2"></i>Team Members
                             <span class="badge bg-secondary ms-2"><?php echo count($team_members); ?> 人</span>
-                            <button type="button" class="btn btn-outline-primary btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#lotteryModal">
+                            <button type="button" class="btn btn-outline-primary btn-sm ms-3" title="老祖宗，保佑我"
+                                data-bs-toggle="modal" data-bs-target="#lotteryModal">
                                 <i class="bi bi-dice-5 me-1"></i>抽籤
                             </button>
                         </h5>

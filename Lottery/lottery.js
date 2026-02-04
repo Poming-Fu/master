@@ -45,8 +45,6 @@
         // 綁定事件
         drawBtn.addEventListener('click', draw);
         resetBtn.addEventListener('click', reset);
-
-        // 複製按鈕可能在 Modal 裡，需要確認存在才綁定
         if (copyWinnersBtn) {
             copyWinnersBtn.addEventListener('click', copyWinners);
         }
@@ -171,7 +169,7 @@
         const shuffled = shuffleArray(remaining);
         const winners = shuffled.slice(0, count);
 
-        // 儲存當前中獎者
+        // 儲存當前中獎者供複製功能使用
         currentWinners = winners;
 
         // 更新已抽過的 ID
@@ -201,8 +199,10 @@
         updateUI();
     }
 
+
+
     /**
-     * 複製中獎名單到剪貼簿（使用與 dev_ctrl_main.js 相同的方法）
+     * 複製中獎名單到剪貼簿（僅支援 HTTPS）
      */
     function copyWinners() {
         if (currentWinners.length === 0) {
@@ -215,25 +215,27 @@
             `${i + 1}. ${w.name} (${w.id})`
         ).join('\n');
 
-        // 使用與 Device_control 相同的複製方法
-        const $temp = $('<textarea>').val(text).appendTo('body');
-        $temp[0].select();
-        document.execCommand('copy');
-        $temp.remove();
+        // 只支援 HTTPS 環境的 Clipboard API
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = copyWinnersBtn;
+                const icon = btn.querySelector('i');
+                icon.classList.remove('bi-clipboard');
+                icon.classList.add('bi-check-lg');
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-light');
 
-        // 更新按鈕狀態
-        const btn = document.getElementById('copyWinnersBtn');
-        if (btn) {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>已複製';
-            btn.classList.remove('btn-light');
-            btn.classList.add('btn-success');
-
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-light');
-            }, 2000);
+                setTimeout(function() {
+                    icon.classList.remove('bi-check-lg');
+                    icon.classList.add('bi-clipboard');
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-light');
+                }, 1500);
+            }).catch(function(err) {
+                alert('複製失敗：' + err);
+            });
+        } else {
+            alert('複製功能需要 HTTPS 環境。\n請使用 HTTPS 連線或手動複製名單。');
         }
     }
 
