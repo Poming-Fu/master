@@ -1,4 +1,5 @@
 <?php
+// 已由 all 取代
 function connect_to_db() {
     $db_server = "10.148.175.12";#main server
     $db_user = "one";

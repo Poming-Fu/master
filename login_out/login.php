@@ -23,11 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 嘗試使用用戶名和密碼進行 LDAP 綁定
     if (@ldap_bind($ds, $user_dn, $password)) {
 	// LDAP 驗證成功，接下來檢查資料庫，function 都在db_operations.php
-    $conn = connect_to_db();
-    //$conn = database_connection::connect_to_db();
-	$user = check_user_in_db($conn, $username);
+    // $conn = connect_to_db();
+    $conn = database_connection::get_connection();
+	$user = users_repository::check_user_in_db($username);
 	if ($user) {
-		update_user_last_login($conn, $username);
+		users_repository::update_user_last_login($username);
 	}
     //綁定成功，設置屬性可用於其他頁面檢查是否已登入
     $_SESSION['loggedin'] = true;
