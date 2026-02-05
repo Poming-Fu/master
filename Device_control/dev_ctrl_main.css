@@ -22,9 +22,17 @@
     --radius-sm: 8px;
 }
 
+/* body 背景由 navbar.css 統一設定 */
 body {
-    background-color: var(--gray-100);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 確保 container 有正確的背景 */
+.container-fluid {
+    background-color: var(--gray-100) !important;
+    min-height: calc(100vh - 60px);
+    position: relative;
+    z-index: 1;
 }
 
 /* ===== 狀態列 ===== */

@@ -13,7 +13,6 @@ if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
 }
 require_once 'DB/db_operations_all.php';
 require_once 'common/common.php';
-include 'login_out/navbar.php';
 $conn = database_connection::get_connection();
 $master_ip = mp510_repository::get_master_ip();
 $current_ip = database_connection::get_server_ip();
@@ -81,10 +80,14 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     <title>IPMI web service - Index</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="login_out/navbar.css" rel="stylesheet">
     <link href="index.css" rel="stylesheet">
     <link href="Lottery/lottery.css?v=<?= filemtime('Lottery/lottery.css') ?>" rel="stylesheet">
 </head>
 <body>
+
+<?php include 'login_out/navbar.php'; ?>
+
     <div class="p-5 text-center border-bottom">
         <h1 class="text-center">IPMI Web Service</Search></h1>
         <div class="col-lg-6 mx-auto">

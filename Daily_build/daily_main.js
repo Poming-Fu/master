@@ -151,7 +151,7 @@ $(document).ready(function() {
         });
     }
     // 綁定事件
-    $('#searchFilter').click(function (e) { 
+    $('#searchFilter').click(function (e) {
         e.preventDefault();
         updateResults();
     });

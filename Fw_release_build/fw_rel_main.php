@@ -21,6 +21,9 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
     <title>IPMI web service - Fw_release_build</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="../login_out/navbar.css" rel="stylesheet">
     <link href="fw_rel_main.css" rel="stylesheet">
 </head>
 <body>
@@ -38,57 +41,52 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
             <a class="nav-link" href="#history">Build History</a>
         </nav> -->
         
-        <div class="row g-4 mb-2">
+        <div class="row g-4 mb-4">
             <div class="col-12">
                 <div id="build-form" class="card h-100">
-                    <div class="card-body">                      
+                    <div class="card-body">
+                        <h2 class="card-title">Build Form</h2>
                         <form>
-                            <div class="mb-3 d-flex">
-                                <label for="username" class="form-label">User：<?= htmlspecialchars($_SESSION['username']) ?></label>
+                            <div class="mb-4">
+                                <div class="form-info-display">
+                                    <span>User:</span>
+                                    <strong><?= htmlspecialchars($_SESSION['username']) ?></strong>
+                                </div>
                                 <input type="hidden" id="who" name="who" value="<?= htmlspecialchars($who) ?>">
                             </div>
-                            
-                            <div class="mb-3 row">
-                                <label for="branch" class="col-sm-3 col-form-label form-label">Branch name or tag or commit id：</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="branch" name="branch" placeholder="ex : master_rel_1.04_20250513, aspeed-master" required>
+
+                            <div class="mb-3">
+                                <label for="branch" class="form-label">Branch name or tag or commit id</label>
+                                <input type="text" class="form-control" id="branch" name="branch" placeholder="ex: master_rel_1.04_20250513, aspeed-master" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="platform" class="form-label">Platform</label>
+                                <input type="text" class="form-control" id="platform" name="platform" placeholder="ex: sx13_rot2hw2_ast26_p, x14-ast2600-rot" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="ver" class="form-label">Version</label>
+                                <input type="text" class="form-control" id="ver" name="ver" placeholder="ex: legacybmc: 1.01.01 & openbmc: 01.02.03.01" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="option" class="form-label">Option</label>
+                                <input type="text" class="form-control" id="option" name="option" value="core=12" readonly required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="oemname" class="form-label">OEM name</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="oemname" name="oemname" placeholder="STD ignored this">
+                                    <span class="input-group-text">.bin</span>
                                 </div>
                             </div>
 
-                            <div class="mb-3 row">
-                                <label for="platform" class="col-sm-3 col-form-label form-label">Platform：</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="platform" name="platform" placeholder="ex : sx13_rot2hw2_ast26_p, x14-ast2600-rot" required>
-                                </div>
-                            </div>
-
-
-                            <div class="mb-3 row">
-                                <label for="ver" class="col-sm-3 col-form-label form-label">Version：</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="ver" name="ver" placeholder="ex : legacybmc : 1.01.01 & openbmc: 01.02.03.01" required>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3 row">
-                                <label for="option" class="col-sm-3 col-form-label form-label">Option：</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="option" name="option" value="core=12" readonly required>
-                                </div>
-                            </div>
-
-                            <div class="mb-3 row">
-                                <label for="oemname" class="col-sm-3 col-form-label form-label">OEM name：</label>
-                                <div class="col-sm-9">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="oemname" name="oemname" placeholder="STD ignored this">
-                                        <span class="input-group-text">.bin</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3 d-grid">
-                                <button id="build-form-submit-btn" type="submit" class="btn btn-primary">Submit</button>
+                            <div class="d-grid">
+                                <button id="build-form-submit-btn" type="submit" class="btn btn-primary btn-lg">
+                                    Submit Build
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -147,10 +145,10 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                     <div class="card-body">
                         <h2 class="card-title">Build history </h2>
                         <?php
-                        $historys = firmware_repository::get_history_builds(10);
+                        $historys = firmware_repository::get_history_builds(100);
                         if (!empty($historys)): ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-bordered">
+                                <table id="historyTable" class="table table-striped table-bordered">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>status</th>
@@ -204,6 +202,8 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="fw_rel_main.js"></script>
 </body>
 </html>

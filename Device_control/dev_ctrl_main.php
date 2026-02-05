@@ -5,8 +5,6 @@ require_once 'dev_ctrl_main_functions.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
 
-include '../login_out/navbar.php';
-
 //檢查用戶是否登入
 common::check_login();
 $username = $_SESSION['username'];
@@ -30,9 +28,12 @@ $mp510_groups = $boards_info['mp510_groups'];
     <title>IPMI web service - Device Control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="../login_out/navbar.css" rel="stylesheet">
     <link href="dev_ctrl_main.css" rel="stylesheet">
 </head>
 <body>
+
+<?php include '../login_out/navbar.php'; ?>
 
 <div class="container-fluid px-3 py-3">
     <!-- 狀態列 -->
