@@ -76,6 +76,47 @@ $(document).ready(function() {
     $('.icon-btn[title="修改"]').click(function() {
         log_user_actions_collect('click_modify', $(this), 'button');
     });
+
+    // 捕捉 Reset ser2net 事件
+    $('.resetMP510ser2net-icon').click(function() {
+        const element = $(this);
+        const mp_ip = element.data('mp_ip');
+
+        log_user_actions_collect('click_reset_ser2net', element, 'button');
+
+        const confirmed = confirm(`確定要重啟 MP510 (${mp_ip}) ser2net service？`);
+        if (confirmed) {
+            log_user_actions_collect('click_reset_ser2net', element, 'confirm');
+
+            // 顯示載入中
+            element.prop('disabled', true);
+            element.html('<span class="spinner-border spinner-border-sm"></span>');
+
+            $.ajax({
+                url: 'dev_ctrl_main_functions.php?action=reset_ser2net',
+                type: 'POST',
+                data: { mp_ip: mp_ip },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Success:\n' + response.message);
+                    } else {
+                        alert('Failed: \n' + response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error: Server not disconnected\n' + textStatus);
+                },
+                complete: function() {
+                    // 恢復按鈕
+                    element.prop('disabled', false);
+                    element.html('<i class="bi bi-arrow-clockwise"></i>');
+                }
+            });
+        } else {
+            log_user_actions_collect('click_reset_ser2net', element, 'cancel');
+        }
+    });
 });
 
 //工具箱 or 元素功能

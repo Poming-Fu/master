@@ -83,6 +83,22 @@ class database_connection {
         $stmt->close();
         return $current_master;
     }
+
+    public static function get_mp510_by_ip($mp_ip) {
+        $conn = database_connection::get_connection();
+        $sql  = "SELECT * FROM mp510 WHERE mp_ip = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $mp_ip);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $mp510_info = null;
+        if ($row = $result->fetch_assoc()) {
+            $mp510_info = $row;
+        }
+        $stmt->close();
+        return $mp510_info;
+    }
  }
 
 class users_repository {

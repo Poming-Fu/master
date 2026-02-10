@@ -133,7 +133,70 @@ class device_controller {
     }
 
     public function upload_boards_FW_file() {
-        
+
+    }
+
+    public function reset_ser2net($mp_ip) {
+        // 檢查 MP510 IP 是否為空
+        if (empty($mp_ip)) {
+            return json_encode([
+                'success' => false,
+                'message' => 'MP510 IP is empty'
+            ]);
+        }
+
+        // 檢查 MP510 是否存在於資料庫
+        $mp510_info = mp510_repository::get_mp510_by_ip($mp_ip);
+        if (!$mp510_info) {
+            return json_encode([
+                'success' => false,
+                'message' => "MP510 not found: $mp_ip"
+            ]);
+        }
+
+        // 使用預設的 MP510 帳號，嘗試兩種密碼（新密碼優先）
+        require_once '../common/constants.php';
+        $mp_user = MP_USER;  // 'one'
+        $passwords = [MP_PASSWORD, OLD_MP_PASSWORD];  // ['4321', '1234']
+
+        // 嘗試每個密碼
+        foreach ($passwords as $mp_password) {
+            // 重啟 ser2net 服務
+            $restart_cmd = sprintf(
+                'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "echo %s | sudo -S systemctl restart ser2net.service" 2>&1',
+                escapeshellarg($mp_password),
+                escapeshellarg($mp_user),
+                escapeshellarg($mp_ip),
+                escapeshellarg($mp_password)
+            );
+            shell_exec($restart_cmd);
+
+            // 等待服務重啟
+            sleep(2);
+
+            // 檢查服務狀態
+            $check_cmd = sprintf(
+                'sshpass -p %s ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR %s@%s "systemctl is-active ser2net.service" 2>&1',
+                escapeshellarg($mp_password),
+                escapeshellarg($mp_user),
+                escapeshellarg($mp_ip)
+            );
+            $output = shell_exec($check_cmd);
+
+            // 檢查是否成功（服務狀態為 active）
+            if (strpos($output, 'active') !== false) {
+                return json_encode([
+                    'success' => true,
+                    'message' => "ser2net.service restart successfully"
+                ]);
+            }
+        }
+
+        // 兩個密碼都失敗
+        return json_encode([
+            'success' => false,
+            'message' => "ser2net.service restart failed"
+        ]);
     }
 }
 
@@ -187,6 +250,9 @@ if (isset($_GET['action'])) {
                     $_POST['page_url']
                 );
                 $response = json_encode(['status' => 'success']);
+                break;
+            case 'reset_ser2net':
+                $response = $controller->reset_ser2net($_POST['mp_ip']);
                 break;
             default:
                 throw new Exception('Invalid action');
