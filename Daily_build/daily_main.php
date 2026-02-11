@@ -48,76 +48,138 @@ $branch_names = daily_repository::get_branch_names();
             <h2>Daily Build Results</h2>
         </div>
 
-        <!-- 篩選卡片 -->
-        <div class="filter-card">
-            <div class="filter-title">Filter Options</div>
-            <div class="row g-3">
-            <div class="col-md-3">
-                <label for="branchFilter" class="form-label">Branch</label>
-                <select class="form-select" id="branchFilter">
-                    <option value="">All Branches</option>
-                    <?php 
-                    // 分離普通分支和BR分支
-                    $normal_branches = [];
-                    $br_branches = [];
-                    // BR開頭的是特別分支
-                    foreach ($branch_names as $branch_name) {
-                        if (strpos($branch_name, 'BR_') === 0) {
-                            $br_branches[] = $branch_name;
-                        } else {
-                            $normal_branches[] = $branch_name;
-                        }
-                    }
-                    ?>
-                    
-                    <!-- 主要 Daily build 群組 -->
-                    <?php if (!empty($normal_branches)): ?>
-                        <optgroup label="Active Branches">
-                            <?php foreach ($normal_branches as $branch_name): ?>
-                                <option value="<?php echo htmlspecialchars($branch_name); ?>">
-                                    <?php echo htmlspecialchars($branch_name); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </optgroup>
-                    <?php endif; ?>
-                    
-                    <!-- BR Daily build 群組 -->
-                    <?php if (!empty($br_branches)): ?>
-                        <optgroup label="Develop Branches">
-                            <?php foreach ($br_branches as $branch_name): ?>
-                                <option value="<?php echo htmlspecialchars($branch_name); ?>">
-                                    <?php echo htmlspecialchars($branch_name); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </optgroup>
-                    <?php endif; ?>
-                </select>
+        <!-- Tab 導航 -->
+        <ul class="nav nav-tabs mb-3" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="build-tab" data-bs-toggle="tab" data-bs-target="#build-content" type="button" role="tab" aria-controls="build-content" aria-selected="true">
+                    <i class="bi bi-hammer"></i> Build Results
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report-content" type="button" role="tab" aria-controls="report-content" aria-selected="false">
+                    <i class="bi bi-envelope-paper"></i> Mail Reports
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab 內容 -->
+        <div class="tab-content" id="mainTabsContent">
+            <!-- Tab 1: Build Results (原有內容) -->
+            <div class="tab-pane fade show active" id="build-content" role="tabpanel" aria-labelledby="build-tab">
+                <!-- 篩選卡片 -->
+                <div class="filter-card">
+                    <div class="filter-title">Filter Options</div>
+                    <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="branchFilter" class="form-label">Branch</label>
+                        <select class="form-select" id="branchFilter">
+                            <option value="">All Branches</option>
+                            <?php
+                            // 分離普通分支和BR分支
+                            $normal_branches = [];
+                            $br_branches = [];
+                            // BR開頭的是特別分支
+                            foreach ($branch_names as $branch_name) {
+                                if (strpos($branch_name, 'BR_') === 0) {
+                                    $br_branches[] = $branch_name;
+                                } else {
+                                    $normal_branches[] = $branch_name;
+                                }
+                            }
+                            ?>
+
+                            <!-- 主要 Daily build 群組 -->
+                            <?php if (!empty($normal_branches)): ?>
+                                <optgroup label="Active Branches">
+                                    <?php foreach ($normal_branches as $branch_name): ?>
+                                        <option value="<?php echo htmlspecialchars($branch_name); ?>">
+                                            <?php echo htmlspecialchars($branch_name); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                            <?php endif; ?>
+
+                            <!-- BR Daily build 群組 -->
+                            <?php if (!empty($br_branches)): ?>
+                                <optgroup label="Develop Branches">
+                                    <?php foreach ($br_branches as $branch_name): ?>
+                                        <option value="<?php echo htmlspecialchars($branch_name); ?>">
+                                            <?php echo htmlspecialchars($branch_name); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="PASS">PASS</option>
+                            <option value="FAIL">FAIL</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="dateFilter" class="form-label">Date Range</label>
+                        <input type="text" class="form-control" id="dateFilter" placeholder="Select date range">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-primary w-100" id="searchFilter">Search</button>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- 結果區域 -->
+                <div class="accordion" id="buildResults">
+                    <!-- 由 JS 動態渲染 -->
+                </div>
             </div>
 
-            <div class="col-md-3">
-                <label for="statusFilter" class="form-label">Status</label>
-                <select class="form-select" id="statusFilter">
-                    <option value="">All Status</option>
-                    <option value="PASS">PASS</option>
-                    <option value="FAIL">FAIL</option>
-                </select>
-            </div>
+            <!-- Tab 2: Mail Reports (新增) -->
+            <div class="tab-pane fade" id="report-content" role="tabpanel" aria-labelledby="report-tab">
+                <!-- 報告篩選 -->
+                <div class="filter-card">
+                    <div class="filter-title">Select Report</div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="reportDate" class="form-label">Date</label>
+                            <input type="text" class="form-control" id="reportDate" placeholder="Select date">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-primary w-100" id="loadReport">Load Report</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-outline-secondary w-100" id="listReports">List All Reports</button>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-md-3">
-                <label for="dateFilter" class="form-label">Date Range</label>
-                <input type="text" class="form-control" id="dateFilter" placeholder="Select date range">
-            </div>
+                <!-- 報告列表 -->
+                <div id="reportList" class="mb-3" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">Available Reports</div>
+                        <div class="card-body" id="reportListContent">
+                            <!-- 由 JS 動態渲染 -->
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <button type="button" class="btn btn-primary w-100" id="searchFilter">Search</button>
+                <!-- 報告內容顯示區 -->
+                <div id="reportDisplay" class="card">
+                    <div class="card-header" id="reportHeader">
+                        <i class="bi bi-file-earmark-text"></i> Mail Report Content
+                    </div>
+                    <div class="card-body p-0">
+                        <iframe id="reportFrame" style="width: 100%; height: 600px; border: none;"></iframe>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
-
-        <!-- 結果區域 -->
-        <div class="accordion" id="buildResults">
-            <!-- 由 JS 動態渲染 -->
         </div>
     </div>
 

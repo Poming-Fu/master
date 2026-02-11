@@ -156,4 +156,75 @@ $(document).ready(function() {
         updateResults();
     });
 
+    // ========== Mail Reports Tab ==========
+
+    // 初始化報告日期選擇器
+    $('#reportDate').daterangepicker({
+        singleDatePicker: true,
+        autoUpdateInput: true,
+        startDate: moment(),
+        locale: {
+            format: 'YYYYMMDD'
+        }
+    });
+
+    // 載入報告
+    $('#loadReport').click(function() {
+        const date = $('#reportDate').val();
+
+        if (!date) {
+            alert('Please select a date');
+            return;
+        }
+
+        $('#reportHeader').html('<i class="bi bi-hourglass-split"></i> Loading report...');
+        $('#reportFrame').attr('src', 'daily_main_functions.php?action=get_mail_report&date=' + date);
+        $('#reportHeader').html('<i class="bi bi-file-earmark-text"></i> Daily Report: ' + date);
+    });
+
+    // 列出所有報告
+    $('#listReports').click(function() {
+        $.ajax({
+            url: 'daily_main_functions.php?action=list_mail_reports',
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function() {
+                $('#reportListContent').html('<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading...</div>');
+                $('#reportList').show();
+            },
+            success: function(reports) {
+                if (reports.length === 0) {
+                    $('#reportListContent').html('<p class="text-muted mb-0">No reports found. Run mail_dev.py to generate reports.</p>');
+                    return;
+                }
+
+                let html = '<div class="table-responsive"><table class="table table-sm table-hover mb-0">';
+                html += '<thead><tr><th>Date</th><th>Modified</th><th>Action</th></tr></thead><tbody>';
+
+                reports.forEach(function(report) {
+                    html += '<tr>';
+                    html += '<td>' + report.display_date + '</td>';
+                    html += '<td><small class="text-muted">' + report.mtime + '</small></td>';
+                    html += '<td><button class="btn btn-sm btn-outline-primary view-report" data-date="' + report.date + '">View</button></td>';
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+                $('#reportListContent').html(html);
+            },
+            error: function() {
+                $('#reportListContent').html('<p class="text-danger mb-0">Error loading report list</p>');
+            }
+        });
+    });
+
+    // 點擊報告列表中的 View 按鈕
+    $(document).on('click', '.view-report', function() {
+        const date = $(this).data('date');
+
+        $('#reportDate').val(date);
+        $('#reportFrame').attr('src', 'daily_main_functions.php?action=get_mail_report&date=' + date);
+        $('#reportHeader').html('<i class="bi bi-file-earmark-text"></i> Daily Report: ' + date);
+    });
+
 });

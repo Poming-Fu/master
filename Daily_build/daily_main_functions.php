@@ -112,6 +112,53 @@ if (isset($_GET['action'])) {
                 }
                 break;
 
+            // ========== Mail Report API ==========
+            case 'list_mail_reports':
+                header('Content-Type: application/json');
+                $report_dir = '/mnt/DB/dailybuild_all_target/mail_report';
+                $reports = [];
+
+                if (is_dir($report_dir)) {
+                    $files = glob($report_dir . '/*.html');
+                    foreach ($files as $file) {
+                        $filename = basename($file);
+                        // 解析檔名: YYYYMMDD.html (只接受日期格式的檔名)
+                        if (preg_match('/^(\d{8})\.html$/', $filename, $matches)) {
+                            $reports[] = [
+                                'filename' => $filename,
+                                'date' => $matches[1],
+                                'display_date' => substr($matches[1], 0, 4) . '/' . substr($matches[1], 4, 2) . '/' . substr($matches[1], 6, 2),
+                                'size' => filesize($file),
+                                'mtime' => date('Y-m-d H:i:s', filemtime($file))
+                            ];
+                        }
+                    }
+                    // 按日期降序排列
+                    usort($reports, function($a, $b) {
+                        return strcmp($b['date'], $a['date']);
+                    });
+                }
+                echo json_encode($reports);
+                break;
+
+            case 'get_mail_report':
+                $date = $_GET['date'] ?? '';
+                $report_dir = '/mnt/DB/dailybuild_all_target/mail_report';
+                $file_path = $report_dir . '/' . $date . '.html';
+
+                if (file_exists($file_path) && preg_match('/^\d{8}$/', $date)) {
+                    header('Content-Type: text/html; charset=utf-8');
+                    readfile($file_path);
+                } else {
+                    header('Content-Type: text/html; charset=utf-8');
+                    echo '<div style="padding: 20px; text-align: center; color: #666;">';
+                    echo '<h3>Report not found</h3>';
+                    echo '<p>File: ' . htmlspecialchars($date . '.html') . '</p>';
+                    echo '<p>Please check if the report exists or try another date.</p>';
+                    echo '</div>';
+                }
+                break;
+
             // 其他 API...
         }
     } catch (Exception $e) {
