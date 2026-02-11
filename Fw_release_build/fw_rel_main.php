@@ -29,12 +29,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
 <body>
     <?php include '../login_out/navbar.php'; ?>
     
-    <div class="container-fluid py-5">
-        <h4 class="text mb-4" style="display: flex; gap: 20px; align-items: center;">
-            <span>FW release build</span>
-            <span><i class="bi bi-check-circle-fill"></i> x12 x13 x14 codebase</span>
-            <span><i class="bi bi-x-circle-fill"></i> hw1</span>
-        </h4>
+    <div class="container-fluid py-3">
         <!-- 頁內導航 
         <nav class="nav justify-content-center mb-4">
             <a class="nav-link" href="#build-form">Build Form</a>
@@ -45,7 +40,15 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
             <div class="col-12">
                 <div id="build-form" class="card h-100">
                     <div class="card-body">
-                        <h2 class="card-title">Build Form</h2>
+                        <h2 class="card-title">
+                            Build Form 
+                            <span class="ms-3 fs-6">
+                                <i class="bi bi-check-circle-fill text-success"></i> x12 x13 x14 codebase
+                            </span>
+                            <span class="ms-3 fs-6">
+                                <i class="bi bi-x-circle-fill text-danger"></i> hw1
+                            </span>
+                        </h2>
                         <form>
                             <div class="mb-4">
                                 <div class="form-info-display">
