@@ -7,6 +7,13 @@ require_once '../common.php';
 common::check_login();
 $username = $_SESSION['username'];
 
+// 檢查用戶權限 - 只有 high 等級才能訪問
+$user = users_repository::check_user_in_db($username);
+if ($user['u_lev'] != 'high') {
+    header('Location: /web1/index.php');
+    exit;
+}
+
 // 取得統計資料
 $conn = database_connection::get_connection();
 
@@ -40,24 +47,10 @@ $recent_events = $conn->query("SELECT * FROM users_action ORDER BY timestamp DES
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../../login_out/navbar.css" rel="stylesheet">
+    <link href="../common.css" rel="stylesheet">
     <!-- DataTables CSS -->
     <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #3b82f6;
-            --success-color: #22c55e;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --gray-100: #f3f4f6;
-            --gray-700: #374151;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            --radius: 12px;
-        }
-        
-        body {
-            background-color: var(--gray-100);
-            font-size: 16px;
-        }
         
         .page-header {
             background: white;
@@ -149,7 +142,7 @@ $recent_events = $conn->query("SELECT * FROM users_action ORDER BY timestamp DES
 </head>
 <body>
 
-<?php include '../login_out/navbar.php'; ?>
+<?php include '../../login_out/navbar.php'; ?>
 
 <div class="container-fluid px-3 py-3">
     <!-- 頁面標題 -->

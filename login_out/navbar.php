@@ -1,3 +1,10 @@
+<?php
+// 取得用戶等級
+require_once __DIR__ . '/../DB/db_operations_all.php';
+$conn = database_connection::get_connection();
+$user = users_repository::check_user_in_db($_SESSION['username']);
+$user_level = $user['u_lev'] ?? 'low';
+?>
 <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -25,6 +32,13 @@
                             <i class="bi bi-calendar3 me-1"></i>Daily Build
                         </a>
                     </li>
+                    <?php if ($user_level == 'high'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web1/common/analytics/analytics_dashboard.php">
+                            <i class="bi bi-graph-up me-1"></i>Analytics
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
