@@ -30,6 +30,7 @@ $mp510_groups = $boards_info['mp510_groups'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../login_out/navbar.css" rel="stylesheet">
     <link href="dev_ctrl_main.css" rel="stylesheet">
+    <link href="boards_mgmt/boards_mgmt.css" rel="stylesheet">
 </head>
 <body>
 
@@ -134,14 +135,17 @@ $mp510_groups = $boards_info['mp510_groups'];
             <div class="mp510-header">
                 <div class="mp510-title">
                     <i class="bi bi-pc-display-horizontal"></i>
-                    <span class="mp510-ip"><?php echo htmlspecialchars($boards[0]['mp_ip']); ?></span>
+                    MP510 - <span class="mp510-ip"><?php echo htmlspecialchars($boards[0]['mp_ip']); ?></span>
                     <span class="mp510-location"><?php echo htmlspecialchars($boards[0]['Locate']); ?></span>
                 </div>
                 <div class="mp510-actions">
-                    <a href="boards_mgmt/insert.php?mp_num=<?php echo $mp_num; ?>&mp_ip=<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>&Locate=<?php echo urlencode($boards[0]['Locate']); ?>"
-                       class="mp510-btn" title="新增主板">
+                    <button class="mp510-btn action-icon insert-board-btn"
+                            title="新增主板"
+                            data-mp_num="<?php echo $mp_num; ?>"
+                            data-mp_ip="<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>"
+                            data-locate="<?php echo htmlspecialchars($boards[0]['Locate']); ?>">
                         <i class="bi bi-plus-lg"></i>
-                    </a>
+                    </button>
                     <button class="mp510-btn resetMP510ser2net-icon"
                             data-mp_ip="<?php echo htmlspecialchars($boards[0]['mp_ip']); ?>"
                             title="Reset ser2net">
@@ -200,14 +204,22 @@ $mp510_groups = $boards_info['mp510_groups'];
                             </button>
                         </form>
                         <!-- Modify -->
-                        <a href="boards_mgmt/modify.php?id=<?php echo htmlspecialchars($board['id']); ?>" class="icon-btn" title="Modify info">
+                        <button class="icon-btn modify-board-btn"
+                                title="修改"
+                                data-board_id="<?php echo htmlspecialchars($board['id']); ?>"
+                                data-ip="<?php echo htmlspecialchars($board['IP']); ?>"
+                                data-name="<?php echo htmlspecialchars($board['B_Name']); ?>">
                             <i class="bi bi-pencil"></i>
-                        </a>
+                        </button>
                         <!-- Delete -->
                         <?php if (isset($user['u_lev']) && $user['u_lev'] == 'high'): ?>
-                        <a href="boards_mgmt/delete.php?id=<?php echo htmlspecialchars($board['id']); ?>" class="icon-btn delete-btn" title="Delete">
+                        <button class="icon-btn delete-board-btn"
+                                title="刪除"
+                                data-board_id="<?php echo htmlspecialchars($board['id']); ?>"
+                                data-ip="<?php echo htmlspecialchars($board['IP']); ?>"
+                                data-name="<?php echo htmlspecialchars($board['B_Name']); ?>">
                             <i class="bi bi-trash"></i>
-                        </a>
+                        </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -344,9 +356,42 @@ $mp510_groups = $boards_info['mp510_groups'];
     <i class="bi bi-chevron-up"></i>
 </button>
 
+<!-- Board Management Modal -->
+<div class="modal fade" id="boardManagementModal" tabindex="-1" aria-labelledby="boardManagementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Custom Form Header -->
+            <div class="form-header">
+                <i class="bi bi-plus-circle" id="boardManagementModalIcon"></i>
+                <div class="form-header-text">
+                    <h1 id="boardManagementModalLabel">板子管理</h1>
+                    <p id="boardManagementModalSubtitle"></p>
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="boardManagementModalBody">
+                <div class="text-center" style="padding: 32px;">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>window.LOG_USER_ACC = '<?php echo htmlspecialchars($_SESSION['username']); ?>';</script>
+<!-- Analytics SDK -->
+<script src="../common/analytics/analytics.js"></script>
+<script>
+// 初始化 Analytics
+Analytics.init('../common/analytics/analytics.php', {
+    debug: false,
+    autoTrackPageView: false  // 關閉自動追蹤頁面瀏覽
+});
+</script>
 <script src="dev_ctrl_main.js"></script>
 <script src="powerbox/dev_ctrl_power_fetch.js"></script>
 <script>

@@ -1,31 +1,57 @@
 // dev_ctrl_main.js
 
-// ===== Log User Action =====
+// ===== Analytics Helper Functions =====
+// 向後相容的包裝函數
 function log_user_actions_collect(action, element, element_type) {
-    const u_acc = window.LOG_USER_ACC;
-    if (!u_acc) return;
+    Analytics.track_button_click(element, action);
+}
 
-    const element_id = element.attr('id')
-        || element.data('id')
-        || element.parent().attr('id')
-        || element.parent().attr('href')
-        || 'undefined';
+// 取得板子識別資訊（IP 或名稱）
+function get_board_identifier(element) {
+    // 優先順序：IP > Board Name > MP IP
+    let ip = element.data('ip') || element.closest('.board-card').find('[data-ip]').first().data('ip');
+    let name = element.data('name') || element.closest('.board-card').find('[data-name]').first().data('name');
+    let mp_ip = element.data('mp_ip');
 
-    $.post('dev_ctrl_main_functions.php?action=log_user_action', {
-        u_acc: u_acc,
-        action_name: action,
-        element_id: element_id,
-        element_type: element_type,
-        page_url: window.location.href
-    });
+    return ip || name || mp_ip || 'unknown';
 }
 
 // ===== Event Handlers =====
 $(document).ready(function() {
 
-    // 捕捉insert事件
-    $('.mp510-actions .action-icon[title="新增主板"]').click(function() {
-        log_user_actions_collect('click_insert', $(this), 'button');
+    // 捕捉 insert 按鈕事件 - 開啟 Modal
+    $(document).on('click', '.insert-board-btn', function() {
+        const btn = $(this);
+        const mp_num = btn.data('mp_num');
+        const mp_ip = btn.data('mp_ip');
+        const locate = btn.data('locate');
+
+        Analytics.track_button_click(btn, `open insert form - MP510: ${mp_ip}`);
+
+        // 開啟 Modal
+        const modal = new bootstrap.Modal(document.getElementById('boardManagementModal'));
+
+        // 更新標題樣式
+        $('#boardManagementModalIcon').removeClass('bi-pencil-square').addClass('bi-plus-circle');
+        $('#boardManagementModalLabel').text('New Board');
+        $('#boardManagementModalSubtitle').text(`Add new board to ${mp_ip}`);
+        $('#boardManagementModalBody').html('<div class="text-center" style="padding: 32px;"><div class="spinner-border" role="status"></div></div>');
+        modal.show();
+
+        // 載入表單
+        $.get('boards_mgmt/board_mgmt_api.php', {
+            action: 'get_form',
+            type: 'insert',
+            mp_num: mp_num,
+            mp_ip: mp_ip,
+            locate: locate
+        }, function(response) {
+            if (response.success) {
+                $('#boardManagementModalBody').html(response.html);
+            } else {
+                $('#boardManagementModalBody').html('<div class="alert alert-danger">' + response.message + '</div>');
+            }
+        }, 'json');
     });
 
     // 捕捉AC button click事件 (PowerBox 控制)
@@ -33,19 +59,18 @@ $(document).ready(function() {
         const element     = $(this);
         const element_id  = element.attr('id') || 'undefined';
 
-        log_user_actions_collect('click_power_control', element, 'button');
+        Analytics.track_button_click(element, `power control - ${element_id}`);
 
         const confirmed   = confirm(`你確定要執行 ${element_id} 嗎？`);
-        if (confirmed) {
-            log_user_actions_collect('click_power_control', element, 'confirm');
 
+        Analytics.track_confirm('power_control', confirmed, element_id);
+
+        if (confirmed) {
             const pw_ip   = element.data('pw_ip');
             const target  = element.data('target');
             const control = element.data('control');
             const url = `http://${pw_ip}/cgi-bin/control2.cgi?user=one&passwd=1234&target=${target}&control=${control}`;
             $.get(url);
-        } else {
-            log_user_actions_collect('click_power_control', element, 'cancel');
         }
     });
 
@@ -53,28 +78,141 @@ $(document).ready(function() {
     $('.telnet-console').click(function() {
         const element = $(this);
         if (!element.hasClass('disabled')) {
-            log_user_actions_collect('click_bmc_console', element, 'button');
+            const board_ip = get_board_identifier(element);
+            Analytics.track_button_click(element, `bmc console - ${board_ip}`);
         }
     });
 
-    // 捕捉delete事件
-    $('.delete-btn').click(function(event) {
+    // 捕捉 delete 按鈕事件 - 使用 AJAX
+    $(document).on('click', '.delete-board-btn', function(event) {
         event.preventDefault();
-        const element = $(this);
-        const confirmed = confirm('確定要刪除這個主板嗎？');
-        log_user_actions_collect('click_delete', element, 'button');
+        const btn = $(this);
+        const board_id = btn.data('board_id');
+        const board_ip = btn.data('ip');
+        const board_name = btn.data('name');
+        const board_identifier = board_ip || board_name;
+
+        Analytics.track_button_click(btn, `delete board - ${board_identifier}`);
+
+        const confirmed = confirm(`確定要刪除這個主板嗎？\n${board_name} - ${board_ip}`);
+
+        Analytics.track_confirm('delete_board', confirmed, board_identifier);
 
         if (confirmed) {
-            log_user_actions_collect('click_delete', element, 'confirm');
-            window.location.href = element.attr('href');
-        } else {
-            log_user_actions_collect('click_delete', element, 'cancel');
+            // 禁用按鈕
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+            // 發送 AJAX 請求
+            $.post('boards_mgmt/board_mgmt_api.php', {
+                action: 'delete_board',
+                id: board_id
+            }, function(response) {
+                if (response.success) {
+                    Analytics.track_event('form_submit', 'success', `Delete Board - ${board_identifier}`);
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    Analytics.track_event('form_submit', 'failed', `Delete Board - ${board_identifier}`);
+                    alert(response.message);
+                    btn.prop('disabled', false).html('<i class="bi bi-trash"></i>');
+                }
+            }, 'json').fail(function() {
+                Analytics.track_event('form_submit', 'error', `Delete Board - ${board_identifier}`);
+                alert('發生錯誤，請稍後再試');
+                btn.prop('disabled', false).html('<i class="bi bi-trash"></i>');
+            });
         }
     });
 
-    // 捕捉modify事件
-    $('.icon-btn[title="修改"]').click(function() {
-        log_user_actions_collect('click_modify', $(this), 'button');
+    // 捕捉 modify 按鈕事件 - 開啟 Modal
+    $(document).on('click', '.modify-board-btn', function() {
+        const btn = $(this);
+        const board_id = btn.data('board_id');
+        const board_ip = btn.data('ip');
+        const board_name = btn.data('name');
+
+        Analytics.track_button_click(btn, `open modify form - ${board_ip || board_name}`);
+
+        // 開啟 Modal
+        const modal = new bootstrap.Modal(document.getElementById('boardManagementModal'));
+
+        // 更新標題樣式
+        $('#boardManagementModalIcon').removeClass('bi-plus-circle').addClass('bi-pencil-square');
+        $('#boardManagementModalLabel').text('Edit Board');
+        $('#boardManagementModalSubtitle').text(`${board_name} - ${board_ip}`);
+        $('#boardManagementModalBody').html('<div class="text-center" style="padding: 32px;"><div class="spinner-border" role="status"></div></div>');
+        modal.show();
+
+        // 載入表單
+        $.get('boards_mgmt/board_mgmt_api.php', {
+            action: 'get_form',
+            type: 'modify',
+            id: board_id
+        }, function(response) {
+            if (response.success) {
+                $('#boardManagementModalBody').html(response.html);
+            } else {
+                $('#boardManagementModalBody').html('<div class="alert alert-danger">' + response.message + '</div>');
+            }
+        }, 'json');
+    });
+
+    // 處理新增板子表單提交
+    $(document).on('submit', '#boardInsertForm', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        const formData = form.serialize();
+
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> 新增中...');
+
+        Analytics.track_form_submit(form, 'Insert Board Form');
+
+        $.post('boards_mgmt/board_mgmt_api.php', formData, function(response) {
+            if (response.success) {
+                Analytics.track_event('form_submit', 'success', 'Insert Board Form');
+                alert(response.message);
+                $('#boardManagementModal').modal('hide');
+                location.reload();
+            } else {
+                Analytics.track_event('form_submit', 'failed', 'Insert Board Form');
+                alert(response.message);
+                submitBtn.prop('disabled', false).html('<i class="bi bi-check-lg"></i> 新增板子');
+            }
+        }, 'json').fail(function() {
+            Analytics.track_event('form_submit', 'error', 'Insert Board Form');
+            alert('發生錯誤，請稍後再試');
+            submitBtn.prop('disabled', false).html('<i class="bi bi-check-lg"></i> 新增板子');
+        });
+    });
+
+    // 處理修改板子表單提交
+    $(document).on('submit', '#boardModifyForm', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        const formData = form.serialize();
+
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> 儲存中...');
+
+        Analytics.track_form_submit(form, 'Modify Board Form');
+
+        $.post('boards_mgmt/board_mgmt_api.php', formData, function(response) {
+            if (response.success) {
+                Analytics.track_event('form_submit', 'success', 'Modify Board Form');
+                alert(response.message);
+                $('#boardManagementModal').modal('hide');
+                location.reload();
+            } else {
+                Analytics.track_event('form_submit', 'failed', 'Modify Board Form');
+                alert(response.message);
+                submitBtn.prop('disabled', false).html('<i class="bi bi-check-lg"></i> 儲存變更');
+            }
+        }, 'json').fail(function() {
+            Analytics.track_event('form_submit', 'error', 'Modify Board Form');
+            alert('發生錯誤，請稍後再試');
+            submitBtn.prop('disabled', false).html('<i class="bi bi-check-lg"></i> 儲存變更');
+        });
     });
 
     // 捕捉 Reset ser2net 事件
@@ -82,11 +220,13 @@ $(document).ready(function() {
         const element = $(this);
         const mp_ip = element.data('mp_ip');
 
-        log_user_actions_collect('click_reset_ser2net', element, 'button');
+        Analytics.track_button_click(element, `reset ser2net - MP510: ${mp_ip}`);
 
         const confirmed = confirm(`確定要重啟 MP510 (${mp_ip}) ser2net service？`);
+
+        Analytics.track_confirm('reset_ser2net', confirmed, `MP510: ${mp_ip}`);
+
         if (confirmed) {
-            log_user_actions_collect('click_reset_ser2net', element, 'confirm');
 
             // 顯示載入中
             element.prop('disabled', true);
@@ -113,8 +253,6 @@ $(document).ready(function() {
                     element.html('<i class="bi bi-arrow-clockwise"></i>');
                 }
             });
-        } else {
-            log_user_actions_collect('click_reset_ser2net', element, 'cancel');
         }
     });
 });
@@ -155,6 +293,9 @@ $(document).ready(function() {
         let current_pw = $(this).data('current_pw');
         let account    = "ADMIN";
         let password   = "ADMIN";
+
+        Analytics.track_button_click($(this), `reload status - ${ip}`);
+
         function sendRequest(customPassword = null) {
             let data = {
                 ip: ip,
@@ -205,7 +346,9 @@ $(document).ready(function() {
         let current_pw = form.find('input[name="current_pw"]').val();
         let account    = "ADMIN";
         let password   = "ADMIN";
-        
+
+        Analytics.track_button_click($(this), `FW Recovery - ${FW_type} - ${ip}`);
+
         // 首先獲取最新的韌體名稱
         $.ajax({
             type: 'POST',
@@ -236,6 +379,8 @@ $(document).ready(function() {
                 ].join('\n');
 
                 let confirmation = confirm(checkMessage);
+
+                Analytics.track_confirm('fw_recovery', confirmation, `${FW_type} - ${ip}`);
 
                 if (confirmation) {
                     function sendUpdateRequest(customPassword = null) {
@@ -290,7 +435,10 @@ $(document).ready(function() {
     $('.copy-button').click(function() {
         let password = $(this).data('unique_pw');
         let button = $(this);
-        
+        const board_ip = get_board_identifier(button);
+
+        Analytics.track_button_click(button, `copy password - ${board_ip}`);
+
         // HTTPS 使用現代 API (HTTPS)
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(password).then(function() {
@@ -328,6 +476,8 @@ $(document).ready(function() {
         let bmcLink = `http://${ip}`;
         let consoleLink = `http://${window.location.hostname}/web1/Device_control/websocket-terminal/bmc-console.html?host=${mp_ip}&port=${mp_com}&IP=${ip}`;
 
+        Analytics.track_button_click(btn, `copy all board info - ${ip}`);
+
         let info = [
             `Board Name: ${btn.data('name')}`,
             `BMC IP: ${ip}`,
@@ -360,6 +510,11 @@ $(document).ready(function() {
     $('#rawForm').on('submit', function(event) {
         event.preventDefault();
 
+        const ip = $('#board_number').val();
+        const command = $('#raw_value').val();
+
+        Analytics.track_form_submit($(this), `raw command - ${ip} - ${command}`);
+
         $.ajax({
             url: 'dev_ctrl_main_functions.php?action=execute_raw_command',
             type: 'POST',
@@ -378,7 +533,12 @@ $(document).ready(function() {
     $(document).on('submit', '.enableForm', function(event) {
         //動態生成表格用 class=enableForm去指定比較好，用id=會bug
         event.preventDefault(); // Prevent default form submission
-        if (confirm('確定要enable console嗎？')) {
+
+        const ip = $(this).find('input[name="ip"]').val();
+        const confirmed = confirm('確定要enable console嗎？');
+        Analytics.track_confirm('enable_console', confirmed, ip);
+
+        if (confirmed) {
             $.ajax({
                 url: 'dev_ctrl_main_functions.php?action=enable_console',
                 type: 'POST',
@@ -409,7 +569,11 @@ $(document).ready(function() {
             alert('Please choose an option.');
             return;//js語法不執行後面
         }
-        if (confirm('Are you sure you want to perform this action?')) {
+
+        const confirmed = confirm('Are you sure you want to perform this action?');
+        Analytics.track_confirm('board_action', confirmed, action);
+
+        if (confirmed) {
             $.ajax({
                 url: 'dev_ctrl_main_functions.php?action=perform_action',
                 type: 'POST',
