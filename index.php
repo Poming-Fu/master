@@ -81,6 +81,7 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="login_out/navbar.css" rel="stylesheet">
+    <link href="common/common.css" rel="stylesheet">
     <link href="index.css" rel="stylesheet">
     <link href="common/lottery/lottery.css?v=<?= filemtime('common/lottery/lottery.css') ?>" rel="stylesheet">
 </head>

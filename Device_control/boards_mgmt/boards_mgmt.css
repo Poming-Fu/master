@@ -1,25 +1,6 @@
-/* ===== 表單共用樣式 ===== */
-/* 所有樣式都限定在 Modal 或表單容器內，避免影響主頁面 */
-
-#boardManagementModal {
-    --primary-color: #3b82f6;
-    --success-color: #22c55e;
-    --danger-color: #ef4444;
-    --warning-color: #f59e0b;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --radius: 12px;
-    --radius-sm: 8px;
-}
+/* ===== Board Management Modal 專屬樣式 ===== */
+/* 所有樣式都限定在 Modal 內，避免影響主頁面 */
+/* CSS 變數已移至 common/common.css */
 
 /* ===== 表單容器 ===== */
 #boardManagementModal .form-container {
@@ -231,34 +212,6 @@
     border: none;
     border-radius: 12px;
     overflow: hidden;
-}
-
-#boardManagementModal .form-header {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-    border-radius: 12px 12px 0 0;
-}
-
-#boardManagementModal .form-header i {
-    font-size: 28px;
-    color: #3b82f6;
-}
-
-#boardManagementModal .form-header-text h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: white;
-}
-
-#boardManagementModal .form-header-text p {
-    margin: 4px 0 0 0;
-    font-size: 13px;
-    color: #94a3b8;
 }
 
 #boardManagementModal .modal-body {

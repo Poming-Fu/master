@@ -34,6 +34,8 @@ $branch_names = daily_repository::get_branch_names();
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- Navbar CSS -->
     <link href="../login_out/navbar.css" rel="stylesheet">
+    <!-- Common CSS -->
+    <link href="../common/common.css" rel="stylesheet">
     <!-- Page CSS -->
     <link href="daily_main.css" rel="stylesheet">
 </head>

@@ -29,6 +29,7 @@ $mp510_groups = $boards_info['mp510_groups'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../login_out/navbar.css" rel="stylesheet">
+    <link href="../common/common.css" rel="stylesheet">
     <link href="dev_ctrl_main.css" rel="stylesheet">
     <link href="boards_mgmt/boards_mgmt.css" rel="stylesheet">
 </head>
