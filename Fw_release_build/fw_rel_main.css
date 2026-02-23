@@ -1,12 +1,13 @@
 /* ===== Fw Release Build 專屬樣式 ===== */
 /* 共用樣式已移至 common/common.css */
+/* 所有選擇器限定在 #fwReleasePage 內，避免污染 navbar 等全域元件 */
 
 /* ===== 表單樣式 - 專屬 ===== */
-.form-label {
+#fwReleasePage .form-label {
     margin-bottom: 12px; /* 覆蓋 common.css 的 8px */
 }
 
-.form-info-display {
+#fwReleasePage .form-info-display {
     background: var(--gray-50);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-sm);
@@ -18,11 +19,11 @@
     font-size: 14px;
 }
 
-.form-info-display strong {
+#fwReleasePage .form-info-display strong {
     color: var(--gray-800);
 }
 
-.form-control {
+#fwReleasePage .form-control {
     border-radius: var(--radius-sm);
     border: 1px solid var(--gray-200);
     padding: 10px 14px;
@@ -30,13 +31,13 @@
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-control:focus {
+#fwReleasePage .form-control:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     outline: none;
 }
 
-.input-group-text {
+#fwReleasePage .input-group-text {
     background: var(--gray-50);
     border-color: var(--gray-200);
     color: var(--gray-600);
@@ -44,7 +45,7 @@
 }
 
 /* ===== 按鈕樣式 ===== */
-.btn {
+#fwReleasePage .btn {
     border-radius: var(--radius-sm);
     padding: 10px 20px;
     font-size: 14px;
@@ -52,39 +53,39 @@
     transition: all 0.2s;
 }
 
-.btn-lg {
+#fwReleasePage .btn-lg {
     padding: 14px 28px;
     font-size: 16px;
 }
 
-.btn-primary {
+#fwReleasePage .btn-primary {
     background: var(--primary-color);
     border-color: var(--primary-color);
 }
 
-.btn-primary:hover {
+#fwReleasePage .btn-primary:hover {
     background: #2563eb;
     border-color: #2563eb;
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
 
-.btn-primary:active {
+#fwReleasePage .btn-primary:active {
     transform: translateY(0);
 }
 
 /* ===== 表格樣式 ===== */
-.table-responsive {
+#fwReleasePage .table-responsive {
     border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
-.table {
+#fwReleasePage .table {
     margin-bottom: 0;
     font-size: 14px;
 }
 
-.table thead th {
+#fwReleasePage .table thead th {
     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     color: white;
     font-weight: 600;
@@ -97,51 +98,51 @@
 }
 
 /* DataTables 排序箭頭 */
-table.dataTable thead th.sorting,
-table.dataTable thead th.sorting_asc,
-table.dataTable thead th.sorting_desc {
+#fwReleasePage table.dataTable thead th.sorting,
+#fwReleasePage table.dataTable thead th.sorting_asc,
+#fwReleasePage table.dataTable thead th.sorting_desc {
     padding-right: 35px;
 }
 
-table.dataTable thead th.sorting:before,
-table.dataTable thead th.sorting:after,
-table.dataTable thead th.sorting_asc:before,
-table.dataTable thead th.sorting_asc:after,
-table.dataTable thead th.sorting_desc:before,
-table.dataTable thead th.sorting_desc:after {
+#fwReleasePage table.dataTable thead th.sorting:before,
+#fwReleasePage table.dataTable thead th.sorting:after,
+#fwReleasePage table.dataTable thead th.sorting_asc:before,
+#fwReleasePage table.dataTable thead th.sorting_asc:after,
+#fwReleasePage table.dataTable thead th.sorting_desc:before,
+#fwReleasePage table.dataTable thead th.sorting_desc:after {
     right: 10px;
     font-size: 14px;
     opacity: 0.8;
 }
 
-table.dataTable thead th.sorting:before,
-table.dataTable thead th.sorting_asc:before,
-table.dataTable thead th.sorting_desc:before {
+#fwReleasePage table.dataTable thead th.sorting:before,
+#fwReleasePage table.dataTable thead th.sorting_asc:before,
+#fwReleasePage table.dataTable thead th.sorting_desc:before {
     bottom: 55%;
 }
 
-table.dataTable thead th.sorting:after,
-table.dataTable thead th.sorting_asc:after,
-table.dataTable thead th.sorting_desc:after {
+#fwReleasePage table.dataTable thead th.sorting:after,
+#fwReleasePage table.dataTable thead th.sorting_asc:after,
+#fwReleasePage table.dataTable thead th.sorting_desc:after {
     top: 55%;
 }
 
-.table tbody td {
+#fwReleasePage .table tbody td {
     padding: 12px 16px;
     vertical-align: middle;
     color: var(--gray-700);
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
+#fwReleasePage .table-striped tbody tr:nth-of-type(odd) {
     background-color: var(--gray-50);
 }
 
-.table-hover tbody tr:hover {
+#fwReleasePage .table-hover tbody tr:hover {
     background-color: rgba(59, 130, 246, 0.05);
 }
 
 /* 狀態標籤 */
-.status-badge {
+#fwReleasePage .status-badge {
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 12px;
@@ -149,44 +150,44 @@ table.dataTable thead th.sorting_desc:after {
     display: inline-block;
 }
 
-.status-badge.completed {
+#fwReleasePage .status-badge.completed {
     background: rgba(34, 197, 94, 0.1);
     color: var(--success-color);
 }
 
-.status-badge.failed {
+#fwReleasePage .status-badge.failed {
     background: rgba(239, 68, 68, 0.1);
     color: var(--danger-color);
 }
 
-.status-badge.pending {
+#fwReleasePage .status-badge.pending {
     background: rgba(245, 158, 11, 0.1);
     color: var(--warning-color);
 }
 
-.status-badge.running {
+#fwReleasePage .status-badge.running {
     background: rgba(6, 182, 212, 0.1);
     color: var(--info-color);
 }
 
 /* ===== DataTables 自訂樣式 ===== */
-.dataTables_wrapper {
+#fwReleasePage .dataTables_wrapper {
     padding: 0;
 }
 
-.dataTables_wrapper .dataTables_length,
-.dataTables_wrapper .dataTables_filter {
+#fwReleasePage .dataTables_wrapper .dataTables_length,
+#fwReleasePage .dataTables_wrapper .dataTables_filter {
     margin-bottom: 16px;
 }
 
-.dataTables_wrapper .dataTables_length label,
-.dataTables_wrapper .dataTables_filter label {
+#fwReleasePage .dataTables_wrapper .dataTables_length label,
+#fwReleasePage .dataTables_wrapper .dataTables_filter label {
     font-size: 14px;
     color: var(--gray-700);
     font-weight: 500;
 }
 
-.dataTables_wrapper .dataTables_length select {
+#fwReleasePage .dataTables_wrapper .dataTables_length select {
     border-radius: var(--radius-sm);
     border: 1px solid var(--gray-200);
     padding: 8px 32px 8px 12px;
@@ -203,7 +204,7 @@ table.dataTable thead th.sorting_desc:after {
     cursor: pointer;
 }
 
-.dataTables_wrapper .dataTables_filter input {
+#fwReleasePage .dataTables_wrapper .dataTables_filter input {
     border-radius: var(--radius-sm);
     border: 1px solid var(--gray-200);
     padding: 8px 12px;
@@ -212,23 +213,23 @@ table.dataTable thead th.sorting_desc:after {
     min-width: 200px;
 }
 
-.dataTables_wrapper .dataTables_filter input:focus {
+#fwReleasePage .dataTables_wrapper .dataTables_filter input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     outline: none;
 }
 
-.dataTables_wrapper .dataTables_info {
+#fwReleasePage .dataTables_wrapper .dataTables_info {
     font-size: 14px;
     color: var(--gray-600);
     padding-top: 16px;
 }
 
-.dataTables_wrapper .dataTables_paginate {
+#fwReleasePage .dataTables_wrapper .dataTables_paginate {
     padding-top: 16px;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button {
+#fwReleasePage .dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 6px 12px;
     margin: 0 2px;
     border-radius: var(--radius-sm);
@@ -240,31 +241,31 @@ table.dataTable thead th.sorting_desc:after {
     transition: all 0.2s;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+#fwReleasePage .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
     background: var(--gray-50);
     border-color: var(--primary-color);
     color: var(--primary-color);
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+#fwReleasePage .dataTables_wrapper .dataTables_paginate .paginate_button.current {
     background: var(--primary-color);
     border-color: var(--primary-color);
     color: white;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+#fwReleasePage .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* ===== Build Status List ===== */
-.build-status-list {
+#fwReleasePage .build-status-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.build-status-item {
+#fwReleasePage .build-status-item {
     background: var(--gray-50);
     border-radius: var(--radius-sm);
     padding: 16px;
@@ -275,66 +276,66 @@ table.dataTable thead th.sorting_desc:after {
     transition: all 0.2s;
 }
 
-.build-status-item:hover {
+#fwReleasePage .build-status-item:hover {
     background: white;
     box-shadow: var(--shadow);
 }
 
-.build-status-item.pending {
+#fwReleasePage .build-status-item.pending {
     border-left-color: var(--warning-color);
 }
 
-.build-status-item.running {
+#fwReleasePage .build-status-item.running {
     border-left-color: var(--info-color);
 }
 
-.build-status-item.completed {
+#fwReleasePage .build-status-item.completed {
     border-left-color: var(--success-color);
 }
 
-.build-status-item.failed {
+#fwReleasePage .build-status-item.failed {
     border-left-color: var(--danger-color);
 }
 
-.build-status-info {
+#fwReleasePage .build-status-info {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.build-status-info .build-user {
+#fwReleasePage .build-status-info .build-user {
     font-weight: 600;
     color: var(--gray-800);
 }
 
-.build-status-info .build-details {
+#fwReleasePage .build-status-info .build-details {
     font-size: 13px;
     color: var(--gray-600);
 }
 
-.build-status-info .build-time {
+#fwReleasePage .build-status-info .build-time {
     font-size: 12px;
     color: var(--gray-500);
 }
 
 /* ===== 響應式設計 ===== */
 @media (max-width: 768px) {
-    .status-bar {
+    #fwReleasePage .status-bar {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .card-body {
+    #fwReleasePage .card-body {
         padding: 16px;
     }
 
-    .table {
+    #fwReleasePage .table {
         font-size: 12px;
     }
 
-    .table thead th,
-    .table tbody td {
+    #fwReleasePage .table thead th,
+    #fwReleasePage .table tbody td {
         padding: 8px 10px;
     }
 }
@@ -345,7 +346,7 @@ table.dataTable thead th.sorting_desc:after {
     100% { transform: rotate(360deg); }
 }
 
-.spinner {
+#fwReleasePage .spinner {
     animation: spin 1s linear infinite;
     display: inline-block;
 }

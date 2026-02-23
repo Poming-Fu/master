@@ -30,7 +30,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
 <body>
     <?php include '../login_out/navbar.php'; ?>
     
-    <div class="container-fluid py-3">
+    <div id="fwReleasePage" class="container-fluid py-3">
         <!-- 頁內導航 
         <nav class="nav justify-content-center mb-4">
             <a class="nav-link" href="#build-form">Build Form</a>
