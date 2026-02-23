@@ -52,24 +52,32 @@ if (($handle = fopen($rf_csv_path, 'r')) !== false) {
 
 // ============================================================
 // Team Members - 從 common/member.csv 讀取
-// CSV 格式: id,name,email,highlight (highlight: 1=標註, 0=正常)
+// CSV 格式: id,name,email,area,role (role: B=BOSS, A=ADMIN, M=Manager, N=Normal)
 // ============================================================
 $team_members = [];
+$area_counts = [];
 $csv_path = __DIR__ . '/common/member.csv';
 if (($handle = fopen($csv_path, 'r')) !== false) {
-    $header = fgetcsv($handle); // 跳過標題列
     while (($row = fgetcsv($handle)) !== false) {
-        if (count($row) >= 4) {
+        // 跳過註解和標題列
+        if (empty($row[0]) || $row[0][0] === '#' || $row[0] === 'id') continue;
+        if (count($row) >= 5) {
+            $area = $row[3] ?: 'Unknown';
             $team_members[] = [
                 'id'        => $row[0],
                 'name'      => $row[1],
                 'email'     => $row[2],
-                'highlight' => (bool)$row[3],
+                'area'      => $area,
+                'role'      => strtoupper(trim($row[4])),
             ];
+            // 統計各地區人數
+            $area_counts[$area] = ($area_counts[$area] ?? 0) + 1;
         }
     }
     fclose($handle);
 }
+// 地區顯示名稱對照
+$area_labels = ['Bade' => '八德', 'Zhonghe' => '中和'];
 ?>
 
 <!DOCTYPE html>
@@ -80,6 +88,7 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     <title>IPMI web service - Index</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="login_out/navbar.css" rel="stylesheet">
     <link href="common/common.css" rel="stylesheet">
     <link href="index.css" rel="stylesheet">
@@ -178,10 +187,10 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
             <div class="tab-pane fade" id="staff" role="tabpanel">
                 <div class="card mt-3">
                     <div class="card-body">
-                        <h5 class="mb-4 fw-semibold d-flex align-items-center">
+                        <h5 class="mb-4 fw-semibold d-flex align-items-center flex-wrap gap-2">
                             <i class="bi bi-people me-2"></i>Team Members
-                            <span class="badge bg-secondary ms-2"><?php echo count($team_members); ?> 人</span>
-                            <button type="button" class="btn btn-outline-primary btn-sm ms-3" title="老祖宗，保佑我"
+                            <span class="badge bg-secondary">共<?php echo count($team_members); ?>人 | <?php foreach ($area_labels as $key => $label) { echo $label . ' ' . ($area_counts[$key] ?? 0) . '人'; if ($key !== array_key_last($area_labels)) echo ' | '; } ?></span>
+                            <button type="button" class="btn btn-outline-primary btn-sm ms-2" title="老祖宗，保佑我"
                                 data-bs-toggle="modal" data-bs-target="#lotteryModal">
                                 <i class="bi bi-dice-5 me-1"></i>抽籤
                             </button>
@@ -190,10 +199,11 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
                             <table class="table table-bordered table-hover align-middle" id="staffTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 80px;">#</th>
+                                        <th style="width: 60px;" class="text-center">#</th>
                                         <th style="width: 100px;">工號</th>
                                         <th style="width: 150px;">姓名</th>
                                         <th>Email</th>
+                                        <th style="width: 100px;" class="text-center">地點</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,8 +213,12 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
                                         <td><?php echo htmlspecialchars($member['id']); ?></td>
                                         <td>
                                             <?php echo htmlspecialchars($member['name']); ?>
-                                            <?php if ($member['highlight']): ?>
-                                            <span class="manager-badge" title="Manager">M</span>
+                                            <?php if ($member['role'] === 'B'): ?>
+                                            <span class="role-badge boss" title="BOSS">B</span>
+                                            <?php elseif ($member['role'] === 'A'): ?>
+                                            <span class="role-badge admin" title="ADMIN">A</span>
+                                            <?php elseif ($member['role'] === 'M'): ?>
+                                            <span class="role-badge manager" title="Manager">M</span>
                                             <?php endif; ?>
                                         </td>
                                         <td>
@@ -212,6 +226,7 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
                                                 <i class="bi bi-envelope me-1"></i><?php echo htmlspecialchars($member['email']); ?>
                                             </a>
                                         </td>
+                                        <td class="text-center"><?php echo $area_labels[$member['area']] ?? htmlspecialchars($member['area']); ?></td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -287,10 +302,23 @@ if (($handle = fopen($csv_path, 'r')) !== false) {
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="common/lottery/lottery.js?v=<?= filemtime('common/lottery/lottery.js') ?>"></script>
     <script>
-        // 初始化樂透系統
         document.addEventListener('DOMContentLoaded', function() {
+            // DataTables 初始化
+            $('#staffTable').DataTable({
+                paging: false,
+                info: false,
+                language: {
+                    search: '搜尋：',
+                    zeroRecords: '找不到符合的資料'
+                }
+            });
+
+            // 初始化樂透系統
             const teamMembers = <?php echo json_encode($team_members); ?>;
             LotterySystem.init(teamMembers);
         });
