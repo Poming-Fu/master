@@ -11,10 +11,10 @@ if (isset($_GET['action'])) {
                 header('Content-Type: application/json');
                 
                 // 移除可能的破折號
-                $start_date = str_replace('-', '', $_POST['start_date'] ?? '');
-                $end_date = str_replace('-', '', $_POST['end_date'] ?? '');
-                $branch = $_POST['branch'] ?? '';
-                $status = $_POST['status'] ?? '';
+                $start_date = str_replace('-', '', $_GET['start_date'] ?? '');
+                $end_date = str_replace('-', '', $_GET['end_date'] ?? '');
+                $branch = $_GET['branch'] ?? '';
+                $status = $_GET['status'] ?? '';
         
                 // Debug 接收到的參數
                 error_log("Received parameters - Start: {$start_date}, End: {$end_date}, Branch: {$branch}, Status: {$status}");
@@ -118,16 +118,27 @@ if (isset($_GET['action'])) {
                 $report_dir = '/mnt/DB/dailybuild_all_target/mail_report';
                 $reports = [];
 
+                // 支援日期範圍和筆數限制
+                $start_date = $_GET['start_date'] ?? '';
+                $end_date = $_GET['end_date'] ?? '';
+                $limit = intval($_GET['limit'] ?? 0);
+
                 if (is_dir($report_dir)) {
                     $files = glob($report_dir . '/*.html');
                     foreach ($files as $file) {
                         $filename = basename($file);
                         // 解析檔名: YYYYMMDD.html (只接受日期格式的檔名)
                         if (preg_match('/^(\d{8})\.html$/', $filename, $matches)) {
+                            $file_date = $matches[1];
+
+                            // 日期範圍篩選
+                            if ($start_date && $file_date < $start_date) continue;
+                            if ($end_date && $file_date > $end_date) continue;
+
                             $reports[] = [
                                 'filename' => $filename,
-                                'date' => $matches[1],
-                                'display_date' => substr($matches[1], 0, 4) . '/' . substr($matches[1], 4, 2) . '/' . substr($matches[1], 6, 2),
+                                'date' => $file_date,
+                                'display_date' => substr($file_date, 0, 4) . '/' . substr($file_date, 4, 2) . '/' . substr($file_date, 6, 2),
                                 'size' => filesize($file),
                                 'mtime' => date('Y-m-d H:i:s', filemtime($file))
                             ];
@@ -137,6 +148,11 @@ if (isset($_GET['action'])) {
                     usort($reports, function($a, $b) {
                         return strcmp($b['date'], $a['date']);
                     });
+
+                    // 筆數限制
+                    if ($limit > 0) {
+                        $reports = array_slice($reports, 0, $limit);
+                    }
                 }
                 echo json_encode($reports);
                 break;

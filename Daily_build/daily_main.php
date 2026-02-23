@@ -148,16 +148,16 @@ $branch_names = daily_repository::get_branch_names();
                     <div class="filter-title">Select Report</div>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label for="reportDate" class="form-label">Date</label>
-                            <input type="text" class="form-control" id="reportDate" placeholder="Select date">
+                            <label for="reportDateRange" class="form-label">Date Range</label>
+                            <input type="text" class="form-control" id="reportDateRange" placeholder="Select date range">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-primary w-100" id="loadReport">Load Report</button>
+                            <button type="button" class="btn btn-primary w-100" id="loadReport"><i class="bi bi-search me-1"></i>Load Reports</button>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-outline-secondary w-100" id="listReports">List All Reports</button>
+                            <button type="button" class="btn btn-outline-secondary w-100" id="listReports"><i class="bi bi-clock-history me-1"></i>List Recent</button>
                         </div>
                     </div>
                 </div>
