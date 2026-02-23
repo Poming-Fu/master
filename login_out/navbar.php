@@ -36,6 +36,7 @@ $user_level = $user['u_lev'] ?? 'low';
                     <li class="nav-item">
                         <a class="nav-link" href="/web1/common/analytics/analytics_dashboard.php">
                             <i class="bi bi-graph-up me-1"></i>Analytics
+                            <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">beta!</span>
                         </a>
                     </li>
                     <?php endif; ?>

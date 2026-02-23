@@ -44,7 +44,7 @@ $branch_names = daily_repository::get_branch_names();
 
 <?php include '../login_out/navbar.php'; ?>
 
-    <div class="container-fluid px-3 py-3">
+    <div id="dailyBuildPage" class="container-fluid px-3 py-3">
         <!-- 頁面標題 -->
         <div class="page-header">
             <h2>Daily Build Results</h2>
@@ -57,11 +57,14 @@ $branch_names = daily_repository::get_branch_names();
                     <i class="bi bi-hammer"></i> Common Std Sign Image
                 </button>
             </li>
+            <?php if ($user_level == 'high'): ?>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report-content" type="button" role="tab" aria-controls="report-content" aria-selected="false">
                     <i class="bi bi-envelope-paper"></i> All Targets Mail Reports
+                    <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">beta!</span>
                 </button>
             </li>
+            <?php endif; ?>
         </ul>
 
         <!-- Tab 內容 -->
@@ -111,7 +114,8 @@ $branch_names = daily_repository::get_branch_names();
                 </div>
             </div>
 
-            <!-- Tab 2: Mail Reports (新增) -->
+            <!-- Tab 2: Mail Reports (僅 high 權限) -->
+            <?php if ($user_level == 'high'): ?>
             <div class="tab-pane fade" id="report-content" role="tabpanel" aria-labelledby="report-tab">
                 <!-- 報告篩選 -->
                 <div class="filter-card">
@@ -152,6 +156,7 @@ $branch_names = daily_repository::get_branch_names();
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 
