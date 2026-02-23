@@ -54,12 +54,12 @@ $branch_names = daily_repository::get_branch_names();
         <ul class="nav nav-tabs mb-3" id="mainTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="build-tab" data-bs-toggle="tab" data-bs-target="#build-content" type="button" role="tab" aria-controls="build-content" aria-selected="true">
-                    <i class="bi bi-hammer"></i> Build Results
+                    <i class="bi bi-hammer"></i> Common Std Sign Image
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report-content" type="button" role="tab" aria-controls="report-content" aria-selected="false">
-                    <i class="bi bi-envelope-paper"></i> Mail Reports
+                    <i class="bi bi-envelope-paper"></i> All Targets Mail Reports
                 </button>
             </li>
         </ul>
