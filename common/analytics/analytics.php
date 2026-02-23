@@ -136,17 +136,17 @@ class Analytics {
         $os = 'Unknown';
         $device_type = 'desktop';
         
-        // 偵測瀏覽器
+        // 偵測瀏覽器（順序重要：Edge/Edg 必須在 Chrome 之前，Chrome 必須在 Safari 之前）
         if (preg_match('/MSIE|Trident/i', $user_agent)) {
             $browser = 'Internet Explorer';
-        } elseif (preg_match('/Edge/i', $user_agent)) {
+        } elseif (preg_match('/Edg/i', $user_agent)) {
             $browser = 'Edge';
+        } elseif (preg_match('/Firefox/i', $user_agent)) {
+            $browser = 'Firefox';
         } elseif (preg_match('/Chrome/i', $user_agent)) {
             $browser = 'Chrome';
         } elseif (preg_match('/Safari/i', $user_agent)) {
             $browser = 'Safari';
-        } elseif (preg_match('/Firefox/i', $user_agent)) {
-            $browser = 'Firefox';
         }
 
         // 偵測作業系統

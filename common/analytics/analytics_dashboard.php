@@ -136,7 +136,12 @@ $recent_events = $conn->query("SELECT * FROM users_action ORDER BY timestamp DES
 
         /* DataTables 控制項位置調整 */
         .dataTables_length {
-            margin-left: 20px; /* 往右移動 */
+            margin-left: 20px;
+        }
+
+        .dataTables_length select {
+            padding: 6px 30px 6px 12px !important;
+            min-width: 70px;
         }
     </style>
 </head>
