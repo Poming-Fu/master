@@ -39,7 +39,7 @@ $(document).ready(function() {
         
         $.ajax({
             url: 'daily_main_functions.php?action=get_filter_data',
-            type: 'POST',
+            type: 'GET',
             data: {
                 branch: $('#branchFilter').val(),
                 status: $('#statusFilter').val(),
@@ -158,43 +158,40 @@ $(document).ready(function() {
 
     // ========== Mail Reports Tab ==========
 
-    // 初始化報告日期選擇器
-    $('#reportDate').daterangepicker({
-        singleDatePicker: true,
+    // 初始化報告日期範圍選擇器（預設最近 7 天）
+    $('#reportDateRange').daterangepicker({
         autoUpdateInput: true,
-        startDate: moment(),
+        startDate: moment().subtract(6, 'days'),
+        endDate: moment(),
         locale: {
-            format: 'YYYYMMDD'
+            format: 'YYYYMMDD',
+            separator: ' - ',
+            applyLabel: '確定',
+            cancelLabel: '清除',
+            customRangeLabel: '自定義範圍'
+        },
+        ranges: {
+            '今天': [moment(), moment()],
+            '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '最近7天': [moment().subtract(6, 'days'), moment()],
+            '最近30天': [moment().subtract(29, 'days'), moment()]
         }
     });
 
-    // 載入報告
-    $('#loadReport').click(function() {
-        const date = $('#reportDate').val();
-
-        if (!date) {
-            alert('Please select a date');
-            return;
-        }
-
-        $('#reportHeader').html('<i class="bi bi-hourglass-split"></i> Loading report...');
-        $('#reportFrame').attr('src', 'daily_main_functions.php?action=get_mail_report&date=' + date);
-        $('#reportHeader').html('<i class="bi bi-file-earmark-text"></i> Daily Report: ' + date);
-    });
-
-    // 列出所有報告
-    $('#listReports').click(function() {
+    // 共用：載入報告列表
+    function loadReportList(params, headerText) {
         $.ajax({
             url: 'daily_main_functions.php?action=list_mail_reports',
             type: 'GET',
+            data: params,
             dataType: 'json',
             beforeSend: function() {
-                $('#reportListContent').html('<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading...</div>');
+                $('#reportListContent').html('<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div> Loading...</div>');
                 $('#reportList').show();
             },
             success: function(reports) {
                 if (reports.length === 0) {
-                    $('#reportListContent').html('<p class="text-muted mb-0">No reports found. Run mail_dev.py to generate reports.</p>');
+                    $('#reportListContent').html('<p class="text-muted mb-0 py-2">No reports found in this range.</p>');
                     return;
                 }
 
@@ -211,20 +208,47 @@ $(document).ready(function() {
 
                 html += '</tbody></table></div>';
                 $('#reportListContent').html(html);
+
+                // 更新 card header
+                $('.card-header', '#reportList').text(headerText + ' (' + reports.length + ' reports)');
             },
             error: function() {
                 $('#reportListContent').html('<p class="text-danger mb-0">Error loading report list</p>');
             }
         });
+    }
+
+    // Load Reports - 按日期範圍搜尋
+    $('#loadReport').click(function() {
+        const picker = $('#reportDateRange').data('daterangepicker');
+        const startDate = picker.startDate.format('YYYYMMDD');
+        const endDate = picker.endDate.format('YYYYMMDD');
+        const displayStart = picker.startDate.format('YYYY/MM/DD');
+        const displayEnd = picker.endDate.format('YYYY/MM/DD');
+
+        loadReportList(
+            { start_date: startDate, end_date: endDate },
+            displayStart + ' ~ ' + displayEnd
+        );
+    });
+
+    // List Recent - 列出最近 50 筆
+    $('#listReports').click(function() {
+        loadReportList(
+            { limit: 50 },
+            'Recent 50'
+        );
     });
 
     // 點擊報告列表中的 View 按鈕
     $(document).on('click', '.view-report', function() {
-        const date = $(this).data('date');
+        const date = String($(this).data('date'));
+        const displayDate = date.substring(0, 4) + '/' + date.substring(4, 6) + '/' + date.substring(6, 8);
 
-        $('#reportDate').val(date);
+        $(this).closest('tr').addClass('table-active').siblings().removeClass('table-active');
+        $('#reportHeader').html('<i class="bi bi-hourglass-split"></i> Loading report...');
         $('#reportFrame').attr('src', 'daily_main_functions.php?action=get_mail_report&date=' + date);
-        $('#reportHeader').html('<i class="bi bi-file-earmark-text"></i> Daily Report: ' + date);
+        $('#reportHeader').html('<i class="bi bi-file-earmark-text"></i> Daily Report: ' + displayDate);
     });
 
 });
