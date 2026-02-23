@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once 'dev_ctrl_main_functions.php';
-//require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
 

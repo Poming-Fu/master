@@ -1,19 +1,8 @@
 <?php
 session_start();
 require_once 'daily_main_functions.php';
-//require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
-//require_once 'users_mgmt/log_user_action.php';
-
-//檢查用戶是否登入
-//common::check_login();
-//$username = $_SESSION['username'];
-
-
-//檢查用戶是否合法
-//$conn = database_connection::get_connection();
-//$user = users_repository::check_user_in_db($username);
 
 $branch_names = daily_repository::get_branch_names();
 

@@ -1,5 +1,4 @@
 <?php
-//require_once '../DB/db_operations.php';
 require_once '../DB/db_operations_all.php';
 require_once '../common/common.php';
 

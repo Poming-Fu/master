@@ -7,7 +7,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 require_once __DIR__ . '/../DB/db_operations_all.php';
-//require_once __DIR__ . '/../DB/db_operations.php';
 $conn = database_connection::get_connection();
 $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSION['password']);
 
@@ -31,12 +30,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
     <?php include '../login_out/navbar.php'; ?>
     
     <div id="fwReleasePage" class="container-fluid py-3">
-        <!-- 頁內導航 
-        <nav class="nav justify-content-center mb-4">
-            <a class="nav-link" href="#build-form">Build Form</a>
-            <a class="nav-link" href="#history">Build History</a>
-        </nav> -->
-        
+
         <div class="row g-4 mb-4">
             <div class="col-12">
                 <div id="build-form" class="card h-100">

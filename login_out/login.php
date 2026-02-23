@@ -1,6 +1,5 @@
 <?php
 session_start();
-#require_once __DIR__ . '/../DB/db_operations.php';
 require_once __DIR__ . '/../DB/db_operations_all.php';
 // 檢查是否為 POST 請求
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -22,8 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // 嘗試使用用戶名和密碼進行 LDAP 綁定
     if (@ldap_bind($ds, $user_dn, $password)) {
-	// LDAP 驗證成功，接下來檢查資料庫，function 都在db_operations.php
-    // $conn = connect_to_db();
+	// LDAP 驗證成功，接下來檢查資料庫
     $conn = database_connection::get_connection();
 	$user = users_repository::check_user_in_db($username);
 	if ($user) {

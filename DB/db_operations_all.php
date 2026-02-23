@@ -628,9 +628,4 @@ class firmware_repository {
         return $builds;
     }
 }
-
-// 使用示例
-// $user = user_repository::check_user_in_db('username');
-// $boards_info = board_repository::query_boards_info();
-// $firmware_history = firmware_repository::fw_r_form_read_history(5);
 ?>
