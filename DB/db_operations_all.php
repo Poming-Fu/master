@@ -250,109 +250,62 @@ class daily_repository {
         return ['branch_list' => $branch_list];
     } */
 
-    private static $branch_maps = [
-        'master' => [
-            'x13rot' => [
-                'path' => 'dailybuild_master/',
-                'type' => 'lbmc',
-                'name' => 'sx13_rot2hw2_ast26_p',
-                'GUID' => 'C301MS'
-            ]
-        ],
-        'master_x12' => [
-            'x12rot' => [
-                'path' => 'dailybuild_master_x12/',
-                'type' => 'lbmc',
-                'name' => 'sx12_rot_ast26_p',
-                'GUID' => '5201MS'
-            ]
-        ],
-        'master_rel_1.05_20250818' => [
-            'x13rot' => [
-                'path' => 'dailybuild_lbmc_x13rot/',
-                'type' => 'lbmc',
-                'name' => 'sx13_rot2hw2_ast26_p',
-                'GUID' => 'C301MS'
-            ],
-            'h13rot' => [
-                'path' => 'dailybuild_lbmc_h13/',
-                'type' => 'lbmc',
-                'name' => 'sh13_rot2hw2_ast26_std_p',
-                'GUID' => '6501MS'
-            ]
-        ],
-        'master_x12_rel_1.07_20250818' => [
-            'x13nonrot' => [
-                'path' => 'dailybuild_lbmc_x13nonrot/',
-                'type' => 'lbmc',
-                'name' => 'sx13_ast26_ws_p',
-                'GUID' => 'F201MS'
-            ],
-            'x12rot' => [
-                'path' => 'dailybuild_lbmc_x12rot/',
-                'type' => 'lbmc',
-                'name' => 'sx12_rot_ast26_p',
-                'GUID' => '5201MS'
-            ]
+    // 從 CSV 載入 branch mapping（帶靜態快取，只讀一次）
+    private static $branch_maps_cache = null;
 
-        ],        
-        'master_hw1_rel_1.05_20250818' => [
-            'master_hw1' => [
-                'path' => 'dailybuild_master_hw1/',
-                'type' => 'lbmc',
-                'name' => 'x13_ast26_pfr',
-                'GUID' => '3401MS'
-            ]
-        ],        
-        'aspeed-master' => [
-            'x14rot' => [
-                'path' => 'dailybuild_obmc/',
-                'type' => 'obmc',
-                'name' => 'x14-ast2600-rot',
-                'GUID' => '5601MS'
-            ]
-        ],
-        'master_rel_1.02_20250609' => [
-            'x14rot' => [
-                'path' => 'dailybuild_obmc_rel/',
-                'type' => 'obmc',
-                'name' => 'x14-ast2600-rot',
-                'GUID' => '5601MS'
-            ]
-        ],
-        'BR_BMC_X14AST2600-ROT-B601MS_01.00.16.00_OEM_CVE_FOR_OBON' => [
-            'OBON' => [
-                'path' => 'dailybuild_obmc_OBON/',
-                'type' => 'obmc',
-                'name' => 'x14-ast2600-deltanext',
-                'GUID' => 'B601MS'
-            ]
-        ],
-        'BR_BMC_X14H14_AST2600_20241128_redfish_1_11' => [
-            'RF1.11' => [
-                'path' => 'dailybuild_obmc_RF1.11/',
-                'type' => 'obmc',
-                'name' => 'x14-ast2600-rot',
-                'GUID' => '5601MS'
-            ]
-        ],
-    ];
+    private static function load_branch_maps() {
+        if (self::$branch_maps_cache !== null) {
+            return self::$branch_maps_cache;
+        }
+
+        $csv_path = __DIR__ . '/../Daily_build/Common_std_sign_image.csv';
+        $maps = [];
+
+        if (($handle = fopen($csv_path, 'r')) !== false) {
+            while (($row = fgetcsv($handle)) !== false) {
+                // 跳過註解和標題列
+                if (empty($row[0]) || $row[0][0] === '#' || $row[0] === 'branch') continue;
+                if (count($row) < 6) continue;
+
+                $branch    = trim($row[0]);
+                $target_id = trim($row[1]);
+
+                if (!isset($maps[$branch])) {
+                    $maps[$branch] = [];
+                }
+
+                $maps[$branch][$target_id] = [
+                    'path' => trim($row[2]),
+                    'type' => trim($row[3]),
+                    'name' => trim($row[4]),
+                    'GUID' => trim($row[5])
+                ];
+            }
+            fclose($handle);
+        } else {
+            error_log("Failed to open branch maps CSV: " . $csv_path);
+        }
+
+        self::$branch_maps_cache = $maps;
+        return self::$branch_maps_cache;
+    }
 
     // 獲取所有分支名稱
     public static function get_branch_names() {
-        return array_keys(self::$branch_maps); // array_keys() 會返回： ['master', 'aspeed-master']
+        return array_keys(self::load_branch_maps());
     }
     // 原有的掃描目錄函數
     public static function scan_build_directories($branch = '', $start_date = '', $end_date = '', $status = '') {
         $base_path = '/mnt/DB/';
-        
+        $branch_maps = self::load_branch_maps();
+
         $all_builds = [];
-        
+
         // 決定要處理的分支
         if (empty($branch) || $branch === 'all') {
-            $branch_to_scan = self::$branch_maps;  // 使用靜態屬性
+            $branch_to_scan = $branch_maps;
         } else {
-            $branch_to_scan = [$branch => self::$branch_maps[$branch]];
+            $branch_to_scan = [$branch => $branch_maps[$branch] ?? []];
         }
     
         // 統一掃描邏輯

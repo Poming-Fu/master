@@ -1,0 +1,11 @@
+# Daily Build branch mapping 設定 對應到 http://10.148.20.12:8080/view/Daily_build/
+# branch: 分支名稱, target_id: 目標代號, path: 掃描路徑, type: lbmc/obmc, name: 目標名稱, GUID: 板子代號
+branch,target_id,path,type,name,GUID
+master,x13rot,dailybuild_master/,lbmc,sx13_rot2hw2_ast26_p,C301MS
+master_x12,x12rot,dailybuild_master_x12/,lbmc,sx12_rot_ast26_p,5201MS
+master_rel_1.09_20260121,x13rot,dailybuild_lbmc_x13rot/,lbmc,sx13_rot2hw2_ast26_p,C301MS
+master_rel_1.09_20260121,h13rot,dailybuild_lbmc_h13/,lbmc,sh13_rot2hw2_ast26_std_p,6501MS
+master_x12_rel_1.11_20260121,x13nonrot,dailybuild_lbmc_x13nonrot/,lbmc,sx13_ast26_ws_p,F201MS
+master_x12_rel_1.11_20260121,x12rot,dailybuild_lbmc_x12rot/,lbmc,sx12_rot_ast26_p,5201MS
+master_hw1_rel_1.09_20260121,master_hw1,dailybuild_master_hw1/,lbmc,x13_ast26_pfr,3401MS
+aspeed-master,x14rot,dailybuild_obmc/,obmc,x14-ast2600-rot,5601MS
