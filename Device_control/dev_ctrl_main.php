@@ -25,44 +25,22 @@ $mp510_groups = $boards_info['mp510_groups'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>IPMI web service - Device Control</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- CSS -->
+    <link href="../common/src/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../common/src/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../login_out/navbar.css?v=<?= filemtime('../login_out/navbar.css') ?>" rel="stylesheet">
     <link href="../common/common.css?v=<?= filemtime('../common/common.css') ?>" rel="stylesheet">
     <link href="dev_ctrl_main.css?v=<?= filemtime('dev_ctrl_main.css') ?>" rel="stylesheet">
     <link href="boards_mgmt/boards_mgmt.css?v=<?= filemtime('boards_mgmt/boards_mgmt.css') ?>" rel="stylesheet">
-    <!-- Loading overlay -->
-    <style id="loading-style">
-        .page-loading-overlay { position:fixed; inset:0; background:rgba(255,255,255,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s; }
-        .page-loading-spinner { width:2.5rem; height:2.5rem; border:3px solid rgba(102,126,234,0.25); border-top-color:#667eea; border-radius:50%; animation:spin .7s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-    </style>
-    <!-- JS：defer 放 head -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+    <!-- JS -->
     <script>window.LOG_USER_ACC = '<?php echo htmlspecialchars($_SESSION['username']); ?>';</script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="../common/analytics/analytics.js" defer></script>
-    <script src="dev_ctrl_main.js?v=<?= filemtime('dev_ctrl_main.js') ?>" defer></script>
-    <script src="powerbox/dev_ctrl_power_fetch.js?v=<?= filemtime('powerbox/dev_ctrl_power_fetch.js') ?>" defer></script>
+    <script src="../common/src/jquery-3.7.1.min.js"></script>
+    <script src="../common/src/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../common/analytics/analytics.js"></script>
+    <script src="dev_ctrl_main.js?v=<?= filemtime('dev_ctrl_main.js') ?>"></script>
+    <script src="powerbox/dev_ctrl_power_fetch.js?v=<?= filemtime('powerbox/dev_ctrl_power_fetch.js') ?>"></script>
 </head>
 <body>
-<div class="page-loading-overlay" id="pageLoadingOverlay"><div class="page-loading-spinner"></div></div>
-<script>
-(function(){
-    function removeOverlay(){
-        var o=document.getElementById('pageLoadingOverlay');
-        if(o){o.style.opacity='0';setTimeout(function(){o.remove();},300);}
-        var s=document.getElementById('loading-style');
-        if(s)s.remove();
-    }
-    document.addEventListener('DOMContentLoaded',removeOverlay);
-    window.addEventListener('pageshow',function(e){if(e.persisted)removeOverlay();});
-    setTimeout(removeOverlay,8000);
-})();
-</script>
-
 <?php include '../login_out/navbar.php'; ?>
 
 <div class="container-fluid px-3 py-3">
