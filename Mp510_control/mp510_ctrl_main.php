@@ -12,10 +12,33 @@ $master_ip = mp510_repository::get_master_ip();
     <title>MP510 Management</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Loading overlay -->
+    <style id="loading-style">
+        .page-loading-overlay { position:fixed; inset:0; background:rgba(255,255,255,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s; }
+        .page-loading-spinner { width:2.5rem; height:2.5rem; border:3px solid rgba(102,126,234,0.25); border-top-color:#667eea; border-radius:50%; animation:spin .7s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+    <!-- JS：defer 放 head -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
 <body>
+<div class="page-loading-overlay" id="pageLoadingOverlay"><div class="page-loading-spinner"></div></div>
+<script>
+(function(){
+    function removeOverlay(){
+        var o=document.getElementById('pageLoadingOverlay');
+        if(o){o.style.opacity='0';setTimeout(function(){o.remove();},300);}
+        var s=document.getElementById('loading-style');
+        if(s)s.remove();
+    }
+    document.addEventListener('DOMContentLoaded',removeOverlay);
+    window.addEventListener('pageshow',function(e){if(e.persisted)removeOverlay();});
+    setTimeout(removeOverlay,8000);
+})();
+</script>
     <div class="container mt-4">
         <h2>MP510 Node Management</h2>
         <div class="row mb-4">
@@ -70,12 +93,8 @@ $master_ip = mp510_repository::get_master_ip();
         </table>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
     <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
         $('.set-master').click(function() {
             if(confirm('Are you sure you want to change the master node?')) {
                 let newMasterIP = $(this).data('ip');
@@ -96,7 +115,6 @@ $master_ip = mp510_repository::get_master_ip();
                             }
                         } catch(e) {
                             alert('Error processing response');
-                            //console.log(e.message);
                         }
                     },
                     error: function() {
@@ -105,6 +123,7 @@ $master_ip = mp510_repository::get_master_ip();
                 });
             }
         });
+
     });
     </script>
 </body>

@@ -22,14 +22,43 @@ $branch_names = daily_repository::get_branch_names();
     <!-- DateRangePicker CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- Navbar CSS -->
-    <link href="../login_out/navbar.css" rel="stylesheet">
+    <link href="../login_out/navbar.css?v=<?= filemtime('../login_out/navbar.css') ?>" rel="stylesheet">
     <!-- Common CSS -->
-    <link href="../common/common.css" rel="stylesheet">
+    <link href="../common/common.css?v=<?= filemtime('../common/common.css') ?>" rel="stylesheet">
     <!-- Page CSS -->
-    <link href="daily_main.css" rel="stylesheet">
+    <link href="daily_main.css?v=<?= filemtime('daily_main.css') ?>" rel="stylesheet">
+    <!-- Loading overlay -->
+    <style id="loading-style">
+        .page-loading-overlay { position:fixed; inset:0; background:rgba(255,255,255,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s; }
+        .page-loading-spinner { width:2.5rem; height:2.5rem; border:3px solid rgba(102,126,234,0.25); border-top-color:#667eea; border-radius:50%; animation:spin .7s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+    <!-- JS：defer 放 head -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
+    <script src="daily_main.js?v=<?= filemtime('daily_main.js') ?>" defer></script>
 </head>
 
 <body>
+<div class="page-loading-overlay" id="pageLoadingOverlay"><div class="page-loading-spinner"></div></div>
+<script>
+(function(){
+    function removeOverlay(){
+        var o=document.getElementById('pageLoadingOverlay');
+        if(o){o.style.opacity='0';setTimeout(function(){o.remove();},300);}
+        var s=document.getElementById('loading-style');
+        if(s)s.remove();
+    }
+    document.addEventListener('DOMContentLoaded',removeOverlay);
+    window.addEventListener('pageshow',function(e){if(e.persisted)removeOverlay();});
+    setTimeout(removeOverlay,8000);
+})();
+</script>
 
 <?php include '../login_out/navbar.php'; ?>
 
@@ -149,12 +178,5 @@ $branch_names = daily_repository::get_branch_names();
         </div>
     </div>
 
-    <!-- JavaScript 庫 -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <!-- 自定義 JavaScript -->
-    <script src="daily_main.js"></script>
 </body>
 </html>
