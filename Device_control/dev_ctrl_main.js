@@ -259,16 +259,40 @@ $(document).ready(function() {
 
 //工具箱 or 元素功能
 $(document).ready(function() {
+    // 停用瀏覽器動畫式 scroll 還原，改用 sessionStorage 手動控制（瞬間定位）
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
     // 回到頂部按鈕功能
     let backToTopBtn = $('#backToTopBtn');
 
-    $(window).scroll(function() {
+    function update_back_to_top() {
         if ($(window).scrollTop() > 300) {
             backToTopBtn.fadeIn();
         } else {
             backToTopBtn.fadeOut();
         }
+    }
+
+    $(window).scroll(function() {
+        update_back_to_top();
     });
+
+    // F5 或任何 reload 前自動儲存 scroll 位置
+    $(window).on('beforeunload', function() {
+        sessionStorage.setItem('dev_ctrl_scroll', $(window).scrollTop());
+    });
+
+    // 恢復 reload 前的 scroll 位置（behavior:'instant' 強制跳過 Bootstrap smooth scroll）
+    let saved_scroll = sessionStorage.getItem('dev_ctrl_scroll');
+    if (saved_scroll) {
+        sessionStorage.removeItem('dev_ctrl_scroll');
+        window.scrollTo({ top: parseInt(saved_scroll), behavior: 'instant' });
+    }
+
+    // 初始檢查：根據當前位置決定是否顯示 back to top 按鈕
+    update_back_to_top();
 
     backToTopBtn.click(function() {
         $(window).scrollTop(0);
@@ -316,6 +340,7 @@ $(document).ready(function() {
                 success: function(response) {
                     if (response.success) {
                         alert('Success: \n' + response.message);
+                        sessionStorage.setItem('dev_ctrl_scroll', $(window).scrollTop());
                         location.reload();
                     } else if (response.needCustomPassword) {
                         let customPassword = prompt(response.message);
@@ -324,6 +349,7 @@ $(document).ready(function() {
                         }
                     } else {
                         alert('Failed: \n' + response.message);
+                        sessionStorage.setItem('dev_ctrl_scroll', $(window).scrollTop());
                         location.reload();
                     }
                 },
