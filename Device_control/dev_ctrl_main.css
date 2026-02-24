@@ -447,6 +447,7 @@
     right: 24px;
     bottom: 24px;
     display: none;
+    z-index: 9999;
     box-shadow: var(--shadow-lg);
     transition: transform 0.2s, background 0.2s;
     color: white;
