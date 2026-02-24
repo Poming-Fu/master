@@ -259,11 +259,6 @@ $(document).ready(function() {
 
 //工具箱 or 元素功能
 $(document).ready(function() {
-    // 停用瀏覽器動畫式 scroll 還原，改用 sessionStorage 手動控制（瞬間定位）
-    if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-    }
-
     // 回到頂部按鈕功能
     let backToTopBtn = $('#backToTopBtn');
 

@@ -33,6 +33,10 @@ $mp510_groups = $boards_info['mp510_groups'];
     <link href="dev_ctrl_main.css?v=<?= filemtime('dev_ctrl_main.css') ?>" rel="stylesheet">
     <link href="boards_mgmt/boards_mgmt.css?v=<?= filemtime('boards_mgmt/boards_mgmt.css') ?>" rel="stylesheet">
     <!-- JS -->
+    <script>
+    // 必須在所有其他腳本之前執行，阻止瀏覽器的原生 scroll 還原（放在 head 才來得及）
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+    </script>
     <script>window.LOG_USER_ACC = '<?php echo htmlspecialchars($_SESSION['username']); ?>';</script>
     <script src="../common/src/jquery-3.7.1.min.js"></script>
     <script src="../common/src/bootstrap/js/bootstrap.bundle.min.js"></script>
