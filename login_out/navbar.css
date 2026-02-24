@@ -25,6 +25,10 @@ body {
     height: 100%;
     padding: 0 1rem;
     background-color: transparent !important;
+    /* 覆蓋 common.css 的 .container-fluid 設定，避免 navbar 內的 container 撐滿整個畫面並擋住下方連結 */
+    min-height: auto;
+    z-index: auto;
+    position: static;
 }
 
 .navbar-custom .navbar-nav {
