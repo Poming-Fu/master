@@ -6,17 +6,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
     <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
-</head>
-<style>
+    <style>
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* 不要滾動條 */
+            overflow: hidden;
+            background: linear-gradient(180deg, #161b22, #0d1117);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
         }
 
-        /* 使用 Flexbox 布局 */
         #container {
             display: flex;
             flex-direction: column;
@@ -24,159 +24,243 @@
             height: 100%;
         }
 
-        /* 終端樣式 */
         #terminal-container {
-            flex-grow: 1; /* 讓terminal吃滿空間 */
+            flex-grow: 1;
             overflow: hidden;
-            font-size: 30px;
         }
 
-        /* 工具欄樣式 */
+        /* Control Panel */
         .tool-container {
-            /*background-color: #f1f1f1;*/
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            transform: scale(0.8); /*工具欄縮小為0.8倍*/
-            transform-origin: top left; 
+            gap: 6px;
+            padding: 6px 8px;
+            background: rgba(22, 27, 34, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .highlight-container {
-            border: 3px solid grey;
-            padding: 8px;
-            border-radius: 5px;
-            width: fit-content;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin: 5px;/*工具間間距*/
-        }
-
-        .highlight-container > input[type="checkbox"] {
-            margin-left: -2px;
-        }
-
-        .keyword-group {
+        .ctrl-group {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.03);
         }
 
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+        .ctrl-group-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+            margin-right: 2px;
+            user-select: none;
         }
 
-        /* 按钮样式 */
-        #saveButton, #timestampButton, #highlight, #cleanall {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 16px;
-            padding: 5px 8px;
+        .ctrl-divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.12);
+            margin: 0 2px;
+        }
+
+        /* Buttons */
+        button {
+            font-family: inherit;
+            font-size: 13px;
+            padding: 4px 10px;
             cursor: pointer;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            transition: background-color 0.3s ease;
+            background: rgba(255, 255, 255, 0.08);
+            color: #c9d1d9;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            transition: all 0.15s ease;
+            white-space: nowrap;
         }
 
-        #saveButton:hover, #timestampButton:hover, #highlight:hover, #cleanall:hover {
-            background-color: #555;
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        #timestampCheckbox, .key_checkbox {
-            transform: scale(1.5);
-            cursor: pointer;
+        button:active {
+            transform: translateY(0);
         }
 
-        /* input 样式 */
-        input[type="text"] {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 8px;
-            margin: 5px;
-            border: 2px solid #ccc;
+        /* Font size display */
+        #fontSizeDisplay {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            min-width: 36px;
+            text-align: center;
+            user-select: none;
+        }
+
+        /* Custom checkbox */
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 4px;
-            width: 200px; /* 宽度 */
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        input[type="checkbox"]:checked {
+            background: #238636;
+            border-color: #238636;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 1px;
+            width: 5px;
+            height: 9px;
+            border: 2px solid #fff;
+            border-top: none;
+            border-left: none;
+            transform: rotate(45deg);
+        }
+
+        /* Keyword inputs */
+        .keyword-input {
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 130px;
+            transition: all 0.15s ease;
+            outline: none;
         }
 
         #redKeyword {
-            color: white;
-            background-color: #FF0000;
+            background: rgba(255, 70, 70, 0.85);
+            color: #fff;
+        }
+
+        #redKeyword:focus {
+            box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.5);
         }
 
         #yellowKeyword {
-            background-color: #F9F900;
+            background: rgba(200, 180, 0, 0.85);
+            color: #1a1a00;
+        }
+
+        #yellowKeyword:focus {
+            box-shadow: 0 0 0 2px rgba(240, 210, 0, 0.5);
         }
 
         #blueKeyword {
-            color: white;
-            background-color: #1E90FF;
+            background: rgba(30, 100, 255, 0.85);
+            color: #fff;
         }
-</style>
 
+        #blueKeyword:focus {
+            box-shadow: 0 0 0 2px rgba(30, 100, 255, 0.5);
+        }
+    </style>
+</head>
 <body>
     <div id="container">
-        <!-- 终端容器 -->
+        <!-- 終端容器 -->
         <div id="terminal-container"></div>
-        <!-- 工具欄容器 -->
+        <!-- 工具列 -->
         <div class="tool-container">
-            <div class="highlight-container">
-                <button id="saveButton">Save</button>
+            <!-- File -->
+            <div class="ctrl-group">
+                <span class="ctrl-group-label">File</span>
+                <button id="saveButton">&#128190; Save</button>
             </div>
-            <div class="highlight-container">
-                <button id="timestampButton">Timestamp</button>
+
+            <div class="ctrl-divider"></div>
+
+            <!-- Font -->
+            <div class="ctrl-group">
+                <span class="ctrl-group-label">Font</span>
+                <button onclick="change_font_size(-2)">A-</button>
+                <span id="fontSizeDisplay">16px</span>
+                <button onclick="change_font_size(2)">A+</button>
+            </div>
+
+            <div class="ctrl-divider"></div>
+
+            <!-- Time -->
+            <div class="ctrl-group">
+                <span class="ctrl-group-label">Time</span>
+                <button id="timestampButton">&#9201; Timestamp</button>
                 <input type="checkbox" id="timestampCheckbox">
             </div>
-            <div class="highlight-container">
-                <input type="text" id="redKeyword" placeholder="Red Keyword">
-                <input class="key_checkbox" type="checkbox" id="redKeywordCheckbox" checked>
-                <input type="text" id="yellowKeyword" placeholder="Yellow Keyword">
-                <input class="key_checkbox" type="checkbox" id="yellowKeywordCheckbox" checked>
-                <input type="text" id="blueKeyword" placeholder="Blue Keyword">
-                <input class="key_checkbox" type="checkbox" id="blueKeywordCheckbox" checked>
-                <div class="button-group">
-                    <button id="highlight">Highlight</button>
-                    <button id="cleanall">Cleanall</button>
-                </div>
+
+            <div class="ctrl-divider"></div>
+
+            <!-- Highlight Keywords -->
+            <div class="ctrl-group">
+                <span class="ctrl-group-label">Highlight</span>
+                <input class="keyword-input" type="text" id="redKeyword" placeholder="Red Keyword">
+                <input type="checkbox" id="redKeywordCheckbox" checked>
+                <input class="keyword-input" type="text" id="yellowKeyword" placeholder="Yellow Keyword">
+                <input type="checkbox" id="yellowKeywordCheckbox" checked>
+                <input class="keyword-input" type="text" id="blueKeyword" placeholder="Blue Keyword">
+                <input type="checkbox" id="blueKeywordCheckbox" checked>
+            </div>
+
+            <div class="ctrl-divider"></div>
+
+            <!-- Actions -->
+            <div class="ctrl-group">
+                <button id="highlight">&#127912; Highlight</button>
+                <button id="checkall">&#9745; Check All</button>
+                <button id="uncheckall">&#9744; Uncheck All</button>
             </div>
         </div>
     </div>
 <script>
 
 const urlParams  = new URLSearchParams(window.location.search);
-const host       = urlParams.get('host'); // 從 URL 參數中獲取主機地址
-const port       = urlParams.get('port'); // 從 URL 參數中獲取端口號
+const host       = urlParams.get('host');
+const port       = urlParams.get('port');
 
-const term       = new Terminal({
-    fontSize: 16, // 設定固定的字型大小
-    scrollback: Infinity, 
+let currentFontSize = 16;
+
+const term     = new Terminal({
+    fontSize: currentFontSize,
+    scrollback: Infinity,
     cols: 80
 });
-const fitAddon   = new FitAddon.FitAddon(); // fitAddon 最適配窗口大小
-let addTimestamp = false;//main時間調用
+const fitAddon = new FitAddon.FitAddon();
+let addTimestamp = false;
 
 term.loadAddon(fitAddon);
 term.open(document.getElementById('terminal-container'));
 
-function getTermTimestamp()
-{
+function getTermTimestamp() {
     const now     = new Date();
-    const year    = now.getFullYear().toString().slice(2); // 獲取年份的後兩位 2024 -> 24
-    const month   = (now.getMonth() + 1).toString().padStart(2, '0'); // 獲取月份，月份從0開始，所以+1
-    const day     = now.getDate().toString().padStart(2, '0'); // 獲取日期
-    const hours   = now.getHours().toString().padStart(2, '0'); // 獲取小時
-    const minutes = now.getMinutes().toString().padStart(2, '0'); // 獲取分鐘
-    const seconds = now.getSeconds().toString().padStart(2, '0'); // 獲取秒鐘
-
+    const year    = now.getFullYear().toString().slice(2);
+    const month   = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day     = now.getDate().toString().padStart(2, '0');
+    const hours   = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-function getFileTimestamp()
-{
-    //padStart = 字串長度不足2則補0  ex:01 ~ 09
+function getFileTimestamp() {
     const now     = new Date();
     const year    = now.getFullYear();
     const month   = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -184,151 +268,137 @@ function getFileTimestamp()
     const hours   = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const seconds = now.getSeconds().toString().padStart(2, '0');
-
     return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
 }
 
-	
-document.getElementById('saveButton').addEventListener('click', function()
-{
-    let allText     = '';
-	const lineCount = term.buffer.active.length;
-	for (let i = 0; i < lineCount; i++) {
-        const line = term.buffer.active.getLine(i);
-        if (line) {
-            allText += line.translateToString() + '\n';
-        }
+function escape_regex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function apply_highlight(text) {
+    const redCheckbox    = document.getElementById('redKeywordCheckbox');
+    const redKeyword     = document.getElementById('redKeyword').value;
+    const yellowCheckbox = document.getElementById('yellowKeywordCheckbox');
+    const yellowKeyword  = document.getElementById('yellowKeyword').value;
+    const blueCheckbox   = document.getElementById('blueKeywordCheckbox');
+    const blueKeyword    = document.getElementById('blueKeyword').value;
+
+    if (redCheckbox.checked && redKeyword) {
+        text = text.replace(new RegExp(escape_regex(redKeyword), 'gi'), m => `\u001b[1;31m${m}\u001b[0m`);
     }
-    
-    const IP        = urlParams.get('IP');// 從 URL 參數中獲取IP
+    if (yellowCheckbox.checked && yellowKeyword) {
+        text = text.replace(new RegExp(escape_regex(yellowKeyword), 'gi'), m => `\u001b[1;33m${m}\u001b[0m`);
+    }
+    if (blueCheckbox.checked && blueKeyword) {
+        text = text.replace(new RegExp(escape_regex(blueKeyword), 'gi'), m => `\u001b[1;34m${m}\u001b[0m`);
+    }
+    return text;
+}
+
+function change_font_size(delta) {
+    currentFontSize = Math.max(8, Math.min(40, currentFontSize + delta));
+    term.options.fontSize = currentFontSize;
+    document.getElementById('fontSizeDisplay').textContent = currentFontSize + 'px';
+    fitAddon.fit();
+}
+
+document.getElementById('saveButton').addEventListener('click', function() {
+    let allText     = '';
+    const lineCount = term.buffer.active.length;
+    for (let i = 0; i < lineCount; i++) {
+        const line = term.buffer.active.getLine(i);
+        if (line) allText += line.translateToString() + '\n';
+    }
+    const IP        = urlParams.get('IP');
     const timestamp = getFileTimestamp();
     const blob      = new Blob([allText], { type: 'text/plain' });
     const url       = URL.createObjectURL(blob);
     const a         = document.createElement('a');
-
     a.href          = url;
     a.download      = `Terminal_${IP}_${timestamp}.txt`;
-    
     document.body.appendChild(a);
     a.click();
-    
-    //釋放變量
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 });
 
-document.getElementById('timestampCheckbox').addEventListener('change', function()
-{
+document.getElementById('timestampCheckbox').addEventListener('change', function() {
     addTimestamp = this.checked;
 });
 
-document.getElementById('timestampButton').addEventListener('click', function() 
-{
-   const checkbox   = document.getElementById('timestampCheckbox');
-   checkbox.checked = !checkbox.checked;
-   addTimestamp     = checkbox.checked;//點按鈕也可以連動checkbox功能
+document.getElementById('timestampButton').addEventListener('click', function() {
+    const checkbox   = document.getElementById('timestampCheckbox');
+    checkbox.checked = !checkbox.checked;
+    addTimestamp     = checkbox.checked;
 });
 
+function highlight() {
+    let   allText   = '';
+    const cursorY   = term.buffer.active.cursorY;
+    const cursorX   = term.buffer.active.cursorX;
+    const lineCount = term.buffer.active.length;
 
-function highlight() 
-{
-    let   allText        = '';
-    const cursorY        = term.buffer.active.cursorY;
-    const cursorX        = term.buffer.active.cursorX;
-    const lineCount      = term.buffer.active.length;
-
-    const redCheckbox    = document.getElementById('redKeywordCheckbox');
-    let   redKeyword     = document.getElementById('redKeyword').value;
-
-    const yellowCheckbox = document.getElementById('yellowKeywordCheckbox');
-    let   yellowKeyword  = document.getElementById('yellowKeyword').value;
-
-    const blueCheckbox   = document.getElementById('blueKeywordCheckbox');
-    let   blueKeyword    = document.getElementById('blueKeyword').value;
-
-    // 收集所有文本
     for (let i = 0; i < lineCount; i++) {
         const line = term.buffer.active.getLine(i);
-        if (line) {
-            allText += line.translateToString();
-        }
+        if (line) allText += line.translateToString();
     }
 
     term.reset();
-
-    if (redCheckbox.checked && redKeyword) {
-        const regRed = new RegExp(`${redKeyword}`, 'gi');
-        allText = allText.replace(regRed, (match) => `\u001b[1;31m${match}\u001b[0m`);
-    }
-
-    if (yellowCheckbox.checked && yellowKeyword) {
-        const regYellow = new RegExp(`${yellowKeyword}`, 'gi');
-        allText = allText.replace(regYellow, (match) => `\u001b[1;33m${match}\u001b[0m`);
-    }
-
-    if (blueCheckbox.checked && blueKeyword) {
-        const regBlue = new RegExp(`${blueKeyword}`, 'gi');
-        allText = allText.replace(regBlue, (match) => `\u001b[1;34m${match}\u001b[0m`);
-    }
+    allText = apply_highlight(allText);
     term.write(allText);
     term.write(`\x1b[${cursorY + 1};${cursorX + 1}H`);
 }
 
-function cleanall() 
-{
-    let   allText        = '';
-    const cursorY        = term.buffer.active.cursorY;
-    const cursorX        = term.buffer.active.cursorX;
-    const lineCount      = term.buffer.active.length;
+function cleanall() {
+    let   allText   = '';
+    const cursorY   = term.buffer.active.cursorY;
+    const cursorX   = term.buffer.active.cursorX;
+    const lineCount = term.buffer.active.length;
 
-    const redCheckbox    = document.getElementById('redKeywordCheckbox');
-    let   redKeyword     = document.getElementById('redKeyword').value;
-
-    const yellowCheckbox = document.getElementById('yellowKeywordCheckbox');
-    let   yellowKeyword  = document.getElementById('yellowKeyword').value;
-
-    const blueCheckbox   = document.getElementById('blueKeywordCheckbox');
-    let   blueKeyword    = document.getElementById('blueKeyword').value;
-
-    // 收集所有文本
     for (let i = 0; i < lineCount; i++) {
         const line = term.buffer.active.getLine(i);
-        if (line) {
-            allText += line.translateToString();
-        }
+        if (line) allText += line.translateToString();
     }
 
     term.reset();
+    document.getElementById('redKeywordCheckbox').checked    = false;
+    document.getElementById('redKeyword').value              = '';
+    document.getElementById('yellowKeywordCheckbox').checked = false;
+    document.getElementById('yellowKeyword').value           = '';
+    document.getElementById('blueKeywordCheckbox').checked   = false;
+    document.getElementById('blueKeyword').value             = '';
 
-    if (redCheckbox.checked || redKeyword) {
-	    redCheckbox.checked = false;
-	    document.getElementById('redKeyword').value = '';
-    }
-
-    if (yellowCheckbox.checked || yellowKeyword) {
-        yellowCheckbox.checked = false;
-		document.getElementById('yellowKeyword').value = '';
-    }
-
-    if (blueCheckbox.checked || blueKeyword) {
-        blueCheckbox.checked = false;
-		document.getElementById('blueKeyword').value = '';
-    }
     term.write(allText);
     term.write(`\x1b[${cursorY + 1};${cursorX + 1}H`);
-
 }
-
 
 document.getElementById('highlight').addEventListener('click', highlight);
-document.getElementById('cleanall').addEventListener('click', cleanall);
+document.getElementById('uncheckall').addEventListener('click', cleanall);
 
+document.getElementById('checkall').addEventListener('click', function() {
+    document.getElementById('redKeywordCheckbox').checked    = true;
+    document.getElementById('yellowKeywordCheckbox').checked = true;
+    document.getElementById('blueKeywordCheckbox').checked   = true;
+    highlight();
+});
+
+let highlightDebounceTimer;
+function debounce_highlight() {
+    clearTimeout(highlightDebounceTimer);
+    highlightDebounceTimer = setTimeout(highlight, 300);
+}
+
+['redKeyword', 'yellowKeyword', 'blueKeyword'].forEach(id => {
+    document.getElementById(id).addEventListener('input', debounce_highlight);
+});
+['redKeywordCheckbox', 'yellowKeywordCheckbox', 'blueKeywordCheckbox'].forEach(id => {
+    document.getElementById(id).addEventListener('change', debounce_highlight);
+});
 
 let socket;
 let heartbeatInterval;
-let reconnectTimeout;
-const HEARTBEAT_INTERVAL = 30000; // 30秒
-const RECONNECT_DELAY = 3000; // 3秒
+const HEARTBEAT_INTERVAL = 30000;
+const RECONNECT_DELAY    = 3000;
 
 function startHeartbeat() {
     clearInterval(heartbeatInterval);
@@ -339,71 +409,54 @@ function startHeartbeat() {
     }, HEARTBEAT_INTERVAL);
 }
 
-function main()
-{
-    // google resize方法 -> 設定timeout -> window.addEventListener('resize', () => fitAddon.fit());  
+function stopHeartbeat() {
+    clearInterval(heartbeatInterval);
+}
+
+function main() {
     setTimeout(() => fitAddon.fit(), 0);
-    //window.addEventListener('resize', () => fitAddon.fit());
-    window.addEventListener('resize', () => {fitAddon.fit();});
+    window.addEventListener('resize', () => { fitAddon.fit(); });
 
-
-
-    // 2024/12/10 限制console用http開啟 https已debug，開視窗會需求安全較麻煩，統一用http
-    const protocol      = 'ws:';  // 強制使用 ws
-    const protocol_port = '8081';  // 強制使用 8081 端口
+    const protocol      = 'ws:';
+    const protocol_port = '8081';
     const server_host   = window.location.hostname;
-    const ws_url         = `${protocol}//${server_host}:${protocol_port}/?host=${host}&port=${port}`;
-    socket              = new WebSocket(ws_url);   
+    const ws_url        = `${protocol}//${server_host}:${protocol_port}/?host=${host}&port=${port}`;
+    socket              = new WebSocket(ws_url);
 
     socket.onopen = function() {
         term.writeln('Connected to Telnet server.');
         startHeartbeat();
     };
-      
-    socket.onmessage = function(event) {
-    if (addTimestamp) {
-        // 處理不同的換行符
-        /*let modifiedData = event.data.replace(/\r\n/g, `\r\n[${getTermTimestamp()}] `)
-                                     .replace(/\r/g, `\r[${getTermTimestamp()}] `)
-                                     .replace(/\n/g, `\n[${getTermTimestamp()}] `);*/
-        let modifiedData = event.data.replace(/(\r\n|\r)/g, function(match) {
-            return match + `[${getTermTimestamp()}] `;
-        });
-        term.write(modifiedData);
-    } else {
-        term.write(event.data);
-    }
-}; 
 
-	
+    socket.onmessage = function(event) {
+        let data = event.data;
+        if (addTimestamp) {
+            data = data.replace(/(\r\n|\r)/g, function(match) {
+                return match + `[${getTermTimestamp()}] `;
+            });
+        }
+        data = apply_highlight(data);
+        term.write(data);
+    };
+
     term.onData(data => {
-        /*if (data === '\r') {
-            highlight();
-        }*/
         socket.send(data);
     });
 
-
-    
-   
     socket.onclose = function() {
         term.writeln('Disconnected from Telnet server.');
         stopHeartbeat();
-        setTimeout(connect, 3000);
+        setTimeout(main, RECONNECT_DELAY);
     };
 
     socket.onerror = function(error) {
-        // 處理websocket錯誤message
         term.writeln(`WebSocket error: ${error.message}`);
         stopHeartbeat();
     };
-
 }
-
 
 main();
 
 </script>
-
 </body>
 </html>
