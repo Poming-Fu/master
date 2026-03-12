@@ -70,7 +70,17 @@ $(document).ready(function() {
         //document.getElementById("myDIV").classList.add("mystyle");
         formDOM.classList.add('was-validated');  // 加 Bootstrap 驗證樣式
         
-        if (!formDOM.checkValidity()) { 
+        if (!formDOM.checkValidity()) {
+            return;
+        }
+
+        // 驗證 version 格式: legacy xx.xx.xx 或 openbmc xx.xx.xx.xx
+        let verVal = $('#ver').val().trim();
+        let verRegex = /^\d{1,2}\.\d{1,2}\.\d{1,2}(\.\d{1,2})?$/;
+        if (!verRegex.test(verVal)) {
+            alert('Version 格式不正確！\n請輸入：\n  Legacy BMC: xx.xx.xx (例: 01.01.01)\n  OpenBMC: xx.xx.xx.xx (例: 01.02.03.01)');
+            //滑鼠會移到這裡
+            $('#ver').focus();
             return;
         }
 

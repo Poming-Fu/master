@@ -44,10 +44,10 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                         <h2 class="card-title">
                             Build Form 
                             <span class="ms-3 fs-6">
-                                <i class="bi bi-check-circle-fill text-success"></i> x12 x13 x14 codebase
+                                <i class="bi bi-check-circle-fill text-success"></i> AST2600(x12, x13, x13_hw1, x14)
                             </span>
                             <span class="ms-3 fs-6">
-                                <i class="bi bi-x-circle-fill text-danger"></i> hw1
+                                <i class="bi bi-x-circle-fill text-danger"></i> AST2500(x11,x12), AST2700(x15)
                             </span>
                         </h2>
                         <form>
@@ -71,7 +71,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
 
                             <div class="mb-3">
                                 <label for="ver" class="form-label">Version</label>
-                                <input type="text" class="form-control" id="ver" name="ver" placeholder="ex: legacybmc: 1.01.01 & openbmc: 01.02.03.01" required>
+                                <input type="text" class="form-control" id="ver" name="ver" placeholder="ex: legacybmc: 01.01.01 & openbmc: 01.02.03.01" required>
                             </div>
 
                             <div class="mb-3">
