@@ -555,6 +555,63 @@ class boards_repository {
 
 }
 
+// ==================== boards_tmp 管理 ====================
+class boards_tmp_repository {
+    public static function query_boards_tmp_info() {
+        $conn   = database_connection::get_connection();
+        $sql    = "SELECT * FROM boards_tmp ORDER BY b_name";
+        $stmt   = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $boards = [];
+        while ($row = $result->fetch_assoc()) {
+            $boards[] = $row;
+        }
+        $stmt->close();
+        return $boards;
+    }
+
+    public static function query_boards_tmp_by_id($b_id) {
+        $conn   = database_connection::get_connection();
+        $sql    = "SELECT * FROM boards_tmp WHERE b_id = ?";
+        $stmt   = $conn->prepare($sql);
+        $stmt->bind_param("s", $b_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $board  = $result->fetch_assoc();
+        $stmt->close();
+        return $board;
+    }
+
+    public static function insert_boards_tmp_info($b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("INSERT INTO boards_tmp (b_id, b_name, guid, pbid, pbid_oem, bmc_chip, bmc_type, rot_pfr, redfish, target, fw_size, owner, gitlab_type, gitlab_id, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssiissssssssis", $b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public static function modify_boards_tmp_info($b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $b_id) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("UPDATE boards_tmp SET b_name=?, guid=?, pbid=?, pbid_oem=?, bmc_chip=?, bmc_type=?, rot_pfr=?, redfish=?, target=?, fw_size=?, owner=?, gitlab_type=?, gitlab_id=?, notes=? WHERE b_id=?");
+        $stmt->bind_param("ssiissssssssiss", $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $b_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public static function delete_boards_tmp_info($b_id) {
+        $conn = database_connection::get_connection();
+        $sql  = "DELETE FROM boards_tmp WHERE b_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $b_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+}
+
 class firmware_repository {
     public static function fw_r_form_read_history($limit = 10) {
         $conn = database_connection::get_connection();

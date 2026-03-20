@@ -32,6 +32,12 @@ $user_level = $user['u_lev'] ?? 'low';
                             <i class="bi bi-calendar3 me-1"></i>Daily Build
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/web1/common/boards_tmp/boards_tmp_mgmt.php">
+                            <i class="bi bi-motherboard me-1"></i>Boards Tmp
+                            <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">beta!</span>
+                        </a>
+                    </li>
                     <?php if ($user_level == 'high'): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/web1/common/analytics/analytics_dashboard.php">
