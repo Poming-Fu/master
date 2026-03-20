@@ -173,9 +173,9 @@ $mp510_groups = $boards_info['mp510_groups'];
                 <div class="card-header">
                     <div class="board-name">
                         <?php if ($board['status'] == 'online'): ?>
-                            <i class="bi bi-wifi text-success" title="Online"></i>
+                            <i class="bi bi-circle-fill text-success" title="Online"></i>
                         <?php else: ?>
-                            <i class="bi bi-wifi-off text-danger" title="Offline"></i>
+                            <i class="bi bi-circle-fill text-danger" title="Offline"></i>
                         <?php endif; ?>
                         <?php echo htmlspecialchars($board['B_Name']); ?>
                     </div>
