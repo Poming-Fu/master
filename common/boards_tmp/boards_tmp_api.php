@@ -58,6 +58,7 @@ if ($action === 'insert_board') {
     $gitlab_type = !empty($_POST['gitlab_type']) ? $_POST['gitlab_type'] : NULL;
     $gitlab_id   = ($_POST['gitlab_id'] !== '' && $_POST['gitlab_id'] !== null) ? intval($_POST['gitlab_id']) : NULL;
     $notes       = !empty($_POST['notes']) ? $_POST['notes'] : NULL;
+    $branch      = !empty($_POST['branch']) ? $_POST['branch'] : 'master';
 
     if (empty($b_id)) {
         echo json_encode(['success' => false, 'message' => 'Board ID 為必填']);
@@ -71,7 +72,7 @@ if ($action === 'insert_board') {
         exit;
     }
 
-    $result = boards_tmp_repository::insert_boards_tmp_info($b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes);
+    $result = boards_tmp_repository::insert_boards_tmp_info($b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $branch);
 
     if ($result) {
         echo json_encode(['success' => true, 'message' => '新增成功！']);
@@ -98,13 +99,14 @@ if ($action === 'modify_board') {
     $gitlab_type = !empty($_POST['gitlab_type']) ? $_POST['gitlab_type'] : NULL;
     $gitlab_id   = ($_POST['gitlab_id'] !== '' && $_POST['gitlab_id'] !== null) ? intval($_POST['gitlab_id']) : NULL;
     $notes       = !empty($_POST['notes']) ? $_POST['notes'] : NULL;
+    $branch      = !empty($_POST['branch']) ? $_POST['branch'] : 'master';
 
     if (empty($b_id)) {
         echo json_encode(['success' => false, 'message' => '缺少 Board ID']);
         exit;
     }
 
-    if (boards_tmp_repository::modify_boards_tmp_info($b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $b_id)) {
+    if (boards_tmp_repository::modify_boards_tmp_info($b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $branch, $b_id)) {
         echo json_encode(['success' => true, 'message' => '更新成功！']);
     } else {
         echo json_encode(['success' => false, 'message' => '更新失敗']);

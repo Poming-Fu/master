@@ -81,8 +81,9 @@ $(document).ready(function() {
                                 <table class="table table-hover table-striped align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th style="width: 15%">Build Date</th>
-                                            <th style="width: 15%">Status</th>
+                                            <th style="width: 12%">Build Date</th>
+                                            <th style="width: 20%">Branch Version</th>
+                                            <th style="width: 12%">Status</th>
                                             <th style="width: 40%">Actions</th>
                                         </tr>
                                     </thead>
@@ -97,6 +98,7 @@ $(document).ready(function() {
                         const row = `
                             <tr>
                                 <td class="fw-bold">${build.build_date}</td>
+                                <td><code>${build.branch_version}</code></td>
                                 <td>
                                     <span class="badge ${build.build_status === 'PASS' ? 'bg-success' : 'bg-danger'} fs-6">
                                         Compile: ${build.build_status}

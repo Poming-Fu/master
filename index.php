@@ -27,28 +27,9 @@ $quick_links = [
 ];
 
 // ============================================================
-// Branch Info - 從 common/rf_schedule.csv 讀取
+// Branch Info - 從 DB rf_schedule 讀取
 // ============================================================
-$rf_schedules = [];
-$rf_csv_path = __DIR__ . '/common/rf_schedule.csv';
-if (($handle = fopen($rf_csv_path, 'r')) !== false) {
-    $header = fgetcsv($handle); // quarter,rf,gen12,gen13,gen13_hw1,gen14,lbmc,obmc
-    while (($row = fgetcsv($handle)) !== false) {
-        if (count($row) >= 8) {
-            $rf_schedules[] = [
-                'quarter'   => $row[0],
-                'rf'        => $row[1],
-                'gen12'     => $row[2],
-                'gen13'     => $row[3],
-                'gen13_hw1' => $row[4],
-                'gen14'     => $row[5],
-                'lbmc'      => $row[6],
-                'obmc'      => $row[7],
-            ];
-        }
-    }
-    fclose($handle);
-}
+$rf_schedules = rf_schedule_repository::query_all();
 
 // ============================================================
 // Team Members - 從 common/member.csv 讀取
@@ -129,7 +110,7 @@ $area_labels = ['Bade' => '八德', 'Zhonghe' => '中和'];
     </div>
 
     <!-- Tab Navigation -->
-    <div class="container py-4">
+    <div class="container py-4" style="max-width: 1300px;">
         <ul class="nav nav-tabs" id="mainTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">
@@ -149,12 +130,15 @@ $area_labels = ['Bade' => '八德', 'Zhonghe' => '中和'];
                 <!-- Branch Board -->
                 <div class="card mt-3">
                     <div class="card-body">
-                        <h5 class="mb-4 fw-semibold">
+                        <h5 class="mb-4 fw-semibold d-flex align-items-center">
                             <a href="https://mysupermicro-my.sharepoint.com/:x:/r/personal/jerry_wang_supermicro_com/_layouts/15/Doc.aspx?sourcedoc=%7BB1E28C19-B698-45D9-821E-379E81F6357A%7D&file=bmc-projects.xlsx&action=default&mobileredirect=true"
                             target="_blank"
                             class="text-decoration-none text-dark">
                                 <i class="bi bi-calendar-event me-2"></i>RF Release Schedule
                             </a>
+                            <button class="btn btn-success btn-sm ms-3" onclick="openRfModal()">
+                                <i class="bi bi-plus-lg"></i> 新增
+                            </button>
                         </h5>
                         <div class="table-responsive">
                             <table class="table table-bordered align-middle">
@@ -164,23 +148,30 @@ $area_labels = ['Bade' => '八德', 'Zhonghe' => '中和'];
                                         <th>RF Version</th>
                                         <th>Gen12</th>
                                         <th>Gen13</th>
-                                        <th>Gen13 HW1</th>
                                         <th>Gen14</th>
                                         <th>LBMC<br><small class="text-muted">(Gen14)</small></th>
                                         <th>OBMC<br><small class="text-muted">(Gen14)</small></th>
+                                        <th style="width:80px;">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($rf_schedules as $rf_schedule): ?>
+                                    <?php foreach ($rf_schedules as $rf): ?>
                                     <tr>
-                                        <td class="fw-semibold text-center"><?php echo $rf_schedule['quarter']; ?></td>
-                                        <td><?php echo $rf_schedule['rf']; ?></td>
-                                        <td><?php echo $rf_schedule['gen12'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                        <td><?php echo $rf_schedule['gen13'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                        <td><?php echo $rf_schedule['gen13_hw1'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                        <td class="text-center"><?php echo $rf_schedule['gen14'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                        <td><?php echo $rf_schedule['lbmc'] ?: '<span class="text-muted">—</span>'; ?></td>
-                                        <td><?php echo $rf_schedule['obmc'] ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td class="fw-semibold text-center"><?php echo htmlspecialchars($rf['quarter']); ?></td>
+                                        <td><?php echo htmlspecialchars($rf['rf_version'] ?? '') ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo htmlspecialchars($rf['gen12'] ?? '') ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo htmlspecialchars($rf['gen13'] ?? '') ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td class="text-center"><?php echo htmlspecialchars($rf['gen14'] ?? '') ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo htmlspecialchars($rf['lbmc'] ?? '') ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td><?php echo htmlspecialchars($rf['obmc'] ?? '') ?: '<span class="text-muted">—</span>'; ?></td>
+                                        <td class="text-center">
+                                            <button class="btn btn-outline-primary btn-sm py-0 px-1" onclick="openRfModifyModal(<?php echo $rf['id']; ?>)" title="修改">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm py-0 px-1" onclick="deleteRfSchedule(<?php echo $rf['id']; ?>, '<?php echo htmlspecialchars($rf['quarter']); ?>')" title="刪除">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -306,6 +297,141 @@ $area_labels = ['Bade' => '八德', 'Zhonghe' => '中和'];
                 &copy; 2024 Baber. All rights reserved.
             </p>
     </footer>
+
+    <!-- RF Schedule Modal -->
+    <div class="modal fade" id="rfModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rfModalTitle">新增 RF Schedule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="rfForm">
+                        <input type="hidden" name="action" id="rfAction" value="insert">
+                        <input type="hidden" name="id" id="rf_id">
+                        <div class="mb-3">
+                            <label class="form-label">Quarter <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="quarter" id="rf_quarter" placeholder="如 Q1 Jan/E" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">RF Version</label>
+                            <input type="text" class="form-control" name="rf_version" id="rf_rf_version" placeholder="如 RF1.21.1-00.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gen12</label>
+                            <input type="text" class="form-control" name="gen12" id="rf_gen12" placeholder="如 master_x12_rel_1.07_20250818">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gen13</label>
+                            <input type="text" class="form-control" name="gen13" id="rf_gen13" placeholder="如 master_rel_1.05_20250818">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gen14</label>
+                            <input type="text" class="form-control" name="gen14" id="rf_gen14" placeholder="如 1.03">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">LBMC (Gen14)</label>
+                            <input type="text" class="form-control" name="lbmc" id="rf_lbmc" placeholder="如 master_rel_1.05_20250818">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">OBMC (Gen14)</label>
+                            <input type="text" class="form-control" name="obmc" id="rf_obmc" placeholder="如 master_rel_1.03_20251031">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">排序</label>
+                            <input type="number" class="form-control" name="sort_order" id="rf_sort_order" value="0">
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-success" id="rfSubmitBtn">
+                                <i class="bi bi-plus-lg"></i> 新增
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // RF Schedule CRUD
+    function openRfModal() {
+        $('#rfModalTitle').text('新增 RF Schedule');
+        $('#rfAction').val('insert');
+        $('#rfSubmitBtn').removeClass('btn-primary').addClass('btn-success').html('<i class="bi bi-plus-lg"></i> 新增');
+        $('#rfForm')[0].reset();
+        $('#rf_sort_order').val(<?php echo count($rf_schedules) + 1; ?>);
+        new bootstrap.Modal(document.getElementById('rfModal')).show();
+    }
+
+    function openRfModifyModal(id) {
+        $.ajax({
+            url: 'common/rf_schedule/rf_schedule_api.php?action=get&id=' + id,
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    let d = res.data;
+                    $('#rfModalTitle').text('修改 RF Schedule - ' + d.quarter);
+                    $('#rfAction').val('modify');
+                    $('#rf_id').val(d.id);
+                    $('#rfSubmitBtn').removeClass('btn-success').addClass('btn-primary').html('<i class="bi bi-check-lg"></i> 儲存變更');
+                    $('#rf_quarter').val(d.quarter || '');
+                    $('#rf_rf_version').val(d.rf_version || '');
+                    $('#rf_gen12').val(d.gen12 || '');
+                    $('#rf_gen13').val(d.gen13 || '');
+                    $('#rf_gen14').val(d.gen14 || '');
+                    $('#rf_lbmc').val(d.lbmc || '');
+                    $('#rf_obmc').val(d.obmc || '');
+                    $('#rf_sort_order').val(d.sort_order || 0);
+                    new bootstrap.Modal(document.getElementById('rfModal')).show();
+                } else {
+                    alert('取得資料失敗: ' + res.message);
+                }
+            },
+            error: function(xhr, status, error) { alert('AJAX 請求失敗: ' + error); }
+        });
+    }
+
+    $('#rfForm').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: 'common/rf_schedule/rf_schedule_api.php',
+            type: 'POST',
+            dataType: 'json',
+            data: $(this).serialize(),
+            success: function(res) {
+                if (res.success) {
+                    alert(res.message);
+                    location.reload();
+                } else {
+                    alert('失敗: ' + res.message);
+                }
+            },
+            error: function(xhr, status, error) { alert('AJAX 請求失敗: ' + error); }
+        });
+    });
+
+    function deleteRfSchedule(id, name) {
+        if (!confirm('確定要刪除 ' + name + ' 嗎？')) return;
+        $.ajax({
+            url: 'common/rf_schedule/rf_schedule_api.php',
+            type: 'POST',
+            dataType: 'json',
+            data: { action: 'delete', id: id },
+            success: function(res) {
+                if (res.success) {
+                    alert(res.message);
+                    location.reload();
+                } else {
+                    alert('刪除失敗: ' + res.message);
+                }
+            },
+            error: function(xhr, status, error) { alert('AJAX 請求失敗: ' + error); }
+        });
+    }
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

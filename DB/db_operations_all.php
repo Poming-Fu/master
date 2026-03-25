@@ -265,7 +265,7 @@ class daily_repository {
             while (($row = fgetcsv($handle)) !== false) {
                 // 跳過註解和標題列
                 if (empty($row[0]) || $row[0][0] === '#' || $row[0] === 'branch') continue;
-                if (count($row) < 6) continue;
+                if (count($row) < 5) continue;
 
                 $branch    = trim($row[0]);
                 $target_id = trim($row[1]);
@@ -275,10 +275,9 @@ class daily_repository {
                 }
 
                 $maps[$branch][$target_id] = [
-                    'path' => trim($row[2]),
-                    'type' => trim($row[3]),
-                    'name' => trim($row[4]),
-                    'GUID' => trim($row[5])
+                    'type' => trim($row[2]),
+                    'name' => trim($row[3]),
+                    'GUID' => trim($row[4])
                 ];
             }
             fclose($handle);
@@ -294,11 +293,10 @@ class daily_repository {
     public static function get_branch_names() {
         return array_keys(self::load_branch_maps());
     }
-    // 原有的掃描目錄函數
-    public static function scan_build_directories($branch = '', $start_date = '', $end_date = '', $status = '') {
-        $base_path = '/mnt/DB/';
-        $branch_maps = self::load_branch_maps();
+    private static $build_base_path = '/mnt/DB/daily_build_for_build/';
 
+    public static function scan_build_directories($branch = '', $start_date = '', $end_date = '', $status = '') {
+        $branch_maps = self::load_branch_maps();
         $all_builds = [];
 
         // 決定要處理的分支
@@ -307,18 +305,17 @@ class daily_repository {
         } else {
             $branch_to_scan = [$branch => $branch_maps[$branch] ?? []];
         }
-    
-        // 統一掃描邏輯
+
         foreach ($branch_to_scan as $branch_name => $targets) {
             foreach ($targets as $target_id => $target_info) {
-                $scan_path = $base_path . $target_info['path'];
                 $target_builds = self::scan_single_build_directory(
-                    $scan_path, 
-                    $start_date, 
-                    $end_date, 
+                    $target_id,
+                    $target_info['name'],
+                    $start_date,
+                    $end_date,
                     $status
                 );
-                
+
                 if (!empty($target_builds)) {
                     $all_builds[] = [
                         'branch_name' => $branch_name,
@@ -330,46 +327,57 @@ class daily_repository {
                     ];
                 }
             }
-        }   
+        }
         return $all_builds;
     }
     
-    private static function scan_single_build_directory($scan_path, $start_date, $end_date, $status) {
+    private static function scan_single_build_directory($target_id, $target_name, $start_date, $end_date, $status) {
+        $scan_path = self::$build_base_path;
         $builds = [];
-        
+
         if (!is_dir($scan_path)) {
             error_log("Directory not found: " . $scan_path);
             return $builds;
         }
-        
+
         $dirs = scandir($scan_path);
-        natsort($dirs); //自然排序
-        
+        natsort($dirs);
+
         foreach ($dirs as $dir) {
             if ($dir === '.' || $dir === '..') continue;
-            
+
             preg_match('/(\d{8})/', $dir, $matches);
             $build_date = $matches[1] ?? '';
-            
-            if (empty($build_date)) continue; 
+
+            if (empty($build_date)) continue;
             if (!empty($start_date) && $build_date < $start_date) continue;
             if (!empty($end_date) && $build_date > $end_date) continue;
-    
+
             $full_path = $scan_path . $dir;
-            if (is_dir($full_path)) {
-                $bin_file_path = glob($full_path . '/*.bin')[0] ?? null;
-                $log_file_path = glob($full_path . '/*git*.txt')[0] ?? null;
-                $build_file_path = glob($full_path . '/*build*.txt')[0] ?? null;
-                
+            if (!is_dir($full_path)) continue;
+
+            // 結構: {日期目錄}/{target_id}/{branch_dir}/{target_name}/
+            // 同一天可能有多個 branch 版本 (例: 1.12 和 1.13 並存)
+            $target_dirs = glob("$full_path/$target_id/*/$target_name");
+            if (empty($target_dirs)) continue;
+
+            foreach ($target_dirs as $target_path) {
+                $branch_dir = basename(dirname($target_path));
+
+                $bin_file_path = glob("$target_path/binaries/*.bin")[0] ?? null;
+                $log_file_path = glob("$target_path/logs/*git*.txt")[0] ?? null;
+                $build_file_path = glob("$target_path/logs/*build*.txt")[0] ?? null;
+
                 $build_status = $bin_file_path ? 'PASS' : 'FAIL';
-                
+
                 if (!empty($status) && strtoupper($status) !== $build_status) {
                     continue;
                 }
-    
-                if ($bin_file_path || $log_file_path) {
+
+                if ($bin_file_path || $log_file_path || $build_file_path) {
                     $builds[] = [
                         'build_date' => $build_date,
+                        'branch_version' => $branch_dir,
                         'bin_file_path' => $bin_file_path,
                         'log_file_path' => $log_file_path,
                         'build_file_path' => $build_file_path,
@@ -378,11 +386,12 @@ class daily_repository {
                 }
             }
         }
-        //日期 近 -> 遠 排列
+        // 排序: 日期 近->遠，同日期則 branch_version 降序
         usort($builds, function($a, $b) {
-            return strcmp($b['build_date'], $a['build_date']);
+            $cmp = strcmp($b['build_date'], $a['build_date']);
+            return $cmp !== 0 ? $cmp : strcmp($b['branch_version'], $a['branch_version']);
         });
-        
+
         return $builds;
     }
 }
@@ -583,19 +592,19 @@ class boards_tmp_repository {
         return $board;
     }
 
-    public static function insert_boards_tmp_info($b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes) {
+    public static function insert_boards_tmp_info($b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $branch) {
         $conn = database_connection::get_connection();
-        $stmt = $conn->prepare("INSERT INTO boards_tmp (b_id, b_name, guid, pbid, pbid_oem, bmc_chip, bmc_type, rot_pfr, redfish, target, fw_size, owner, gitlab_type, gitlab_id, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssiissssssssis", $b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes);
+        $stmt = $conn->prepare("INSERT INTO boards_tmp (b_id, b_name, guid, pbid, pbid_oem, bmc_chip, bmc_type, rot_pfr, redfish, target, fw_size, owner, gitlab_type, gitlab_id, notes, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssiissssssssiss", $b_id, $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $branch);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public static function modify_boards_tmp_info($b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $b_id) {
+    public static function modify_boards_tmp_info($b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $branch, $b_id) {
         $conn = database_connection::get_connection();
-        $stmt = $conn->prepare("UPDATE boards_tmp SET b_name=?, guid=?, pbid=?, pbid_oem=?, bmc_chip=?, bmc_type=?, rot_pfr=?, redfish=?, target=?, fw_size=?, owner=?, gitlab_type=?, gitlab_id=?, notes=? WHERE b_id=?");
-        $stmt->bind_param("ssiissssssssiss", $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $b_id);
+        $stmt = $conn->prepare("UPDATE boards_tmp SET b_name=?, guid=?, pbid=?, pbid_oem=?, bmc_chip=?, bmc_type=?, rot_pfr=?, redfish=?, target=?, fw_size=?, owner=?, gitlab_type=?, gitlab_id=?, notes=?, branch=? WHERE b_id=?");
+        $stmt->bind_param("ssiissssssssisss", $b_name, $guid, $pbid, $pbid_oem, $bmc_chip, $bmc_type, $rot_pfr, $redfish, $target, $fw_size, $owner, $gitlab_type, $gitlab_id, $notes, $branch, $b_id);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
@@ -606,6 +615,58 @@ class boards_tmp_repository {
         $sql  = "DELETE FROM boards_tmp WHERE b_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $b_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+}
+
+// ==================== rf_schedule 管理 ====================
+class rf_schedule_repository {
+    public static function query_all() {
+        $conn = database_connection::get_connection();
+        $sql = "SELECT * FROM rf_schedule ORDER BY sort_order";
+        $result = $conn->query($sql);
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    public static function query_by_id($id) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("SELECT * FROM rf_schedule WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        return $row;
+    }
+
+    public static function insert($quarter, $rf_version, $gen12, $gen13, $gen14, $lbmc, $obmc, $sort_order) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("INSERT INTO rf_schedule (quarter, rf_version, gen12, gen13, gen14, lbmc, obmc, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssi", $quarter, $rf_version, $gen12, $gen13, $gen14, $lbmc, $obmc, $sort_order);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public static function modify($quarter, $rf_version, $gen12, $gen13, $gen14, $lbmc, $obmc, $sort_order, $id) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("UPDATE rf_schedule SET quarter=?, rf_version=?, gen12=?, gen13=?, gen14=?, lbmc=?, obmc=?, sort_order=? WHERE id=?");
+        $stmt->bind_param("sssssssii", $quarter, $rf_version, $gen12, $gen13, $gen14, $lbmc, $obmc, $sort_order, $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public static function delete($id) {
+        $conn = database_connection::get_connection();
+        $stmt = $conn->prepare("DELETE FROM rf_schedule WHERE id = ?");
+        $stmt->bind_param("i", $id);
         $result = $stmt->execute();
         $stmt->close();
         return $result;

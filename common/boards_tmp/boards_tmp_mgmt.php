@@ -231,6 +231,7 @@ $boards = boards_tmp_repository::query_boards_tmp_info();
                         <th>FW Size</th>
                         <th>Owner</th>
                         <th>GitLab</th>
+                        <th>Branch</th>
                         <th>Notes</th>
                         <th>操作</th>
                     </tr>
@@ -272,6 +273,7 @@ $boards = boards_tmp_repository::query_boards_tmp_info();
                             <small><?php echo htmlspecialchars($board['gitlab_type'] ?? ''); ?> #<?php echo htmlspecialchars($board['gitlab_id']); ?></small>
                             <?php endif; ?>
                         </td>
+                        <td><?php echo htmlspecialchars($board['branch'] ?? 'master'); ?></td>
                         <td><small><?php echo htmlspecialchars($board['notes'] ?? ''); ?></small></td>
                         <td>
                             <div class="action-btns">
@@ -432,6 +434,20 @@ $boards = boards_tmp_repository::query_boards_tmp_info();
                         </div>
                     </div>
 
+                    <!-- Branch -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="bi bi-diagram-2"></i>
+                            Branch
+                        </div>
+                        <div class="form-grid single">
+                            <div class="form-field">
+                                <label>Branch</label>
+                                <input type="text" name="branch" id="f_branch" placeholder="如 master" value="master">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Notes -->
                     <div class="form-section">
                         <div class="section-title">
@@ -488,7 +504,7 @@ $(document).ready(function() {
             emptyTable: "目前沒有資料"
         },
         columnDefs: [
-            { orderable: false, targets: [14] } // "操作"欄位不排序
+            { orderable: false, targets: [15] } // "操作"欄位不排序
         ]
     });
 });
@@ -536,6 +552,7 @@ function openModifyModal(b_id) {
                 $('#f_owner').val(board.owner || '');
                 $('#f_gitlab_type').val(board.gitlab_type || '');
                 $('#f_gitlab_id').val(board.gitlab_id || '');
+                $('#f_branch').val(board.branch || 'master');
                 $('#f_notes').val(board.notes || '');
 
                 let modal = new bootstrap.Modal(document.getElementById('boardModal'));
