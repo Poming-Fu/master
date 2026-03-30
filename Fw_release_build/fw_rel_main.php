@@ -59,6 +59,28 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                                 <input type="hidden" id="who" name="who" value="<?= htmlspecialchars($who) ?>">
                             </div>
 
+                            <!-- STD / OEM 切換 -->
+                            <div class="mb-3">
+                                <label class="form-label">Build Type</label>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="build_type" id="build_type_std" value="std" checked>
+                                    <label class="btn btn-outline-primary" for="build_type_std">STD</label>
+                                    <input type="radio" class="btn-check" name="build_type" id="build_type_oem" value="oem">
+                                    <label class="btn btn-outline-primary" for="build_type_oem">OEM</label>
+                                </div>
+                            </div>
+
+                            <!-- Release / Only Build 切換 -->
+                            <div class="mb-3">
+                                <label class="form-label">Mode</label>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="build_mode" id="build_mode_only" value="only_build" checked>
+                                    <label class="btn btn-outline-success" for="build_mode_only">Only Build</label>
+                                    <input type="radio" class="btn-check" name="build_mode" id="build_mode_release" value="release">
+                                    <label class="btn btn-outline-success" for="build_mode_release">Release</label>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="branch" class="form-label">Branch name or tag or commit id</label>
                                 <input type="text" class="form-control" id="branch" name="branch" placeholder="ex: master_rel_1.04_20250513, aspeed-master" required>
@@ -79,16 +101,67 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                                 <input type="text" class="form-control" id="option" name="option" value="core=12" readonly required>
                             </div>
 
-                            <div class="mb-4">
+                            <!-- OEM name - 只在 OEM 模式顯示 -->
+                            <div class="mb-4" id="oemname-group" style="display: none;">
                                 <label for="oemname" class="form-label">OEM name</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="oemname" name="oemname" placeholder="STD ignored this">
+                                    <input type="text" class="form-control" id="oemname" name="oemname" placeholder="OEM firmware name">
                                     <span class="input-group-text">.bin</span>
                                 </div>
                             </div>
 
-                            <div class="d-grid">
-                                <button id="build-form-submit-btn" type="submit" class="btn btn-primary btn-lg">
+                            <!-- Release 板子選擇 - 只在 Release 模式顯示 -->
+                            <div class="mb-4" id="release-board-group" style="display: none;">
+                                <label class="form-label">選擇板子 (依 Platform 對應)</label>
+                                <select class="form-select" id="release-board-select">
+                                    <option value="" disabled selected>請先填入 Platform 並按 Tab 觸發搜尋</option>
+                                </select>
+                                <small class="text-muted">請選擇一個板子</small>
+                            </div>
+
+                            <!-- Release 資訊 - 選完板子後顯示 -->
+                            <div id="release-board-info" style="display: none;">
+                                <hr>
+                                <h5 class="mb-3"><i class="bi bi-motherboard"></i> Release Info</h5>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Board Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="release-board-name" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">BMC Type</label>
+                                        <input type="text" class="form-control form-control-sm" id="release-bmc-type" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">GUID</label>
+                                        <input type="text" class="form-control form-control-sm" id="release-guid" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">PBID</label>
+                                        <input type="text" class="form-control form-control-sm" id="release-pbid" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Gitlab Type</label>
+                                        <input type="text" class="form-control form-control-sm" id="release-gitlab-type" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Gitlab ID</label>
+                                        <input type="text" class="form-control form-control-sm" id="release-gitlab-id" readonly>
+                                    </div>
+                                </div>
+                                <button id="gen-release-note-btn" type="button" class="btn btn-warning btn-lg w-100 mb-3">
+                                    <i class="bi bi-file-earmark-text"></i> Gen Release Note
+                                </button>
+                                <!-- Release Note 顯示區 -->
+                                <div id="release-note-output" style="display: none;">
+                                    <label class="form-label">Release Note</label>
+                                    <pre id="release-note-content" class="form-control" style="height: auto; white-space: pre-wrap; background: var(--gray-50); font-size: 13px;"></pre>
+                                    <small class="text-muted" id="release-note-paths"></small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button id="build-form-submit-btn" type="submit" class="btn btn-primary btn-lg flex-fill">
                                     Submit Build
                                 </button>
                             </div>
@@ -202,6 +275,7 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
         </div>
 
     </div>
+
 
 </body>
 </html>

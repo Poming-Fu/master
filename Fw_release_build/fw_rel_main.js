@@ -1,6 +1,8 @@
 
 // DataTable 實例
 let historyTable;
+// Release 模式下查到的板子資料暫存
+let matchedBoards = [];
 
 function update_jenkins_status() {
     $.ajax({
@@ -56,12 +58,160 @@ function initDataTable() {
     });
 }
 
+// ==================== STD / OEM 切換 ====================
+function toggleBuildType() {
+    let isOem = $('input[name="build_type"]:checked').val() === 'oem';
+    if (isOem) {
+        $('#oemname-group').slideDown();
+    } else {
+        $('#oemname-group').slideUp();
+        $('#oemname').val('');
+    }
+}
 
+// ==================== Release / Only Build 切換 ====================
+function toggleBuildMode() {
+    let isRelease = $('input[name="build_mode"]:checked').val() === 'release';
+    if (isRelease) {
+        $('#release-board-group').slideDown();
+        $('#build-form-submit-btn').hide();
+    } else {
+        $('#release-board-group').slideUp();
+        $('#release-board-info').slideUp();
+        $('#build-form-submit-btn').show();
+        matchedBoards = [];
+    }
+}
+
+// ==================== 根據 platform 查詢對應板子 ====================
+function fetchBoardsByPlatform() {
+    let platform = $('#platform').val().trim();
+    if (!platform) return;
+
+    let isRelease = $('input[name="build_mode"]:checked').val() === 'release';
+    if (!isRelease) return;
+
+    $.ajax({
+        url: 'fw_rel_main_functions.php?action=get_boards_by_target&target=' + encodeURIComponent(platform),
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            let $select = $('#release-board-select');
+            $select.empty();
+            matchedBoards = [];
+            $('#release-board-info').slideUp();
+
+            if (response.success && response.data.length > 0) {
+                matchedBoards = response.data;
+                $select.append('<option value="" disabled selected>請選擇板子</option>');
+                response.data.forEach(function(board) {
+                    $select.append(
+                        $('<option>').val(board.b_id).text(
+                            '[' + board.b_id + '] ' + board.b_name + ' | GUID: ' + (board.guid || 'N/A') + ' | PBID: ' + (board.pbid || 'N/A')
+                        )
+                    );
+                });
+            } else {
+                $select.append('<option disabled>沒有找到對應的板子</option>');
+            }
+        },
+        error: function() {
+            console.error('查詢板子失敗');
+        }
+    });
+}
+
+// ==================== 選擇板子後顯示 Board Info ====================
+function showBoardInfo() {
+    let selectedId = $('#release-board-select').val();
+    if (!selectedId) {
+        $('#release-board-info').slideUp();
+        return;
+    }
+
+    let board = matchedBoards.find(b => b.b_id === selectedId);
+    if (!board) {
+        $('#release-board-info').slideUp();
+        return;
+    }
+
+    let buildType = $('input[name="build_type"]:checked').val();
+    let pbid = (buildType === 'oem') ? (board.pbid_oem || '') : (board.pbid || '');
+
+    $('#release-bmc-type').val(board.bmc_type || '');
+    $('#release-gitlab-type').val(board.gitlab_type || '');
+    $('#release-gitlab-id').val(board.gitlab_id || '');
+    $('#release-guid').val(board.guid || '');
+    $('#release-pbid').val(pbid);
+    $('#release-board-name').val(board.b_name || '');
+
+    $('#release-board-info').slideDown();
+}
 
 
 $(document).ready(function() {
     // 初始化 DataTable
     initDataTable();
+
+    // STD / OEM 切換
+    $('input[name="build_type"]').on('change', toggleBuildType);
+
+    // Release / Only Build 切換
+    $('input[name="build_mode"]').on('change', toggleBuildMode);
+
+    // Platform 欄位 blur 時查詢板子
+    $('#platform').on('blur', fetchBoardsByPlatform);
+
+    // 選擇板子後顯示 Board Info
+    $('#release-board-select').on('change', showBoardInfo);
+
+    // STD/OEM 切換時更新 PBID
+    $('input[name="build_type"]').on('change', showBoardInfo);
+
+    // Gen Release Note 按鈕
+    $('#gen-release-note-btn').on('click', function() {
+        let $btn = $(this);
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Generating...');
+
+        $.ajax({
+            type: 'POST',
+            url: 'fw_rel_main_functions.php?action=gen_release_note',
+            data: {
+                build_type:  $('input[name="build_type"]:checked').val(),
+                build_mode:  $('input[name="build_mode"]:checked').val(),
+                branch:      $('#branch').val(),
+                platform:    $('#platform').val(),
+                ver:         $('#ver').val(),
+                option:      $('#option').val(),
+                oemname:     $('#oemname').val() || 'N/A',
+                b_id:        $('#release-board-select').val(),
+                board_name:  $('#release-board-name').val(),
+                bmc_type:    $('#release-bmc-type').val(),
+                guid:        $('#release-guid').val(),
+                pbid:        $('#release-pbid').val(),
+                gitlab_type: $('#release-gitlab-type').val(),
+                gitlab_id:   $('#release-gitlab-id').val()
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('#release-note-content').text(response.content);
+                    $('#release-note-paths').text('Saved: ' + response.tmp_path + ' & ' + response.release_path);
+                    $('#release-note-output').slideDown();
+                    $('#build-form-submit-btn').show();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Gen Release Note failed:', error);
+                alert('Gen Release Note 失敗');
+            },
+            complete: function() {
+                $btn.prop('disabled', false).html('<i class="bi bi-file-earmark-text"></i> Gen Release Note');
+            }
+        });
+    });
 
     $('#build-form-submit-btn').click(function(e) {
         e.preventDefault();
@@ -69,7 +219,7 @@ $(document).ready(function() {
         let formDOM  = $(this).closest('form')[0]; //元素
         //document.getElementById("myDIV").classList.add("mystyle");
         formDOM.classList.add('was-validated');  // 加 Bootstrap 驗證樣式
-        
+
         if (!formDOM.checkValidity()) {
             return;
         }
@@ -260,11 +410,11 @@ $(document).ready(function() {
                             </body>
                             </html>
                         `;
-    
+
                         // 開啟新視窗
                         let popup = window.open('', 'BuildResult', 'width=800,height=600');
                         popup.document.write(popupContent);
-                        
+
                         // 延遲重整主頁面
                         setTimeout(function() {
                             location.reload();
@@ -280,7 +430,7 @@ $(document).ready(function() {
             });
         }
     });
-    
+
     update_jenkins_status();
 });
 
