@@ -27,6 +27,11 @@ function jenkins_api() {
 	echo $COOKIE
 	#jenkins server build 10.148.21.21
 
+	# h13-ast2600-svw 是例外，不視為 LBMC
+	if [[ "$BUILD_TARGET" == "h13-ast2600-svw" ]]; then
+    	BUILD_ON="obmc_rel_1"
+	fi
+	
 	#判斷BUILD_ON sx12 sx13 sh12 sh13 判斷 
 	if [[ $BUILD_TARGET == *h11*  || $BUILD_TARGET == "sh14_rot2hw2_ast26_std_p" ||
 	      $BUILD_TARGET == *x12*  || $BUILD_TARGET == *h12* ||
