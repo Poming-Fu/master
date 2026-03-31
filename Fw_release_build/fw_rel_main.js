@@ -67,7 +67,7 @@ $(document).ready(function() {
     function isLbmc() {
         let p = $('#platform').val() || '';
         // 與 fw_rel_form_api.sh 的判斷邏輯一致
-        return /h11|sh14_rot2hw2_ast26_std_p|x12|h12|x13|h13|h14_am5/.test(p);
+        return /h11|sh14_rot2hw2_ast26_std_p|x12|m12|h12|x13|h13|h14_am5/.test(p);
     }
     function updateOptionValue() {
         let options = ['core=12']; // core=12 永遠帶入
