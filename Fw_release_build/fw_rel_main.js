@@ -66,6 +66,12 @@ $(document).ready(function() {
     // Option checkbox 變更時更新 hidden option 值
     function isLbmc() {
         let p = $('#platform').val() || '';
+        
+        // h13-ast2600-svw 是例外，不視為 LBMC
+        if (p === 'h13-ast2600-svw') {
+            return false;
+        }
+        
         // 與 fw_rel_form_api.sh 的判斷邏輯一致
         return /h11|sh14_rot2hw2_ast26_std_p|x12|m12|h12|x13|h13|h14_am5/.test(p);
     }
