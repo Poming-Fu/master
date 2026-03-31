@@ -75,8 +75,19 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                             </div>
 
                             <div class="mb-3">
-                                <label for="option" class="form-label">Option</label>
-                                <input type="text" class="form-control" id="option" name="option" value="core=12" readonly required>
+                                <label class="form-label">Option</label>
+                                <input type="hidden" id="option" name="option" value="core=12" required>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input option-checkbox" type="checkbox" id="opt_core" value="core=12" checked disabled>
+                                        <label class="form-check-label" for="opt_core">core=12</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="opt_hotfix">
+                                        <label class="form-check-label" for="opt_hotfix">Hotfix</label>
+                                        <small class="text-muted ms-1">(LBMC: hotfix=y / OBMC: SMCI_FW_TYPE_HOTFIX=y)</small>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-4">

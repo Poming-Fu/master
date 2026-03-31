@@ -42,16 +42,16 @@ class firmware_release_controller {
         $ver         = $_POST['ver'];
         $option      = $_POST['option'];
         $oemname     = $_POST['oemname'];
-        
+
         if (!empty($oemname) && !str_ends_with($oemname, '.bin')) {
             $oemname .= '.bin';
         }
-    
+
         //gen uuid
         $UUID        = common::generate_uuid(4);
         // submit time
         $submit_time = date("Y-m-d H:i:s");
-        
+
         $result      = $this->execute_form_api($who, $branch, $platform, $ver, $option, $oemname, $UUID);
         if ($result['message'] == null || trim($result['message']) == '') {
             $response = [

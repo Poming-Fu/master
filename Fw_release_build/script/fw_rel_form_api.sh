@@ -41,24 +41,24 @@ function jenkins_api() {
 	lbmc_rel_2)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
 		http://10.148.21.21:8080/job/X12%20Codebase%20Release_1/buildWithParameters \
-		--user $USER \
-		-F BRANCH_NAME=$BRANCH_NAME \
-		-F BUILD_TARGET=$BUILD_TARGET \
-		-F RELEASE_FW_VER=$RELEASE_FW_VER \
-		-F BUILD_OPTION=$BUILD_OPTION \
-		-F OEM_NAME=$OEM_NAME \
-		-F UUID=$UUID
-	
+		--user "$USER" \
+		-F "BRANCH_NAME=$BRANCH_NAME" \
+		-F "BUILD_TARGET=$BUILD_TARGET" \
+		-F "RELEASE_FW_VER=$RELEASE_FW_VER" \
+		-F "BUILD_OPTION=$BUILD_OPTION" \
+		-F "OEM_NAME=$OEM_NAME" \
+		-F "UUID=$UUID"
+
 	;;
 	obmc_rel_1)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
 		http://10.148.21.21:8080/job/Obmc%20Codebase%20Release_1/buildWithParameters \
-		--user $USER \
-		-F BRANCH_NAME=$BRANCH_NAME \
-		-F BUILD_TARGET=$BUILD_TARGET \
-		-F RELEASE_FW_VER=$RELEASE_FW_VER \
-		-F BUILD_OPTION=$BUILD_OPTION \
-		-F UUID=$UUID
+		--user "$USER" \
+		-F "BRANCH_NAME=$BRANCH_NAME" \
+		-F "BUILD_TARGET=$BUILD_TARGET" \
+		-F "RELEASE_FW_VER=$RELEASE_FW_VER" \
+		-F "BUILD_OPTION=$BUILD_OPTION" \
+		-F "UUID=$UUID"
 
 	;;
 	*)

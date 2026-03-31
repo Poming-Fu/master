@@ -63,8 +63,25 @@ $(document).ready(function() {
     // 初始化 DataTable
     initDataTable();
 
+    // Option checkbox 變更時更新 hidden option 值
+    function isLbmc() {
+        let p = $('#platform').val() || '';
+        // 與 fw_rel_form_api.sh 的判斷邏輯一致
+        return /h11|sh14_rot2hw2_ast26_std_p|x12|h12|x13|h13|h14_am5/.test(p);
+    }
+    function updateOptionValue() {
+        let options = ['core=12']; // core=12 永遠帶入
+        if ($('#opt_hotfix').is(':checked')) {
+            options.push(isLbmc() ? 'hotfix=y' : 'SMCI_FW_TYPE_HOTFIX=y');
+        }
+        $('#option').val(options.join(' '));
+    }
+    $('#opt_hotfix').change(updateOptionValue);
+    $('#platform').on('input', updateOptionValue); // platform 改變時也重新判斷
+
     $('#build-form-submit-btn').click(function(e) {
         e.preventDefault();
+        updateOptionValue(); // 確保 option 值是最新的
         let formData = $(this).closest('form').serialize(); //表單值 who, branch, target...
         let formDOM  = $(this).closest('form')[0]; //元素
         //document.getElementById("myDIV").classList.add("mystyle");
