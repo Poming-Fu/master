@@ -31,7 +31,7 @@ function jenkins_api() {
 	if [[ $BUILD_TARGET == *h11*  || $BUILD_TARGET == "sh14_rot2hw2_ast26_std_p" ||
 	      $BUILD_TARGET == *x12*  || $BUILD_TARGET == *h12* ||
 	      $BUILD_TARGET == *x13*  || $BUILD_TARGET == *h13* ||
-		  $BUILD_TARGET == *h14_am5* ]]; then
+		  $BUILD_TARGET == *m12*  || $BUILD_TARGET == *h14_am5* ]]; then
 		BUILD_ON="lbmc_rel_2"
 	else
 		BUILD_ON="obmc_rel_1"
