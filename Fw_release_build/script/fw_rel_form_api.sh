@@ -15,7 +15,7 @@ UUID=$7
 
 function jenkins_api() {
 	#open session , output all data
-	api_output=$(curl -verbose  -s 'http://10.148.21.21:8080/crumbIssuer/api/json' --user ${USER} 2>&1)
+	api_output=$(curl -verbose  -s 'http://10.148.44.200:8080/crumbIssuer/api/json' --user ${USER} 2>&1)
 	echo $api_output
 	
 	#提取crumb
@@ -26,24 +26,12 @@ function jenkins_api() {
 	COOKIE=$(echo "$api_output" | awk -F '[:; ]+' '/Set-Cookie: JSESSIONID/ {print$3}')
 	echo $COOKIE
 	#jenkins server build 10.148.21.21
-
-	# h13-ast2600-svw 是例外，不視為 LBMC
-	if [[ "$BUILD_TARGET" == "h13-ast2600-svw" ]]; then
-    	BUILD_ON="obmc_rel_1"
-	#判斷BUILD_ON sx12 sx13 sh12 sh13 判斷 
-	elif [[ $BUILD_TARGET == *h11*  || $BUILD_TARGET == "sh14_rot2hw2_ast26_std_p" ||
-	      $BUILD_TARGET == *x12*  || $BUILD_TARGET == *h12* ||
-	      $BUILD_TARGET == *x13*  || $BUILD_TARGET == *h13* ||
-		  $BUILD_TARGET == *m12*  || $BUILD_TARGET == *h14_am5* ]]; then
-		BUILD_ON="lbmc_rel_2"
-	else
-		BUILD_ON="obmc_rel_1"
-	fi
+	BUILD_ON="Release_build_official"
 
 	case $BUILD_ON in
-	lbmc_rel_2)
+ 	Release_build_official)
 	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
-		http://10.148.21.21:8080/job/X12%20Codebase%20Release_1/buildWithParameters \
+		http://10.148.44.200:8080/job/Release_build_official/buildWithParameters \
 		--user "$USER" \
 		-F "BRANCH_NAME=$BRANCH_NAME" \
 		-F "BUILD_TARGET=$BUILD_TARGET" \
@@ -51,18 +39,6 @@ function jenkins_api() {
 		-F "BUILD_OPTION=$BUILD_OPTION" \
 		-F "OEM_NAME=$OEM_NAME" \
 		-F "UUID=$UUID"
-
-	;;
-	obmc_rel_1)
-	curl -s -X POST --cookie "${COOKIE}" -H "Jenkins-Crumb:${CRUMB}" \
-		http://10.148.21.21:8080/job/Obmc%20Codebase%20Release_1/buildWithParameters \
-		--user "$USER" \
-		-F "BRANCH_NAME=$BRANCH_NAME" \
-		-F "BUILD_TARGET=$BUILD_TARGET" \
-		-F "RELEASE_FW_VER=$RELEASE_FW_VER" \
-		-F "BUILD_OPTION=$BUILD_OPTION" \
-		-F "UUID=$UUID"
-
 	;;
 	*)
 	echo "wrong BUILD_ON"

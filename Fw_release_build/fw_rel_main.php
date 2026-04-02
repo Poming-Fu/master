@@ -44,10 +44,10 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                         <h2 class="card-title">
                             Build Form 
                             <span class="ms-3 fs-6">
-                                <i class="bi bi-check-circle-fill text-success"></i> AST2600(x12, x13, x13_hw1, x14)
+                                <i class="bi bi-check-circle-fill text-success"></i> AST2500(x11, x12) & AST2600(x12, x13, x13_hw1, x14) & AST2700(x15)
                             </span>
                             <span class="ms-3 fs-6">
-                                <i class="bi bi-x-circle-fill text-danger"></i> AST2500(x11,x12), AST2700(x15)
+                                <i class="bi bi-x-circle-fill text-danger"></i> hw1 sign need Hunter.
                             </span>
                         </h2>
                         <form>
@@ -76,11 +76,11 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
 
                             <div class="mb-3">
                                 <label class="form-label">Option</label>
-                                <input type="hidden" id="option" name="option" value="core=12" required>
+                                <input type="hidden" id="option" name="option" value="core=20" required>
                                 <div class="d-flex flex-wrap gap-3">
                                     <div class="form-check">
                                         <input class="form-check-input option-checkbox" type="checkbox" id="opt_core" value="core=12" checked disabled>
-                                        <label class="form-check-label" for="opt_core">core=12</label>
+                                        <label class="form-check-label" for="opt_core">core=20</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="opt_hotfix">
