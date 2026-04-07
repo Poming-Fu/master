@@ -76,10 +76,24 @@ $(document).ready(function() {
         return /h11|sh14_rot2hw2_ast26_std_p|x12|m12|h12|x13|h13|h14_am5/.test(p);
     }
     function updateOptionValue() {
-        let options = ['core=12']; // core=12 永遠帶入
+        let options = [];
+
+        // Core 部分
+        $('.option-checkbox:checked').each(function() {
+            options.push($(this).val());
+        });
+
+        // Hotfix 部分
         if ($('#opt_hotfix').is(':checked')) {
             options.push(isLbmc() ? 'hotfix=y' : 'SMCI_FW_TYPE_HOTFIX=y');
         }
+
+        // 至少要有 core=20
+        if (options.length === 0) {
+            options.push('core=20');
+        }
+
+        // 寫入 hidden input
         $('#option').val(options.join(' '));
     }
     $('#opt_hotfix').change(updateOptionValue);

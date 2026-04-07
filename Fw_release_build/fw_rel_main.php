@@ -76,14 +76,26 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
 
                             <div class="mb-3">
                                 <label class="form-label">Option</label>
-                                <input type="hidden" id="option" name="option" value="core=20" required>
+                                
+                                <input type="hidden" id="option" name="option" value="core=20">
+                                
                                 <div class="d-flex flex-wrap gap-3">
+                                    <!-- Core 選項 -->
                                     <div class="form-check">
-                                        <input class="form-check-input option-checkbox" type="checkbox" id="opt_core" value="core=12" checked disabled>
+                                        <input class="form-check-input option-checkbox" 
+                                            type="checkbox" 
+                                            id="opt_core" 
+                                            value="core=20" 
+                                            checked
+                                            disabled>
                                         <label class="form-check-label" for="opt_core">core=20</label>
                                     </div>
+
+                                    <!-- Hotfix 選項 -->
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="opt_hotfix">
+                                        <input class="form-check-input" 
+                                            type="checkbox" 
+                                            id="opt_hotfix">
                                         <label class="form-check-label" for="opt_hotfix">Hotfix</label>
                                         <small class="text-muted ms-1">(LBMC: hotfix=y / OBMC: SMCI_FW_TYPE_HOTFIX=y)</small>
                                     </div>
