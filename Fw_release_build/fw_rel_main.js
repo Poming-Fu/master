@@ -101,14 +101,15 @@ $(document).ready(function() {
 
     $('#build-form-submit-btn').click(function(e) {
         e.preventDefault();
-        updateOptionValue(); // 確保 option 值是最新的
-        let formData = $(this).closest('form').serialize(); //表單值 who, branch, target...
-        let formDOM  = $(this).closest('form')[0]; //元素
-        //document.getElementById("myDIV").classList.add("mystyle");
-        formDOM.classList.add('was-validated');  // 加 Bootstrap 驗證樣式
+
+        let formDOM = $(this).closest('form')[0];
         
+        // 先加上驗證樣式（Bootstrap 紅框）
+        formDOM.classList.add('was-validated');
+
+        // 1. 先用 HTML5 原生驗證（檢查 required 等）
         if (!formDOM.checkValidity()) {
-            return;
+            return;   // 有欄位沒填就會直接停在這裡，不繼續往下
         }
 
         // 驗證 version 格式：必須是兩位數字.兩位數字.兩位數字 (可選 .兩位數字)
