@@ -111,12 +111,16 @@ $(document).ready(function() {
             return;
         }
 
-        // 驗證 version 格式: legacy xx.xx.xx 或 openbmc xx.xx.xx.xx
+        // 驗證 version 格式：必須是兩位數字.兩位數字.兩位數字 (可選 .兩位數字)
         let verVal = $('#ver').val().trim();
-        let verRegex = /^\d{1,2}\.\d{1,2}\.\d{1,2}(\.\d{1,2})?$/;
+        let verRegex = /^\d{2}\.\d{2}\.\d{2}(\.\d{2})?$/;
+
         if (!verRegex.test(verVal)) {
-            alert('Version 格式不正確！\n請輸入：\n  Legacy BMC: xx.xx.xx (例: 01.01.01)\n  OpenBMC: xx.xx.xx.xx (例: 01.02.03.01)');
-            //滑鼠會移到這裡
+            alert('Version 格式不正確！\n\n' + 
+                '請輸入以下格式（每段必須是兩位數，可補0）：\n' +
+                '• Legacy BMC : 01.04.04\n' +
+                '• OpenBMC    : 01.02.03.01');
+            
             $('#ver').focus();
             return;
         }

@@ -44,10 +44,10 @@ $who  = htmlspecialchars($_SESSION['username']) . ":" . htmlspecialchars($_SESSI
                         <h2 class="card-title">
                             Build Form 
                             <span class="ms-3 fs-6">
-                                <i class="bi bi-check-circle-fill text-success"></i> AST2500(x11, x12) & AST2600(x12, x13, x13_hw1, x14) & AST2700(x15)
+                                <i class="bi bi-check-circle-fill text-success"></i> AST2500(x11, x12) & AST2600(x12, x13, x13_hw1(debug key), x14) & AST2700(x15)
                             </span>
                             <span class="ms-3 fs-6">
-                                <i class="bi bi-x-circle-fill text-danger"></i> hw1 sign need Hunter.
+                                <i class="bi bi-x-circle-fill text-danger"></i> hw1 product sign needs Hunter.
                             </span>
                         </h2>
                         <form>
