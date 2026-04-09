@@ -127,6 +127,7 @@ $(document).ready(function() {
         }
 
         if(confirm('確定要送出表單嗎?')) {
+	    let formData = $(formDOM).serialize();
             $.ajax({
                 type: "POST",
                 url: "fw_rel_main_functions.php?action=submit_fw_rel_form",
