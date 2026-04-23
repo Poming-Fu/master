@@ -34,9 +34,7 @@ $user_level = $user['u_lev'] ?? 'low';
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/web1/common/boards_tmp/boards_tmp_mgmt.php">
-                            <i class="bi bi-motherboard me-1"></i>Boards Tmp
-                            <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">beta!</span>
-                        </a>
+                            <i class="bi bi-motherboard me-1"></i>Boards Tmp                        </a>
                     </li>
                     <?php if ($user_level == 'high'): ?>
                     <li class="nav-item">

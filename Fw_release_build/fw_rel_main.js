@@ -2,6 +2,9 @@
 // DataTable 實例
 let historyTable;
 
+// platform autocomplete 快取的 bmc_type（從 DB 選取後設定，手動輸入時為 null）
+let selectedPlatformBmcType = null;
+
 function update_jenkins_status() {
     $.ajax({
         url: 'fw_rel_main_functions.php?action=update_jenkins_status',
@@ -65,14 +68,13 @@ $(document).ready(function() {
 
     // Option checkbox 變更時更新 hidden option 值
     function isLbmc() {
-        let p = $('#platform').val() || '';
-        
-        // h13-ast2600-svw 是例外，不視為 LBMC
-        if (p === 'h13-ast2600-svw') {
-            return false;
+        // 優先使用從 DB autocomplete 選取的 bmc_type
+        if (selectedPlatformBmcType !== null) {
+            return selectedPlatformBmcType === 'legacybmc';
         }
-        
-        // 與 fw_rel_form_api.sh 的判斷邏輯一致
+        // fallback：手動輸入時用 regex
+        let p = $('#platform').val() || '';
+        if (p === 'h13-ast2600-svw') return false;
         return /h11|sh14_rot2hw2_ast26_std_p|x12|m12|h12|x13|h13|h14_am5/.test(p);
     }
     function updateOptionValue() {
@@ -97,7 +99,66 @@ $(document).ready(function() {
         $('#option').val(options.join(' '));
     }
     $('#opt_hotfix').change(updateOptionValue);
-    $('#platform').on('input', updateOptionValue); // platform 改變時也重新判斷
+
+    // ---- Platform autocomplete ----
+    let $platformWrap = $('#platform').parent();
+    $platformWrap.css('position', 'relative');
+    let $platformDropdown = $('<ul id="platform-dropdown" class="list-group position-absolute w-100" style="z-index:1050;display:none;max-height:220px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.15);"></ul>');
+    $('#platform').after($platformDropdown);
+
+    let platformTimer = null;
+
+    $('#platform').on('input', function() {
+        let q = $(this).val().trim();
+        selectedPlatformBmcType = null; // 手動輸入時清除快取
+        updateOptionValue();
+        clearTimeout(platformTimer);
+
+        if (q.length < 1) {
+            $platformDropdown.hide().empty();
+            return;
+        }
+
+        platformTimer = setTimeout(function() {
+            $.ajax({
+                url: 'fw_rel_main_functions.php?action=search_platform&q=' + encodeURIComponent(q),
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $platformDropdown.empty();
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(function(item) {
+                            let $li = $('<li class="list-group-item list-group-item-action py-1 px-2" style="cursor:pointer;font-size:.875em;"></li>');
+                            $li.html('<strong>' + $('<span>').text(item.target).html() + '</strong>'
+                                + ' <span class="badge ' + (item.bmc_type === 'legacybmc' ? 'bg-warning text-dark' : 'bg-info text-dark') + ' ms-1">'
+                                + $('<span>').text(item.bmc_type).html() + '</span>');
+                            $li.on('mousedown', function(e) {
+                                e.preventDefault(); // 防止 input blur 先觸發
+                                $('#platform').val(item.target);
+                                selectedPlatformBmcType = item.bmc_type; // 快取 DB 的 bmc_type
+                                $platformDropdown.hide().empty();
+                                updateOptionValue();
+                            });
+                            $platformDropdown.append($li);
+                        });
+                        $platformDropdown.show();
+                    } else {
+                        $platformDropdown.hide();
+                    }
+                }
+            });
+        }, 280);
+    });
+
+    $('#platform').on('blur', function() {
+        setTimeout(function() { $platformDropdown.hide(); }, 150);
+    });
+
+    $('#platform').on('focus', function() {
+        if ($platformDropdown.children().length > 0) {
+            $platformDropdown.show();
+        }
+    });
 
     $('#build-form-submit-btn').click(function(e) {
         e.preventDefault();
@@ -127,7 +188,7 @@ $(document).ready(function() {
         }
 
         if(confirm('確定要送出表單嗎?')) {
-	    let formData = $(formDOM).serialize();
+            let formData = $(formDOM).serialize();
             $.ajax({
                 type: "POST",
                 url: "fw_rel_main_functions.php?action=submit_fw_rel_form",
