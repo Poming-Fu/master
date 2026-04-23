@@ -175,6 +175,65 @@ if (isset($_GET['action'])) {
                 }
                 break;
 
+            // ========== MR Check Report API ==========
+            case 'list_mr_check_reports':
+                header('Content-Type: application/json');
+                $report_dir = '/mnt/DB/daily_MR_check_report';
+                $reports = [];
+
+                $start_date = $_GET['start_date'] ?? '';
+                $end_date   = $_GET['end_date'] ?? '';
+                $limit      = intval($_GET['limit'] ?? 0);
+
+                if (is_dir($report_dir)) {
+                    $files = glob($report_dir . '/*.html');
+                    foreach ($files as $file) {
+                        $filename = basename($file);
+                        // 接受任意前綴 + YYYYMMDD.html
+                        if (preg_match('/(\d{8})\.html$/', $filename, $matches)) {
+                            $file_date = $matches[1];
+
+                            if ($start_date && $file_date < $start_date) continue;
+                            if ($end_date   && $file_date > $end_date)   continue;
+
+                            $reports[] = [
+                                'filename'     => $filename,
+                                'date'         => $file_date,
+                                'display_date' => substr($file_date, 0, 4) . '/' . substr($file_date, 4, 2) . '/' . substr($file_date, 6, 2),
+                                'mtime'        => date('Y-m-d H:i:s', filemtime($file))
+                            ];
+                        }
+                    }
+                    usort($reports, function($a, $b) {
+                        return strcmp($b['date'], $a['date']);
+                    });
+                    if ($limit > 0) {
+                        $reports = array_slice($reports, 0, $limit);
+                    }
+                }
+                echo json_encode($reports);
+                break;
+
+            case 'get_mr_check_report':
+                $date       = $_GET['date'] ?? '';
+                $report_dir = '/mnt/DB/daily_MR_check_report';
+
+                if (preg_match('/^\d{8}$/', $date) && is_dir($report_dir)) {
+                    $files = glob($report_dir . '/*' . $date . '.html');
+                    if (!empty($files)) {
+                        header('Content-Type: text/html; charset=utf-8');
+                        readfile($files[0]);
+                        break;
+                    }
+                }
+                header('Content-Type: text/html; charset=utf-8');
+                echo '<div style="padding: 20px; text-align: center; color: #666;">';
+                echo '<h3>Report not found</h3>';
+                echo '<p>File: *' . htmlspecialchars($date) . '.html</p>';
+                echo '<p>Please check if the report exists or try another date.</p>';
+                echo '</div>';
+                break;
+
             // 其他 API...
         }
     } catch (Exception $e) {

@@ -6,6 +6,26 @@ $u_acc      = htmlspecialchars($_SESSION['username']);
 $conn       = database_connection::get_connection();
 class firmware_release_controller {
 
+    public function search_platform() {
+        $q = trim($_GET['q'] ?? '');
+        if (strlen($q) < 1) {
+            return json_encode(['results' => []]);
+        }
+        $conn = database_connection::get_connection();
+        $like = '%' . $q . '%';
+        # DISTINCT 去重複
+        $stmt = $conn->prepare("SELECT DISTINCT target, bmc_type FROM boards_tmp WHERE target LIKE ? ORDER BY target LIMIT 15");
+        $stmt->bind_param("s", $like);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $results = [];
+        while ($row = $result->fetch_assoc()) {
+            $results[] = $row;
+        }
+        $stmt->close();
+        return json_encode(['results' => $results]);
+    }
+
     public function update_jenkins_status() {
     $output = shell_exec(__DIR__ . "/script/fw_rel_get_jenkins_status.sh");
     return json_encode([
@@ -81,6 +101,9 @@ if (isset($_GET['action'])) {
     
     try {
         switch ($action) {
+            case 'search_platform':
+                $response = $fw_rel_controller->search_platform();
+                break;
             case 'update_jenkins_status':
                 $response = $fw_rel_controller->update_jenkins_status();
                 break;

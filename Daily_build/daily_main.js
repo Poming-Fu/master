@@ -253,4 +253,92 @@ $(document).ready(function() {
         $('#reportHeader').html('<i class="bi bi-file-earmark-text"></i> Daily Report: ' + displayDate);
     });
 
+    // ========== MR Check Reports Tab ==========
+
+    $('#mrDateRange').daterangepicker({
+        autoUpdateInput: true,
+        startDate: moment().subtract(6, 'days'),
+        endDate: moment(),
+        locale: {
+            format: 'YYYYMMDD',
+            separator: ' - ',
+            applyLabel: '確定',
+            cancelLabel: '清除',
+            customRangeLabel: '自定義範圍'
+        },
+        ranges: {
+            '今天': [moment(), moment()],
+            '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '最近7天': [moment().subtract(6, 'days'), moment()],
+            '最近30天': [moment().subtract(29, 'days'), moment()]
+        }
+    });
+
+    function loadMrReportList(params, headerText) {
+        $.ajax({
+            url: 'daily_main_functions.php?action=list_mr_check_reports',
+            type: 'GET',
+            data: params,
+            dataType: 'json',
+            beforeSend: function() {
+                $('#mrReportListContent').html('<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div> Loading...</div>');
+                $('#mrReportList').show();
+            },
+            success: function(reports) {
+                if (reports.length === 0) {
+                    $('#mrReportListContent').html('<p class="text-muted mb-0 py-2">No reports found in this range.</p>');
+                    return;
+                }
+
+                let html = '<div class="table-responsive"><table class="table table-sm table-hover mb-0">';
+                html += '<thead><tr><th>Date</th><th>Modified</th><th>Action</th></tr></thead><tbody>';
+
+                reports.forEach(function(report) {
+                    html += '<tr>';
+                    html += '<td>' + report.display_date + '</td>';
+                    html += '<td><small class="text-muted">' + report.mtime + '</small></td>';
+                    html += '<td><button class="btn btn-sm btn-outline-primary view-mr-report" data-date="' + report.date + '">View</button></td>';
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+                $('#mrReportListContent').html(html);
+                $('.card-header', '#mrReportList').text(headerText + ' (' + reports.length + ' reports)');
+            },
+            error: function() {
+                $('#mrReportListContent').html('<p class="text-danger mb-0">Error loading report list</p>');
+            }
+        });
+    }
+
+    $('#loadMrReport').click(function() {
+        const picker = $('#mrDateRange').data('daterangepicker');
+        const startDate = picker.startDate.format('YYYYMMDD');
+        const endDate = picker.endDate.format('YYYYMMDD');
+        const displayStart = picker.startDate.format('YYYY/MM/DD');
+        const displayEnd = picker.endDate.format('YYYY/MM/DD');
+
+        loadMrReportList(
+            { start_date: startDate, end_date: endDate },
+            displayStart + ' ~ ' + displayEnd
+        );
+    });
+
+    $('#listMrReports').click(function() {
+        loadMrReportList(
+            { limit: 50 },
+            'Recent 50'
+        );
+    });
+
+    $(document).on('click', '.view-mr-report', function() {
+        const date = String($(this).data('date'));
+        const displayDate = date.substring(0, 4) + '/' + date.substring(4, 6) + '/' + date.substring(6, 8);
+
+        $(this).closest('tr').addClass('table-active').siblings().removeClass('table-active');
+        $('#mrReportHeader').html('<i class="bi bi-hourglass-split"></i> Loading report...');
+        $('#mrReportFrame').attr('src', 'daily_main_functions.php?action=get_mr_check_report&date=' + date);
+        $('#mrReportHeader').html('<i class="bi bi-file-earmark-check"></i> MR Check Report: ' + displayDate);
+    });
+
 });

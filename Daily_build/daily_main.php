@@ -50,7 +50,13 @@ $branch_names = daily_repository::get_branch_names();
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report-content" type="button" role="tab" aria-controls="report-content" aria-selected="false">
                     <i class="bi bi-envelope-paper"></i> All Targets Mail Reports
-                    <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">beta!</span>
+                    <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">new!</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mr-check-tab" data-bs-toggle="tab" data-bs-target="#mr-check-content" type="button" role="tab" aria-controls="mr-check-content" aria-selected="false">
+                    <i class="bi bi-file-earmark-check"></i> MR Check Reports
+                    <span class="badge rounded-pill text-bg-warning ms-1" style="font-size: 10px;">new!</span>
                 </button>
             </li>
             <?php endif; ?>
@@ -104,7 +110,6 @@ $branch_names = daily_repository::get_branch_names();
             </div>
 
             <!-- Tab 2: Mail Reports (僅 high 權限) -->
-            <?php if ($user_level == 'high'): ?>
             <div class="tab-pane fade" id="report-content" role="tabpanel" aria-labelledby="report-tab">
                 <!-- 報告篩選 -->
                 <div class="filter-card">
@@ -145,7 +150,47 @@ $branch_names = daily_repository::get_branch_names();
                     </div>
                 </div>
             </div>
-            <?php endif; ?>
+            <!-- Tab 3: MR Check Reports (僅 high 權限) -->
+            <div class="tab-pane fade" id="mr-check-content" role="tabpanel" aria-labelledby="mr-check-tab">
+                <!-- 篩選 -->
+                <div class="filter-card">
+                    <div class="filter-title">Select MR Check Report</div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="mrDateRange" class="form-label">Date Range</label>
+                            <input type="text" class="form-control" id="mrDateRange" placeholder="Select date range">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-primary w-100" id="loadMrReport"><i class="bi bi-search me-1"></i>Load Reports</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-outline-secondary w-100" id="listMrReports"><i class="bi bi-clock-history me-1"></i>List Recent</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 報告列表 -->
+                <div id="mrReportList" class="mb-3" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">Available MR Check Reports</div>
+                        <div class="card-body" id="mrReportListContent">
+                            <!-- 由 JS 動態渲染 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 報告內容顯示區 -->
+                <div id="mrReportDisplay" class="card">
+                    <div class="card-header" id="mrReportHeader">
+                        <i class="bi bi-file-earmark-check"></i> MR Check Report Content
+                    </div>
+                    <div class="card-body p-0">
+                        <iframe id="mrReportFrame" style="width: 100%; height: 600px; border: none;"></iframe>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
